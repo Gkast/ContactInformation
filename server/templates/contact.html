@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Information</title>
+</head>
+<body>
+<form method="post" id="contact-form" action="http://localhost:3000/contact">
+    <label for="first-name">First Name:</label>
+    <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs">
+
+    <label for="last-name">Last Name:</label>
+    <input type="text" placeholder="Last Name" name="lastname" id="last-name" class="form-inputs">
+
+    <label for="email">Email:</label>
+    <input type="email" placeholder="Email" name="email" id="email" class="form-inputs">
+
+    <label for="subject">Subject:</label>
+    <input type="text" placeholder="Subject" name="subject" id="subject" class="form-inputs">
+
+    <label for="message-area">Message:</label>
+    <textarea placeholder="Write a message..." name="message" id="message-area" class="form-inputs"></textarea>
+
+    <button type="submit" id="submit-button">Submit</button>
+</form>
+<a href="/home">Home</a>
+</body>
+</html>
