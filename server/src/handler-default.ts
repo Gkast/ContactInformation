@@ -29,10 +29,10 @@ export function homeRequestListener(): MyHttpListener {
 }
 
 export function defaultListener(): MyHttpListener {
-    return function (req, parsedUrl) {
+    return function (req, url) {
         return fs.promises.readFile("../templates/" +
-            (parsedUrl.pathname.endsWith('.html') ?
-                parsedUrl.pathname : (parsedUrl.pathname + '.html')))
+            (url.pathname.endsWith('.html') ?
+                url.pathname : (url.pathname + '.html')))
             .then(fileContents => {
                 return {
                     headers: new Map(Object.entries({'Content-Type': 'text/html',})),
@@ -41,5 +41,3 @@ export function defaultListener(): MyHttpListener {
             }).catch(pageNotFound);
     }
 }
-
-

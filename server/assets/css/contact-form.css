@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#contact-form {
+    width: 500px;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 20px;
+    margin: 40px 0;
+}
+
+.form-inputs {
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+#message-area {
+    resize: none;
+    height: 200px;
+}
+
+#submit-button {
+    padding: 10px 20px;
+    width: 100px;
+    margin-top: 20px;
+}

@@ -3,17 +3,22 @@ import * as fs from "fs";
 import {writeMyResToNodeResponse} from "./utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
-import {contactusRedirectListener, contactRequestListener} from "./contact";
+import {
+    contactusRedirectListener,
+    contactRequestListener,
+    submittedContactFormsRequestListener,
+    contactUpdateListener, contactEditPageListener, contactDeleteListener
+} from "./contact";
 import {defaultListener, homeRequestListener, staticFileListener} from "./handler-default";
-import {submittedContactFormsRequestListener} from "./submitted-contact-forms";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
     port: 25,
-    secure: false,
-
+    secure: false
 });
+
 const con = mysql.createConnection(process.env.MYSQL_CONN_STRING);
+
 Promise.all([
     fs.promises.readFile('../misc/mimetypes.json', {encoding: 'utf-8'}).then(
         fileContents => new Map<string, string>(Object.entries(JSON.parse(fileContents)))),
@@ -33,6 +38,9 @@ Promise.all([
     const staticFileHandler = staticFileListener(mimetypes);
     const homePageHandler = homeRequestListener();
     const submittedContactFormsHandler = submittedContactFormsRequestListener(con);
+    const contactDeleteHandler = contactDeleteListener(con);
+    const contactUpdateHandler = contactUpdateListener(con);
+    const contactEditPageHandler = contactEditPageListener(con);
 
 
     http.createServer(function (req, res) {
@@ -42,10 +50,12 @@ Promise.all([
             pathLowerCase === '/contact' && req.method === 'POST' ? contactHandler :
                 pathLowerCase === '/contactus' && req.method === 'GET' ? contactusRedirectHandler :
                     (pathLowerCase === "/" || pathLowerCase === "/home") && req.method === "GET" ? homePageHandler :
-                        pathLowerCase === "/submitted-contact-forms" &&
-                        req.method === "GET" ? submittedContactFormsHandler :
-                            pathLowerCase.startsWith('/assets/') && req.method === "GET" ? staticFileHandler :
-                                defaultHandler;
+                        pathLowerCase === "/form-dashboard" && req.method === "GET" ? submittedContactFormsHandler :
+                            pathLowerCase.match(/^\/form-dashboard\/\d+\/delete$/) && req.method === "POST" ? contactDeleteHandler :
+                                pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? contactEditPageHandler :
+                                    pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? contactUpdateHandler :
+                                        pathLowerCase.startsWith('/assets/') && req.method === "GET" ? staticFileHandler :
+                                            defaultHandler;
 
 
         handlerFound(req, parsedUrl)

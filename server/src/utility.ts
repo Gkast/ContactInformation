@@ -11,9 +11,11 @@ export type MyHttpListener = (req: IncomingMessage, url: URL) => Promise<MyHttpR
 
 export function writeMyResToNodeResponse(myres: MyHttpResponse, res: ServerResponse) {
     res.statusCode = myres.status || 200;
-    myres.headers.forEach((headerValue, name) => {
-        res.setHeader(name, headerValue);
-    });
+    if (myres.headers) {
+        myres.headers.forEach((headerValue, name) => {
+            res.setHeader(name, headerValue);
+        });
+    }
     if (!myres.body) {
         res.end();
     } else if (typeof myres.body === 'string') {
