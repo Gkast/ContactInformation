@@ -20,7 +20,7 @@ export function registerRequestListener(con: Connection): MyHttpListener {
             const p = querystring.parse(bodyString);
 
             return new Promise((resolve, reject) => {
-                con.query(`INSERT INTO form_dashboard_users (username, password, email)
+                con.query(`INSERT INTO users (username, password, email)
                            VALUES (?, ?, ?)`, [p.username, p.password, p.email],
                     function (err) {
                         if (err) {

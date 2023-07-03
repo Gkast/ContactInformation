@@ -1,6 +1,7 @@
 import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
 import * as querystring from "querystring";
+import * as randomstring from "randomstring";
 
 export function loginRequestListener(con: Connection): MyHttpListener {
     return function (req) {
@@ -9,7 +10,7 @@ export function loginRequestListener(con: Connection): MyHttpListener {
 
             return new Promise((resolve, reject) => {
                 con.query(`SELECT username, password
-                           FROM form_dashboard_users
+                           FROM users
                            WHERE username = (?)
                              AND password = (?)`, [p.username, p.password],
                     function (err, results) {
@@ -26,9 +27,16 @@ export function loginRequestListener(con: Connection): MyHttpListener {
                                     body: "wrong credentials"
                                 } as MyHttpResponse);
                             } else {
+                                const cookieString = randomstring.generate();
+                                con.query(`INSERT INTO login_cookies (cookie_value) VALUE (?)`,[cookieString],err1 => {
+                                    reject(err1)
+                                });
                                 resolve({
                                     status: 302,
-                                    headers: new Map(Object.entries({'Location': '/form-dashboard'}))
+                                    headers: new Map(Object.entries({
+                                        'Location': '/home',
+                                        'Set-Cookie': `loginid=${cookieString}`
+                                    })),
                                 } as MyHttpResponse);
                             }
                         }

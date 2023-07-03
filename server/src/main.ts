@@ -48,6 +48,8 @@ Promise.all([
 
 
     http.createServer(function (req, res) {
+        const hasLoginIdCookie = (cookie)=>cookie[0]==="loginid";
+        console.log("has login id cookie:",hasLoginIdCookie(req.headers.cookie.split("=")));
         const parsedUrl = new URL('http://' + req.headers.host + req.url);
         const pathLowerCase = parsedUrl.pathname.toLowerCase();
         const handlerFound =
