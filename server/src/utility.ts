@@ -41,3 +41,12 @@ export function pageNotFound() {
         body: 'Page not found'
     } as MyHttpResponse
 }
+
+export function parseRequestCookies(cookie: string) {
+    const allCookiesMap = new Map<string, string>();
+    cookie.split(";").forEach(cookie => {
+        const parts = cookie.split('=', 2)
+        allCookiesMap.set(parts[0].trim(), parts[1]);
+    });
+    return allCookiesMap;
+}

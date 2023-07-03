@@ -9,7 +9,7 @@ export function loginRequestListener(con: Connection): MyHttpListener {
             const p = querystring.parse(bodyString);
 
             return new Promise((resolve, reject) => {
-                con.query(`SELECT username, password
+                con.query(`SELECT id
                            FROM users
                            WHERE username = (?)
                              AND password = (?)`, [p.username, p.password],
@@ -28,9 +28,11 @@ export function loginRequestListener(con: Connection): MyHttpListener {
                                 } as MyHttpResponse);
                             } else {
                                 const cookieString = randomstring.generate();
-                                con.query(`INSERT INTO login_cookies (cookie_value) VALUE (?)`,[cookieString],err1 => {
-                                    reject(err1)
-                                });
+                                con.query(`INSERT INTO login_cookies (cookie_value, user_id) VALUE (?, ?)`,
+                                    [cookieString, results[0].id],
+                                    err1 => {
+                                        reject(err1)
+                                    });
                                 resolve({
                                     status: 302,
                                     headers: new Map(Object.entries({

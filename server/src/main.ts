@@ -1,6 +1,6 @@
 import * as http from "http";
 import * as fs from "fs";
-import {writeMyResToNodeResponse} from "./utility";
+import {parseRequestCookies, writeMyResToNodeResponse} from "./utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
 import {
@@ -48,8 +48,10 @@ Promise.all([
 
 
     http.createServer(function (req, res) {
-        const hasLoginIdCookie = (cookie)=>cookie[0]==="loginid";
-        console.log("has login id cookie:",hasLoginIdCookie(req.headers.cookie.split("=")));
+
+        const allCookiesMap = parseRequestCookies(req.headers.cookie);
+        console.log("all cookies:", allCookiesMap);
+
         const parsedUrl = new URL('http://' + req.headers.host + req.url);
         const pathLowerCase = parsedUrl.pathname.toLowerCase();
         const handlerFound =
