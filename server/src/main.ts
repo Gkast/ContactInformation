@@ -10,6 +10,8 @@ import {
     contactUpdateListener, contactEditPageListener, contactDeleteListener
 } from "./contact";
 import {defaultListener, homeRequestListener, staticFileListener} from "./handler-default";
+import {registerRequestListener} from "./register";
+import {loginRequestListener} from "./login";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -41,6 +43,8 @@ Promise.all([
     const contactDeleteHandler = contactDeleteListener(con);
     const contactUpdateHandler = contactUpdateListener(con);
     const contactEditPageHandler = contactEditPageListener(con);
+    const registerHandler = registerRequestListener(con);
+    const loginHandler = loginRequestListener(con);
 
 
     http.createServer(function (req, res) {
@@ -55,7 +59,9 @@ Promise.all([
                                 pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? contactEditPageHandler :
                                     pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? contactUpdateHandler :
                                         pathLowerCase.startsWith('/assets/') && req.method === "GET" ? staticFileHandler :
-                                            defaultHandler;
+                                            pathLowerCase === '/register' && req.method === 'POST' ? registerHandler :
+                                                pathLowerCase === '/login' && req.method === 'POST' ? loginHandler :
+                                                    defaultHandler;
 
 
         handlerFound(req, parsedUrl)

@@ -4,17 +4,17 @@ import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
 import {format as dateFormat} from "fecha";
 
-const successSubmissionFormHtml = "<!DOCTYPE html>\n" +
-    "<html lang=\"en\">\n" +
-    "<head>\n" +
-    "    <meta charset=\"UTF-8\">\n" +
-    "    <title>Success</title>\n" +
-    "</head>\n" +
-    "<body>\n" +
-    "<h1>Successful Submission</h1>\n" +
-    "<a href=\"/home\">Home</a>\n" +
-    "</body>\n" +
-    "</html>";
+const successSubmissionFormHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Success</title></head>
+<body>
+<h1>Successful Registration</h1>
+<a href="/home">Home</a>
+</body>
+</html>`;
 
 export function contactusRedirectListener(): MyHttpListener {
     return function (req, url) {
@@ -102,7 +102,8 @@ export function contactEditPageListener(con: Connection): MyHttpListener {
                     }
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: `<!DOCTYPE html>
+                        body: `
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
