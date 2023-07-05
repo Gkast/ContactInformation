@@ -1,17 +1,27 @@
 import * as http from "http";
 import * as fs from "fs";
-import {parseRequestCookies, writeMyResToNodeResponse} from "./utility";
+import {
+    makePrivateHandler,
+    MyHttpListener,
+    parseRequestCookies,
+    staticFileListener,
+    userIdFromCookie,
+    writeMyResToNodeResponse
+} from "./utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
 import {
-    contactusRedirectListener,
+    contactDeleteListener,
+    contactEditPageListener,
     contactRequestListener,
-    submittedContactFormsRequestListener,
-    contactUpdateListener, contactEditPageListener, contactDeleteListener
+    contactUpdateListener,
+    contactusRedirectListener
 } from "./contact";
-import {defaultListener, homeRequestListener, staticFileListener} from "./handler-default";
+import {defaultListener} from "./handler-default";
 import {registerRequestListener} from "./register";
 import {loginRequestListener} from "./login";
+import {homeRequestListener} from "./home";
+import {submittedContactFormsRequestListener} from "./dashboard";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -48,20 +58,19 @@ Promise.all([
 
 
     http.createServer(function (req, res) {
-
         const allCookiesMap = parseRequestCookies(req.headers.cookie);
         console.log("all cookies:", allCookiesMap);
-
+        userIdFromCookie(con, allCookiesMap.get("loginid")).then(value => console.log('userid=', value))
         const parsedUrl = new URL('http://' + req.headers.host + req.url);
         const pathLowerCase = parsedUrl.pathname.toLowerCase();
-        const handlerFound =
+        const handlerFound: MyHttpListener =
             pathLowerCase === '/contact' && req.method === 'POST' ? contactHandler :
                 pathLowerCase === '/contactus' && req.method === 'GET' ? contactusRedirectHandler :
                     (pathLowerCase === "/" || pathLowerCase === "/home") && req.method === "GET" ? homePageHandler :
-                        pathLowerCase === "/form-dashboard" && req.method === "GET" ? submittedContactFormsHandler :
-                            pathLowerCase.match(/^\/form-dashboard\/\d+\/delete$/) && req.method === "POST" ? contactDeleteHandler :
-                                pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? contactEditPageHandler :
-                                    pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? contactUpdateHandler :
+                        pathLowerCase === "/form-dashboard" && req.method === "GET" ? makePrivateHandler(con, submittedContactFormsHandler) :
+                            pathLowerCase.match(/^\/form-dashboard\/\d+\/delete$/) && req.method === "POST" ? makePrivateHandler(con, contactDeleteHandler) :
+                                pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? makePrivateHandler(con, contactEditPageHandler) :
+                                    pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? makePrivateHandler(con, contactUpdateHandler) :
                                         pathLowerCase.startsWith('/assets/') && req.method === "GET" ? staticFileHandler :
                                             pathLowerCase === '/register' && req.method === 'POST' ? registerHandler :
                                                 pathLowerCase === '/login' && req.method === 'POST' ? loginHandler :

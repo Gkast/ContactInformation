@@ -1,5 +1,7 @@
-import {IncomingMessage, OutgoingMessage, ServerResponse} from "http";
+import {IncomingMessage, ServerResponse} from "http";
 import {URL} from "url";
+import * as fs from "fs";
+import {Connection} from "mysql";
 
 export interface MyHttpResponse {
     status?: number;
@@ -44,9 +46,51 @@ export function pageNotFound() {
 
 export function parseRequestCookies(cookie: string) {
     const allCookiesMap = new Map<string, string>();
-    cookie.split(";").forEach(cookie => {
-        const parts = cookie.split('=', 2)
-        allCookiesMap.set(parts[0].trim(), parts[1]);
-    });
+    if (cookie) {
+        cookie.split(";").forEach(cookie => {
+            const parts = cookie.split('=', 2);
+            allCookiesMap.set(parts[0].trim(), parts[1]);
+        });
+    }
     return allCookiesMap;
+}
+
+export function staticFileListener(mimetypes: Map<string, string>): MyHttpListener {
+    return function (req, url) {
+        return fs.promises.stat('..' + url.pathname.toLowerCase()).then(result => {
+            if (result.isFile()) {
+                const ext = url.pathname.split('.').pop().toLowerCase();
+                return {
+                    headers: new Map(Object.entries({'Content-Type': mimetypes.get(ext) || 'application/octet-stream'})),
+                    body: res => fs.createReadStream('..' + url.pathname.toLowerCase()).pipe(res)
+                } as MyHttpResponse;
+            } else {
+                return pageNotFound()
+            }
+        }).catch(pageNotFound);
+    }
+}
+
+export function userIdFromCookie(con: Connection, loginId: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+        con.query(`SELECT user_id
+                   FROM login_cookies
+                   WHERE cookie_value = ?`, [loginId], function (err, results) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results[0]?.user_id as number);
+            }
+        })
+    })
+}
+
+export function makePrivateHandler(con: Connection, handler: MyHttpListener): MyHttpListener {
+    return function (req, url) {
+        return userIdFromCookie(con, parseRequestCookies(req.headers.cookie).get('loginid'))
+            .then(userId => userId ? handler(req, url) : {
+                status: 302,
+                headers: new Map(Object.entries({'Location': '/login?href=' + encodeURIComponent(url.toString())})),
+            });
+    }
 }
