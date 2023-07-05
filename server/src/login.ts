@@ -48,3 +48,27 @@ export function loginRequestListener(con: Connection): MyHttpListener {
     }
 }
 
+export function loginPageRequestListener(): MyHttpListener {
+    return function (req, url) {
+        return Promise.resolve({
+            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
+            body: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+</head>
+<body>
+<form action="/login" method="post" id="login-form">
+  <label for="username">Username:</label>
+  <input type="text" placeholder="Username" name="username" id="username" required>
+  <label for="password">Password:</label>
+  <input type="password" placeholder="Password" name="password" id="password" required>
+  <button type="submit" id="submit-button">Login</button>
+</form>
+<a href="/home">Home</a>
+</body>
+</html>`
+        });
+    }
+}

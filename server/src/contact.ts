@@ -3,24 +3,42 @@ import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
 
-const successSubmissionFormHtml = `
+export function contactPageRequestListener(): MyHttpListener {
+    return function (req, url) {
+        return Promise.resolve({
+            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
+            body: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Success</title></head>
+    <title>Contact Information</title>
+    <link rel="stylesheet" type="text/css" href="../assets/css/contact-form.css">
+</head>
 <body>
-<h1>Successful Registration</h1>
-<a href="/home">Home</a>
-</body>
-</html>`;
+<form method="post" id="contact-form" action="http://localhost:3000/contact">
+    <label for="first-name">Firstname:</label>
+    <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required>
 
-export function contactusRedirectListener(): MyHttpListener {
-    return function (req, url) {
-        return Promise.resolve({
-            status: 302,
-            headers: new Map(Object.entries({"Location": "/contact"}))
-        })
+    <label for="last-name">Lastname:</label>
+    <input type="text" placeholder="Last Name" name="lastname" id="last-name" class="form-inputs" required>
+
+    <label for="email">Email:</label>
+    <input type="email" placeholder="Email" name="email" id="email" class="form-inputs" required>
+
+    <label for="subject">Subject:</label>
+    <input type="text" placeholder="Subject" name="subject" id="subject" class="form-inputs" required>
+
+    <label for="message-area">Message:</label>
+    <textarea placeholder="Write a message..." name="message" id="message-area" class="form-inputs" required></textarea>
+
+    <button type="submit" id="submit-button">Submit</button>
+</form>
+<a href="/home">Home</a>
+<script src="../assets/js/contact-form.js"></script>
+</body>
+</html>`
+        });
     }
 }
 
@@ -51,7 +69,17 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
                                     headers: new Map(Object.entries({
                                         'content-type': 'text/html'
                                     })),
-                                    body: successSubmissionFormHtml
+                                    body: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Success</title></head>
+<body>
+<h1>Successful Registration</h1>
+<a href="/home">Home</a>
+</body>
+</html>`
                                 } as MyHttpResponse)
                             }
                         });
@@ -155,7 +183,8 @@ export function contactUpdateListener(con: Connection): MyHttpListener {
                                email=?,
                                subject=?,
                                message=?
-                           WHERE id = ?`, [p.firstname, p.lastname, p.email, p.subject, p.message, id], (err, results) => {
+                           WHERE id = ?`, [p.firstname, p.lastname, p.email, p.subject, p.message, id],
+                    (err, results) => {
                     if (err != null) {
                         reject(err)
                     } else {

@@ -12,16 +12,16 @@ import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
 import {
     contactDeleteListener,
-    contactEditPageListener,
+    contactEditPageListener, contactPageRequestListener,
     contactRequestListener,
-    contactUpdateListener,
-    contactusRedirectListener
+    contactUpdateListener
 } from "./contact";
 import {defaultListener} from "./handler-default";
-import {registerRequestListener} from "./register";
-import {loginRequestListener} from "./login";
+import {registerPageRequestListener, registerRequestListener} from "./register";
+import {loginPageRequestListener, loginRequestListener} from "./login";
 import {homeRequestListener} from "./home";
 import {submittedContactFormsRequestListener} from "./dashboard";
+import {aboutPageRequestListener} from "./about";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -45,8 +45,9 @@ Promise.all([
     const mimetypes = all[0];
 
     const defaultHandler = defaultListener();
+    const aboutPageHandler = aboutPageRequestListener();
     const contactHandler = contactRequestListener(con, smtpTransport);
-    const contactusRedirectHandler = contactusRedirectListener();
+    const contactPageHandler = contactPageRequestListener();
     const staticFileHandler = staticFileListener(mimetypes);
     const homePageHandler = homeRequestListener();
     const submittedContactFormsHandler = submittedContactFormsRequestListener(con);
@@ -54,7 +55,9 @@ Promise.all([
     const contactUpdateHandler = contactUpdateListener(con);
     const contactEditPageHandler = contactEditPageListener(con);
     const registerHandler = registerRequestListener(con);
+    const registerPageHandler = registerPageRequestListener();
     const loginHandler = loginRequestListener(con);
+    const loginPageHandler = loginPageRequestListener();
 
 
     http.createServer(function (req, res) {
@@ -64,17 +67,20 @@ Promise.all([
         const parsedUrl = new URL('http://' + req.headers.host + req.url);
         const pathLowerCase = parsedUrl.pathname.toLowerCase();
         const handlerFound: MyHttpListener =
-            pathLowerCase === '/contact' && req.method === 'POST' ? contactHandler :
-                pathLowerCase === '/contactus' && req.method === 'GET' ? contactusRedirectHandler :
-                    (pathLowerCase === "/" || pathLowerCase === "/home") && req.method === "GET" ? homePageHandler :
-                        pathLowerCase === "/form-dashboard" && req.method === "GET" ? makePrivateHandler(con, submittedContactFormsHandler) :
-                            pathLowerCase.match(/^\/form-dashboard\/\d+\/delete$/) && req.method === "POST" ? makePrivateHandler(con, contactDeleteHandler) :
-                                pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? makePrivateHandler(con, contactEditPageHandler) :
-                                    pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? makePrivateHandler(con, contactUpdateHandler) :
-                                        pathLowerCase.startsWith('/assets/') && req.method === "GET" ? staticFileHandler :
-                                            pathLowerCase === '/register' && req.method === 'POST' ? registerHandler :
-                                                pathLowerCase === '/login' && req.method === 'POST' ? loginHandler :
-                                                    defaultHandler;
+            pathLowerCase === '/about' && req.method === 'GET' ? aboutPageHandler :
+                pathLowerCase === '/contact' && req.method === 'POST' ? contactHandler :
+                    pathLowerCase === '/contact' && req.method === 'GET' ? contactPageHandler :
+                        (pathLowerCase === "/" || pathLowerCase === "/home") && req.method === "GET" ? homePageHandler :
+                            pathLowerCase === "/form-dashboard" && req.method === "GET" ? makePrivateHandler(con, submittedContactFormsHandler) :
+                                pathLowerCase.match(/^\/form-dashboard\/\d+\/delete$/) && req.method === "POST" ? makePrivateHandler(con, contactDeleteHandler) :
+                                    pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? makePrivateHandler(con, contactEditPageHandler) :
+                                        pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? makePrivateHandler(con, contactUpdateHandler) :
+                                            pathLowerCase.startsWith('/assets/') && req.method === "GET" ? staticFileHandler :
+                                                pathLowerCase === '/register' && req.method === 'POST' ? registerHandler :
+                                                    pathLowerCase === '/register' && req.method === 'GET' ? registerPageHandler :
+                                                        pathLowerCase === '/login' && req.method === 'POST' ? loginHandler :
+                                                            pathLowerCase === '/login' && req.method === 'GET' ? loginPageHandler :
+                                                                defaultHandler;
 
 
         handlerFound(req, parsedUrl)
