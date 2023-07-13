@@ -6,6 +6,7 @@ export interface UserDetails {
     id: number;
     username?: string;
     email?: string;
+    admin?: boolean;
 }
 
 export function userIdFromCookie(con: Connection, loginId: string): Promise<UserDetails> {
@@ -13,7 +14,7 @@ export function userIdFromCookie(con: Connection, loginId: string): Promise<User
         if (!loginId) {
             resolve(undefined);
         } else {
-            con.query(`SELECT login_cookies.user_id AS id, users.username
+            con.query(`SELECT login_cookies.user_id AS id, users.username, users.email, users.is_admin AS admin
                        FROM login_cookies
                                 JOIN users on login_cookies.user_id = users.id
                        WHERE cookie_value = ?
@@ -23,7 +24,11 @@ export function userIdFromCookie(con: Connection, loginId: string): Promise<User
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(results[0] as UserDetails);
+                    const user = results[0];
+                    if (user) {
+                        user.admin = user.admin === 1;
+                    }
+                    resolve(user as UserDetails);
                 }
             });
         }

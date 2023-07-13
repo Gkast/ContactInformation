@@ -62,12 +62,12 @@ Promise.all([
         const handlerFound: MyHttpListener =
             pathLowerCase === '/about' && req.method === 'GET' ? aboutPageHandler :
                 pathLowerCase === '/contact' && req.method === 'POST' ? contactHandler :
-                    pathLowerCase === '/contact' && req.method === 'GET' ? contactPageHandler :
+                    pathLowerCase === '/contact' && req.method === 'GET' ? redirectIfNotAuthenticated(contactPageHandler) :
                         (pathLowerCase === "/" || pathLowerCase === "/home") && req.method === "GET" ? homePageHandler :
-                            pathLowerCase === "/form-dashboard" && req.method === "GET" ? redirectIfNotAuthenticated(submittedContactFormsHandler) :
-                                pathLowerCase.match(/^\/form-dashboard\/\d+\/delete$/) && req.method === "POST" ? redirectIfNotAuthenticated(contactDeleteHandler) :
-                                    pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? redirectIfNotAuthenticated(contactEditPageHandler) :
-                                        pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? redirectIfNotAuthenticated(contactUpdateHandler) :
+                            pathLowerCase === "/dashboard" && req.method === "GET" ? redirectIfNotAuthenticated(submittedContactFormsHandler) :
+                                pathLowerCase.match(/^\/dashboard\/\d+\/delete$/) && req.method === "POST" ? redirectIfNotAuthenticated(contactDeleteHandler) :
+                                    pathLowerCase.match(/^\/dashboard\/\d+$/) && req.method === "GET" ? redirectIfNotAuthenticated(contactEditPageHandler) :
+                                        pathLowerCase.match(/^\/dashboard\/\d+$/) && req.method === "POST" ? redirectIfNotAuthenticated(contactUpdateHandler) :
                                             pathLowerCase.startsWith('/assets/') && req.method === "GET" ? staticFileHandler :
                                                 pathLowerCase === '/register' && req.method === 'POST' ? registerHandler :
                                                     pathLowerCase === '/register' && req.method === 'GET' ? registerPageHandler :

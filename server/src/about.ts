@@ -11,11 +11,11 @@ export function aboutPageRequestListener(): MyHttpListener {
 <head>
     <meta charset="UTF-8">
     <title>ABOUT Information</title>
+    <link rel="stylesheet" type="text/css" href="../assets/css/about.css">
 </head>
-<body>` + headerHtml(user) + `
+<body>${headerHtml(user)}
 <h1>ABOUT US</h1>
 <p>test test test </p>
-<a href="/home">Home</a>
 </body>
 </html>`
         });

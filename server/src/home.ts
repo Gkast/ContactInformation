@@ -11,16 +11,15 @@ export function homeRequestListener(): MyHttpListener {
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="../assets/css/home.css">
 </head>
-<body>` + headerHtml(user) + `
+<body>${headerHtml(user)}
 <h1>Home</h1>
-${user ? `<p>Welcome ${user.username}</p>` : ''}
+${user ? `<p>Welcome ${user.username.toUpperCase()}</p>` : ''}
 <ul>
     <li><a href="/about">About us</a></li>
-    <li><a href="/contact">Contact</a></li>
-    <li><a href="/login">Login</a></li>
-    <li><a href="/register">Register</a></li>
-    <li><a href="/form-dashboard">Form Dashboard</a></li>
+    ${user ? `<li><a href="/contact">Contact</a></li>
+    <li><a href="/dashboard">Dashboard</a></li>` : ``}
 </ul>
 </body>
 </html>`

@@ -1,9 +1,10 @@
 import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
 import * as querystring from "querystring";
+import {headerHtml} from "./header";
 
 export function registerRequestListener(con: Connection): MyHttpListener {
-    return (req) => {
+    return (req, url, user) => {
         return streamToString(req).then(bodyString => {
             const p = querystring.parse(bodyString);
 
@@ -25,9 +26,9 @@ export function registerRequestListener(con: Connection): MyHttpListener {
 <head>
     <meta charset="UTF-8">
     <title>Success</title></head>
-<body>
+    <link rel="stylesheet" type="text/css" href="../assets/css/successful-action.css">
+<body>${headerHtml(user)}
 <h1>Successful Registration</h1>
-<a href="/home">Home</a>
 </body>
 </html>`
                             } as MyHttpResponse);
@@ -39,7 +40,7 @@ export function registerRequestListener(con: Connection): MyHttpListener {
 }
 
 export function registerPageRequestListener(): MyHttpListener {
-    return () => {
+    return (req, url, user) => {
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
             body: `
@@ -48,8 +49,9 @@ export function registerPageRequestListener(): MyHttpListener {
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
+    <link rel="stylesheet" type="text/css" href="../assets/css/register.css">
 </head>
-<body>
+<body>${headerHtml(user)}
 <form action="/register" method="post" id="register-form">
     <label for="username">Username:</label>
     <input type="text" placeholder="Username" name="username" id="username" required>
@@ -59,7 +61,6 @@ export function registerPageRequestListener(): MyHttpListener {
     <input type="email" placeholder="Email" name="email" id="email" required>
     <button type="submit" id="submit-button">Register</button>
 </form>
-<a href="/home">Home</a>
 </body>
 </html>`
         });

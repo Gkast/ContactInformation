@@ -2,6 +2,7 @@ import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse, parseRequestCookies, plusMinutes, streamToString} from "./utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
+import {headerHtml} from "./header";
 
 export function loginRequestListener(con: Connection): MyHttpListener {
     return (req) => {
@@ -49,7 +50,7 @@ export function loginRequestListener(con: Connection): MyHttpListener {
 }
 
 export function loginPageRequestListener(): MyHttpListener {
-    return () => {
+    return (req, url, user) => {
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
             body: `<!DOCTYPE html>
@@ -57,8 +58,9 @@ export function loginPageRequestListener(): MyHttpListener {
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
+  <link rel="stylesheet" type="text/css" href="../assets/css/login.css">
 </head>
-<body>
+<body>${headerHtml(user)}
 <form action="/login" method="post" id="login-form">
   <label for="username">Username:</label>
   <input type="text" placeholder="Username" name="username" id="username" required>
@@ -68,7 +70,6 @@ export function loginPageRequestListener(): MyHttpListener {
   <input type="checkbox" name="remember_me" id="remember_me" value="1">
   <button type="submit" id="submit-button">Login</button>
 </form>
-<a href="/home">Home</a>
 </body>
 </html>`
         });

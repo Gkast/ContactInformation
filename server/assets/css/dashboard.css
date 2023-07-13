@@ -1,4 +1,10 @@
-table {
+@import "header.css";
+
+body {
+    margin: 0;
+}
+
+.dashboard {
     border: 1px solid;
 }
 

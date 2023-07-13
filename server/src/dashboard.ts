@@ -7,9 +7,8 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
     return (req, url, user) => {
         return new Promise((resolve, reject) => {
             con.query(`SELECT *
-                       FROM contact_form_submits
-                       WHERE firstname IS NOT NULL
-                       ORDER BY datetime_submitted DESC`, (err, result) => {
+                       FROM contact_form_submits ${user.admin ? `` : `WHERE user_id = ?`}
+                       ORDER BY datetime_submitted DESC`, user.admin ? [] : [user.id], (err, result) => {
                 if (err) {
                     reject(err);
                     return;
@@ -18,15 +17,18 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
                     (result as any[]).forEach((row, i) => {
                         queryToHtml += `
 <tr>
-    <td>${i + 1}</td><td>${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</td>
-    <td>${row.firstname}</td><td>${row.lastname}</td>
-    <td>${row.email}</td><td>${row.subject}</td>
-    <td>${row.message}</td>
-    <td><a href="/form-dashboard/${row.id}">Edit</a></td>
-    <td>
-        <form action="/form-dashboard/${row.id}/delete" method="post" onsubmit="confirm('Are you sure?')" 
-        class="action-button">
-        <button>DELETE</button></form>
+    <td class="cell">${i + 1}</td>
+    <td class="cell">${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</td>
+    <td class="cell">${row.firstname}</td>
+    <td class="cell">${row.lastname}</td>
+    <td class="cell">${row.email}</td>
+    <td class="cell">${row.subject}</td>
+    <td class="cell">${row.message}</td>
+    <td class="cell"><a href="/dashboard/${row.id}">Edit</a></td>
+    <td class="cell">
+        <form data-confirm-text="Are you sure111?" action="/dashboard/${row.id}/delete" method="post" class="action-button">
+        <button>DELETE</button>
+        </form>
     </td>
 </tr>`
                     });
@@ -36,30 +38,28 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
 <head>
     <meta charset="UTF-8">
     <title>Submitted Contact Forms</title>
-<link rel="stylesheet" href="/assets/css/form-dashboard.css"></head>
-<body>` + headerHtml(user) + `
-<table>
+<link rel="stylesheet" href="../assets/css/dashboard.css"></head>
+<body>${headerHtml(user)}
+<table class="dashboard">
     <thead>
     <tr>
-        <th>#</th>
-        <th>Submitted Time</th>
-        <th>Firstname</th>
-        <th>Lastname</th>
-        <th>Email</th>
-        <th>Subject</th>
-        <th>Message</th>
-        <th>Edit</th>
-        <th>Delete</th>
+        <th class="cell">#</th>
+        <th class="cell">Submitted Time</th>
+        <th class="cell">Firstname</th>
+        <th class="cell">Lastname</th>
+        <th class="cell">Email</th>
+        <th class="cell">Subject</th>
+        <th class="cell">Message</th>
+        <th class="cell">Edit</th>
+        <th class="cell">Delete</th>
     </tr>
     </thead>
     <tbody>
         ${queryToHtml}
     </tbody>
 </table>
-<ul>
-    <li><a href="/home" class="action-button">Home</a></li>
-    <li><a href="/form-dashboard" class="action-button">Refresh</a></li>
-</ul>
+<a href="/dashboard" class="action-button">Refresh</a>
+<script src="../assets/js/main.js"></script>
 </body>
 </html>`;
                     resolve({

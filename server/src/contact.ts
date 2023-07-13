@@ -14,9 +14,9 @@ export function contactPageRequestListener(): MyHttpListener {
 <head>
     <meta charset="UTF-8">
     <title>Contact Information</title>
-    <link rel="stylesheet" type="text/css" href="../assets/css/contact-form.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/contact.css">
 </head>
-<body>` + headerHtml(user) + `
+<body>${headerHtml(user)}
 <form method="post" id="contact-form" action="http://localhost:3000/contact">
     <label for="first-name">Firstname:</label>
     <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required>
@@ -35,8 +35,7 @@ export function contactPageRequestListener(): MyHttpListener {
 
     <button type="submit" id="submit-button">Submit</button>
 </form>
-<a href="/home">Home</a>
-<script src="../assets/js/contact-form.js"></script>
+<script src="../assets/js/main.js"></script>
 </body>
 </html>`
         });
@@ -48,8 +47,8 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
         return streamToString(req).then(bodyString => {
             const p = querystring.parse(bodyString);
             return new Promise((resolve, reject) => {
-                con.query(`INSERT INTO contact_form_submits (firstname, lastname, email, subject, message)
-                           VALUES (?, ?, ?, ?, ?)`, [p.firstname, p.lastname, p.email, p.subject, p.message],
+                con.query(`INSERT INTO contact_form_submits (firstname, lastname, email, subject, message, user_id)
+                           VALUES (?, ?, ?, ?, ?, ?)`, [p.firstname, p.lastname, p.email, p.subject, p.message, user.id],
                     (err) => {
                         if (err) {
                             reject(err);
@@ -75,9 +74,9 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
 <head>
     <meta charset="UTF-8">
     <title>Success</title></head>
-<body>` + headerHtml(user) + `
-<h1>Successful Registration</h1>
-<a href="/home">Home</a>
+    <link rel="stylesheet" type="text/css" href="../assets/css/successful-action.css">
+<body> ${headerHtml(user)}
+<h1>Successful Submission</h1>
 </body>
 </html>`
                                 } as MyHttpResponse)
@@ -100,7 +99,7 @@ export function contactDeleteListener(con: Connection): MyHttpListener {
                     } else {
                         resolve({
                             status: 302,
-                            headers: new Map(Object.entries({'Location': '/form-dashboard'}))
+                            headers: new Map(Object.entries({'Location': '/dashboard'}))
                         })
                     }
                 })
@@ -111,7 +110,7 @@ export function contactDeleteListener(con: Connection): MyHttpListener {
 }
 
 export function contactEditPageListener(con: Connection): MyHttpListener {
-    return (req, url) => {
+    return (req, url, user) => {
         return new Promise((resolve, reject) => {
             const id = parseInt(url.pathname.split('/')[2], 10);
             if (!id) {
@@ -135,30 +134,23 @@ export function contactEditPageListener(con: Connection): MyHttpListener {
 <head>
     <meta charset="UTF-8">
     <title>Contact Information</title>
-    <link rel="stylesheet" type="text/css" href="../assets/css/contact-form.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/contact.css">
 </head>
-<body>
+<body>${headerHtml(user)}
 <form method="post" id="contact-form" action="/form-dashboard/${row.id}">
     <label for="first-name">First Name:</label>
     <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required value="${row.firstname}">
-
     <label for="last-name">Last Name:</label>
     <input type="text" placeholder="Last Name" name="lastname" id="last-name" class="form-inputs" required value="${row.lastname}">
-
     <label for="email">Email:</label>
     <input type="email" placeholder="Email" name="email" id="email" class="form-inputs" required value="${row.email}">
-
     <label for="subject">Subject:</label>
     <input type="text" placeholder="Subject" name="subject" id="subject" class="form-inputs" required value="${row.subject}">
-
     <label for="message-area">Message:</label>
     <textarea placeholder="Write a message..." name="message" id="message-area" class="form-inputs" required>${row.message}</textarea>
-
     <button type="submit" id="submit-button">Submit</button>
-    
-    <a href="/home">Home</a>
 </form>
-<script src="../assets/js/contact-form.js"></script>
+<script src="../assets/js/main.js"></script>
 </body>
 </html>`
                     })
@@ -190,7 +182,7 @@ export function contactUpdateListener(con: Connection): MyHttpListener {
                         } else {
                             resolve({
                                 status: 302,
-                                headers: new Map(Object.entries({'Location': '/form-dashboard'}))
+                                headers: new Map(Object.entries({'Location': '/dashboard'}))
                             });
                         }
                     });
