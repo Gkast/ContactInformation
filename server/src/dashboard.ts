@@ -1,14 +1,15 @@
 import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse} from "./utility";
 import {format as dateFormat} from "fecha";
+import {headerHtml} from "./header";
 
 export function submittedContactFormsRequestListener(con: Connection): MyHttpListener {
-    return function (req, url) {
+    return (req, url, user) => {
         return new Promise((resolve, reject) => {
             con.query(`SELECT *
                        FROM contact_form_submits
                        WHERE firstname IS NOT NULL
-                       ORDER BY datetime_submitted DESC`, function (err, result, fields) {
+                       ORDER BY datetime_submitted DESC`, (err, result) => {
                 if (err) {
                     reject(err);
                     return;
@@ -36,7 +37,7 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
     <meta charset="UTF-8">
     <title>Submitted Contact Forms</title>
 <link rel="stylesheet" href="/assets/css/form-dashboard.css"></head>
-<body>
+<body>` + headerHtml(user) + `
 <table>
     <thead>
     <tr>

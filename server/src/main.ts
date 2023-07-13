@@ -1,27 +1,22 @@
 import * as http from "http";
 import * as fs from "fs";
-import {
-    makePrivateHandler,
-    MyHttpListener,
-    parseRequestCookies,
-    staticFileListener,
-    userIdFromCookie,
-    writeMyResToNodeResponse
-} from "./utility";
+import {MyHttpListener, staticFileListener, writeMyResToNodeResponse} from "./utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
 import {
     contactDeleteListener,
-    contactEditPageListener, contactPageRequestListener,
+    contactEditPageListener,
+    contactPageRequestListener,
     contactRequestListener,
     contactUpdateListener
 } from "./contact";
 import {defaultListener} from "./handler-default";
 import {registerPageRequestListener, registerRequestListener} from "./register";
-import {loginPageRequestListener, loginRequestListener} from "./login";
+import {loginPageRequestListener, loginRequestListener, logout} from "./login";
 import {homeRequestListener} from "./home";
 import {submittedContactFormsRequestListener} from "./dashboard";
 import {aboutPageRequestListener} from "./about";
+import {redirectIfNotAuthenticated, withUserId} from "./auth";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -58,12 +53,10 @@ Promise.all([
     const registerPageHandler = registerPageRequestListener();
     const loginHandler = loginRequestListener(con);
     const loginPageHandler = loginPageRequestListener();
+    const logoutHandler = logout(con);
 
 
-    http.createServer(function (req, res) {
-        const allCookiesMap = parseRequestCookies(req.headers.cookie);
-        console.log("all cookies:", allCookiesMap);
-        userIdFromCookie(con, allCookiesMap.get("loginid")).then(value => console.log('userid=', value))
+    http.createServer((req, res) => {
         const parsedUrl = new URL('http://' + req.headers.host + req.url);
         const pathLowerCase = parsedUrl.pathname.toLowerCase();
         const handlerFound: MyHttpListener =
@@ -71,19 +64,20 @@ Promise.all([
                 pathLowerCase === '/contact' && req.method === 'POST' ? contactHandler :
                     pathLowerCase === '/contact' && req.method === 'GET' ? contactPageHandler :
                         (pathLowerCase === "/" || pathLowerCase === "/home") && req.method === "GET" ? homePageHandler :
-                            pathLowerCase === "/form-dashboard" && req.method === "GET" ? makePrivateHandler(con, submittedContactFormsHandler) :
-                                pathLowerCase.match(/^\/form-dashboard\/\d+\/delete$/) && req.method === "POST" ? makePrivateHandler(con, contactDeleteHandler) :
-                                    pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? makePrivateHandler(con, contactEditPageHandler) :
-                                        pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? makePrivateHandler(con, contactUpdateHandler) :
+                            pathLowerCase === "/form-dashboard" && req.method === "GET" ? redirectIfNotAuthenticated(submittedContactFormsHandler) :
+                                pathLowerCase.match(/^\/form-dashboard\/\d+\/delete$/) && req.method === "POST" ? redirectIfNotAuthenticated(contactDeleteHandler) :
+                                    pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "GET" ? redirectIfNotAuthenticated(contactEditPageHandler) :
+                                        pathLowerCase.match(/^\/form-dashboard\/\d+$/) && req.method === "POST" ? redirectIfNotAuthenticated(contactUpdateHandler) :
                                             pathLowerCase.startsWith('/assets/') && req.method === "GET" ? staticFileHandler :
                                                 pathLowerCase === '/register' && req.method === 'POST' ? registerHandler :
                                                     pathLowerCase === '/register' && req.method === 'GET' ? registerPageHandler :
                                                         pathLowerCase === '/login' && req.method === 'POST' ? loginHandler :
                                                             pathLowerCase === '/login' && req.method === 'GET' ? loginPageHandler :
-                                                                defaultHandler;
+                                                                pathLowerCase === '/logout' && req.method === 'GET' ? logoutHandler :
+                                                                    defaultHandler;
 
 
-        handlerFound(req, parsedUrl)
+        withUserId(con, handlerFound)(req, parsedUrl)
             .then(myres => writeMyResToNodeResponse(myres, res))
             .catch(err => {
                 console.error(new Date(), err);

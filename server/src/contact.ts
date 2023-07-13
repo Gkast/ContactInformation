@@ -2,9 +2,10 @@ import {MyHttpListener, MyHttpResponse, pageNotFound, streamToString} from "./ut
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
+import {headerHtml} from "./header";
 
 export function contactPageRequestListener(): MyHttpListener {
-    return function (req, url) {
+    return (req, url, user) => {
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
             body: `
@@ -15,7 +16,7 @@ export function contactPageRequestListener(): MyHttpListener {
     <title>Contact Information</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/contact-form.css">
 </head>
-<body>
+<body>` + headerHtml(user) + `
 <form method="post" id="contact-form" action="http://localhost:3000/contact">
     <label for="first-name">Firstname:</label>
     <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required>
@@ -43,14 +44,13 @@ export function contactPageRequestListener(): MyHttpListener {
 }
 
 export function contactRequestListener(con: Connection, smtpTransport: Transporter): MyHttpListener {
-    return function (req, url) {
-        return streamToString(req).then(function (bodyString) {
+    return (req, url, user) => {
+        return streamToString(req).then(bodyString => {
             const p = querystring.parse(bodyString);
-
             return new Promise((resolve, reject) => {
                 con.query(`INSERT INTO contact_form_submits (firstname, lastname, email, subject, message)
                            VALUES (?, ?, ?, ?, ?)`, [p.firstname, p.lastname, p.email, p.subject, p.message],
-                    function (err) {
+                    (err) => {
                         if (err) {
                             reject(err);
                             return;
@@ -61,7 +61,7 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
                             to: p.email,
                             subject: typeof p.subject === 'string' ? p.subject : p.subject[0],
                             text: 'Contact form message: \n\n' + p.message
-                        }, function (error, info) {
+                        }, (error) => {
                             if (error) {
                                 reject(error);
                             } else {
@@ -75,7 +75,7 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
 <head>
     <meta charset="UTF-8">
     <title>Success</title></head>
-<body>
+<body>` + headerHtml(user) + `
 <h1>Successful Registration</h1>
 <a href="/home">Home</a>
 </body>
@@ -90,11 +90,11 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
 }
 
 export function contactDeleteListener(con: Connection): MyHttpListener {
-    return function (req, url) {
+    return (req, url) => {
         return new Promise((resolve, reject) => {
             const id = parseInt(url.pathname.split('/')[2], 10);
             if (id) {
-                con.query("DELETE FROM contact_form_submits WHERE id=?", [id], (err, results) => {
+                con.query("DELETE FROM contact_form_submits WHERE id=?", [id], (err) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -111,7 +111,7 @@ export function contactDeleteListener(con: Connection): MyHttpListener {
 }
 
 export function contactEditPageListener(con: Connection): MyHttpListener {
-    return function (req, url) {
+    return (req, url) => {
         return new Promise((resolve, reject) => {
             const id = parseInt(url.pathname.split('/')[2], 10);
             if (!id) {
@@ -169,12 +169,12 @@ export function contactEditPageListener(con: Connection): MyHttpListener {
 }
 
 export function contactUpdateListener(con: Connection): MyHttpListener {
-    return function (req, url) {
+    return (req, url) => {
         const id = parseInt(url.pathname.split('/')[2], 10);
         if (!id) {
             return Promise.resolve(pageNotFound());
         }
-        return streamToString(req).then(function (bodyString) {
+        return streamToString(req).then(bodyString => {
             const p = querystring.parse(bodyString);
             return new Promise((resolve, reject) => {
                 con.query(`UPDATE contact_form_submits
@@ -184,16 +184,16 @@ export function contactUpdateListener(con: Connection): MyHttpListener {
                                subject=?,
                                message=?
                            WHERE id = ?`, [p.firstname, p.lastname, p.email, p.subject, p.message, id],
-                    (err, results) => {
-                    if (err != null) {
-                        reject(err)
-                    } else {
-                        resolve({
-                            status: 302,
-                            headers: new Map(Object.entries({'Location': '/form-dashboard'}))
-                        });
-                    }
-                });
+                    (err) => {
+                        if (err != null) {
+                            reject(err)
+                        } else {
+                            resolve({
+                                status: 302,
+                                headers: new Map(Object.entries({'Location': '/form-dashboard'}))
+                            });
+                        }
+                    });
             })
         });
     }

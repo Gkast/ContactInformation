@@ -1,7 +1,8 @@
 import {MyHttpListener} from "./utility";
+import {headerHtml} from "./header";
 
 export function homeRequestListener(): MyHttpListener {
-    return function (req, url) {
+    return (req, url, user) => {
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
             body: `
@@ -11,9 +12,9 @@ export function homeRequestListener(): MyHttpListener {
     <meta charset="UTF-8">
     <title>Home</title>
 </head>
-<body>
+<body>` + headerHtml(user) + `
 <h1>Home</h1>
-<p>Welcome</p>
+${user ? `<p>Welcome ${user.username}</p>` : ''}
 <ul>
     <li><a href="/about">About us</a></li>
     <li><a href="/contact">Contact</a></li>

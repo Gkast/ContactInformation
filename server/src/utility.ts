@@ -1,7 +1,7 @@
 import {IncomingMessage, ServerResponse} from "http";
 import {URL} from "url";
 import * as fs from "fs";
-import {Connection} from "mysql";
+import {UserDetails} from "./auth";
 
 export interface MyHttpResponse {
     status?: number;
@@ -9,7 +9,7 @@ export interface MyHttpResponse {
     body?: string | ((res: NodeJS.WritableStream) => void)
 }
 
-export type MyHttpListener = (req: IncomingMessage, url: URL) => Promise<MyHttpResponse>
+export type MyHttpListener = (req: IncomingMessage, url: URL, user?: UserDetails) => Promise<MyHttpResponse>
 
 export function writeMyResToNodeResponse(myres: MyHttpResponse, res: ServerResponse) {
     res.statusCode = myres.status || 200;
@@ -56,7 +56,7 @@ export function parseRequestCookies(cookie: string) {
 }
 
 export function staticFileListener(mimetypes: Map<string, string>): MyHttpListener {
-    return function (req, url) {
+    return (req, url) => {
         return fs.promises.stat('..' + url.pathname.toLowerCase()).then(result => {
             if (result.isFile()) {
                 const ext = url.pathname.split('.').pop().toLowerCase();
@@ -71,26 +71,6 @@ export function staticFileListener(mimetypes: Map<string, string>): MyHttpListen
     }
 }
 
-export function userIdFromCookie(con: Connection, loginId: string): Promise<number> {
-    return new Promise((resolve, reject) => {
-        con.query(`SELECT user_id
-                   FROM login_cookies
-                   WHERE cookie_value = ?`, [loginId], function (err, results) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(results[0]?.user_id as number);
-            }
-        })
-    })
-}
-
-export function makePrivateHandler(con: Connection, handler: MyHttpListener): MyHttpListener {
-    return function (req, url) {
-        return userIdFromCookie(con, parseRequestCookies(req.headers.cookie).get('loginid'))
-            .then(userId => userId ? handler(req, url) : {
-                status: 302,
-                headers: new Map(Object.entries({'Location': '/login?href=' + encodeURIComponent(url.toString())})),
-            });
-    }
+export function plusMinutes(d: Date, minutes_diff: number): Date {
+    return new Date(d.getTime() + 1000 * 60 * minutes_diff);
 }

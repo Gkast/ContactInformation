@@ -3,14 +3,14 @@ import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
 import * as querystring from "querystring";
 
 export function registerRequestListener(con: Connection): MyHttpListener {
-    return function (req, url) {
-        return streamToString(req).then(function (bodyString) {
+    return (req) => {
+        return streamToString(req).then(bodyString => {
             const p = querystring.parse(bodyString);
 
             return new Promise((resolve, reject) => {
                 con.query(`INSERT INTO users (username, password, email)
                            VALUES (?, ?, ?)`, [p.username, p.password, p.email],
-                    function (err) {
+                    (err) => {
                         if (err) {
                             reject(err);
                             return;
@@ -39,7 +39,7 @@ export function registerRequestListener(con: Connection): MyHttpListener {
 }
 
 export function registerPageRequestListener(): MyHttpListener {
-    return function (req, url) {
+    return () => {
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
             body: `

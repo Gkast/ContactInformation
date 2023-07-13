@@ -2,7 +2,7 @@ import * as fs from "fs";
 import {MyHttpListener, MyHttpResponse, pageNotFound} from "./utility";
 
 export function defaultListener(): MyHttpListener {
-    return function (req, url) {
+    return (req, url) => {
         return fs.promises.readFile("../templates/" +
             (url.pathname.endsWith('.html') ?
                 url.pathname : (url.pathname + '.html')))

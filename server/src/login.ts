@@ -1,19 +1,18 @@
 import {Connection} from "mysql";
-import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
+import {MyHttpListener, MyHttpResponse, parseRequestCookies, plusMinutes, streamToString} from "./utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
 
 export function loginRequestListener(con: Connection): MyHttpListener {
-    return function (req) {
-        return streamToString(req).then(function (bodyString) {
+    return (req) => {
+        return streamToString(req).then(bodyString => {
             const p = querystring.parse(bodyString);
-
             return new Promise((resolve, reject) => {
                 con.query(`SELECT id
                            FROM users
                            WHERE username = (?)
                              AND password = (?)`, [p.username, p.password],
-                    function (err, results) {
+                    (err, results) => {
                         if (err) {
                             reject(err);
                             return;
@@ -27,9 +26,10 @@ export function loginRequestListener(con: Connection): MyHttpListener {
                                     body: "wrong credentials"
                                 } as MyHttpResponse);
                             } else {
+                                const rememberMe = p['remember_me'] === '1';
                                 const cookieString = randomstring.generate();
-                                con.query(`INSERT INTO login_cookies (cookie_value, user_id) VALUE (?, ?)`,
-                                    [cookieString, results[0].id],
+                                con.query(`INSERT INTO login_cookies (cookie_value, user_id, expires_interval_minutes, remember_me) VALUE (?, ?, ?, ?)`,
+                                    [cookieString, results[0].id, rememberMe ? 24 * 7 * 60 : 30, rememberMe ? 1 : 0],
                                     err1 => {
                                         reject(err1)
                                     });
@@ -37,7 +37,7 @@ export function loginRequestListener(con: Connection): MyHttpListener {
                                     status: 302,
                                     headers: new Map(Object.entries({
                                         'Location': '/home',
-                                        'Set-Cookie': `loginid=${cookieString}`
+                                        'Set-Cookie': `loginid=${cookieString}${rememberMe ? `; Expires=${plusMinutes(new Date(), 60 * 24 * 7).toUTCString()}` : ''};Path=/;HttpOnly`
                                     })),
                                 } as MyHttpResponse);
                             }
@@ -49,7 +49,7 @@ export function loginRequestListener(con: Connection): MyHttpListener {
 }
 
 export function loginPageRequestListener(): MyHttpListener {
-    return function (req, url) {
+    return () => {
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
             body: `<!DOCTYPE html>
@@ -64,11 +64,36 @@ export function loginPageRequestListener(): MyHttpListener {
   <input type="text" placeholder="Username" name="username" id="username" required>
   <label for="password">Password:</label>
   <input type="password" placeholder="Password" name="password" id="password" required>
+  <label for="remember_me">Remember me:</label>
+  <input type="checkbox" name="remember_me" id="remember_me" value="1">
   <button type="submit" id="submit-button">Login</button>
 </form>
 <a href="/home">Home</a>
 </body>
 </html>`
         });
+    }
+}
+
+export function logout(con: Connection): MyHttpListener {
+    return (req) => {
+        return new Promise((resolve, reject) => {
+            const allCookiesMap = parseRequestCookies(req.headers.cookie);
+            con.query(`UPDATE login_cookies
+                       SET has_logged_out=?,
+                           logout_time=?
+                       WHERE cookie_value = ?`, [1, new Date(), allCookiesMap.get('loginid')],
+                (err) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    } else {
+                        resolve({
+                            status: 302,
+                            headers: new Map(Object.entries({'Location': '/home'}))
+                        } as MyHttpResponse)
+                    }
+                });
+        })
     }
 }
