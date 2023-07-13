@@ -16,11 +16,14 @@ export function registerRequestListener(con: Connection): MyHttpListener {
                             reject(err);
                             return;
                         } else {
+                            const contentHtml = `
+<h1>Successful Registration</h1>
+<a href="/home">home</a>`;
                             resolve({
                                 headers: new Map(Object.entries({
                                     'content-type': 'text/html'
                                 })),
-                                body: pageHtml("Success", user, "")
+                                body: pageHtml("Successful Registration", user, contentHtml)
                             } as MyHttpResponse);
                         }
                     });

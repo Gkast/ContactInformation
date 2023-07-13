@@ -57,7 +57,7 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
                                     headers: new Map(Object.entries({
                                         'content-type': 'text/html'
                                     })),
-                                    body: pageHtml("Success", user, contentHtml)
+                                    body: pageHtml("Successful Submission", user, contentHtml)
                                 } as MyHttpResponse)
                             }
                         });
