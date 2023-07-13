@@ -36,12 +36,12 @@ export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     })
 }
 
-export function pageNotFound() {
-    return {
+export function pageNotFound(): Promise<MyHttpResponse> {
+    return Promise.resolve({
         status: 404,
         headers: new Map(Object.entries({'Content-Type': 'text/plain',})),
         body: 'Page not found'
-    } as MyHttpResponse
+    } as MyHttpResponse)
 }
 
 export function parseRequestCookies(cookie: string) {

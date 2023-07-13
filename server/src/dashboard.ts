@@ -1,7 +1,7 @@
 import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse} from "./utility";
 import {format as dateFormat} from "fecha";
-import {headerHtml} from "./header";
+import {pageHtml} from "./page";
 
 export function submittedContactFormsRequestListener(con: Connection): MyHttpListener {
     return (req, url, user) => {
@@ -32,15 +32,7 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
     </td>
 </tr>`
                     });
-
-                    const submittedContactFormHtmlString = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Submitted Contact Forms</title>
-<link rel="stylesheet" href="../assets/css/dashboard.css"></head>
-<body>${headerHtml(user)}
-<table class="dashboard">
+                    const contentHtml = `<table class="dashboard">
     <thead>
     <tr>
         <th class="cell">#</th>
@@ -58,13 +50,10 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
         ${queryToHtml}
     </tbody>
 </table>
-<a href="/dashboard" class="action-button">Refresh</a>
-<script src="../assets/js/main.js"></script>
-</body>
-</html>`;
+<a href="/dashboard" class="action-button">Refresh</a>`
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: submittedContactFormHtmlString
+                        body: pageHtml("Dashboard", user, contentHtml)
                     } as MyHttpResponse);
                 }
             });

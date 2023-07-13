@@ -2,7 +2,7 @@ import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse, parseRequestCookies, plusMinutes, streamToString} from "./utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
-import {headerHtml} from "./header";
+import {pageHtml} from "./page";
 
 export function loginRequestListener(con: Connection): MyHttpListener {
     return (req) => {
@@ -51,16 +51,7 @@ export function loginRequestListener(con: Connection): MyHttpListener {
 
 export function loginPageRequestListener(): MyHttpListener {
     return (req, url, user) => {
-        return Promise.resolve({
-            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <link rel="stylesheet" type="text/css" href="../assets/css/login.css">
-</head>
-<body>${headerHtml(user)}
+        const contentHtml = `
 <form action="/login" method="post" id="login-form">
   <label for="username">Username:</label>
   <input type="text" placeholder="Username" name="username" id="username" required>
@@ -69,9 +60,10 @@ export function loginPageRequestListener(): MyHttpListener {
   <label for="remember_me">Remember me:</label>
   <input type="checkbox" name="remember_me" id="remember_me" value="1">
   <button type="submit" id="submit-button">Login</button>
-</form>
-</body>
-</html>`
+</form>`
+        return Promise.resolve({
+            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
+            body: pageHtml("Login", user, contentHtml)
         });
     }
 }

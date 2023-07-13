@@ -1,7 +1,7 @@
 import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
 import * as querystring from "querystring";
-import {headerHtml} from "./header";
+import {pageHtml} from "./page";
 
 export function registerRequestListener(con: Connection): MyHttpListener {
     return (req, url, user) => {
@@ -20,17 +20,7 @@ export function registerRequestListener(con: Connection): MyHttpListener {
                                 headers: new Map(Object.entries({
                                     'content-type': 'text/html'
                                 })),
-                                body: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Success</title></head>
-    <link rel="stylesheet" type="text/css" href="../assets/css/successful-action.css">
-<body>${headerHtml(user)}
-<h1>Successful Registration</h1>
-</body>
-</html>`
+                                body: pageHtml("Success", user, "")
                             } as MyHttpResponse);
                         }
                     });
@@ -41,17 +31,7 @@ export function registerRequestListener(con: Connection): MyHttpListener {
 
 export function registerPageRequestListener(): MyHttpListener {
     return (req, url, user) => {
-        return Promise.resolve({
-            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-    <link rel="stylesheet" type="text/css" href="../assets/css/register.css">
-</head>
-<body>${headerHtml(user)}
+        const contentHtml = `
 <form action="/register" method="post" id="register-form">
     <label for="username">Username:</label>
     <input type="text" placeholder="Username" name="username" id="username" required>
@@ -60,9 +40,10 @@ export function registerPageRequestListener(): MyHttpListener {
     <label for="email">Email:</label>
     <input type="email" placeholder="Email" name="email" id="email" required>
     <button type="submit" id="submit-button">Register</button>
-</form>
-</body>
-</html>`
+</form>`
+        return Promise.resolve({
+            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
+            body: pageHtml("Register", user, contentHtml)
         });
     }
 }

@@ -1,23 +1,14 @@
 import {MyHttpListener} from "./utility";
-import {headerHtml} from "./header";
+import {pageHtml} from "./page";
 
 export function aboutPageRequestListener(): MyHttpListener {
     return (req, url, user) => {
+        const contentHtml = `
+<h1>ABOUT US</h1>
+<p>test test test </p>`;
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>ABOUT Information</title>
-    <link rel="stylesheet" type="text/css" href="../assets/css/about.css">
-</head>
-<body>${headerHtml(user)}
-<h1>ABOUT US</h1>
-<p>test test test </p>
-</body>
-</html>`
+            body: pageHtml("About", user, contentHtml)
         });
     }
 }
