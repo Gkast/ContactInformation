@@ -50,16 +50,17 @@ export function parseRequestCookies(cookie: string) {
 
 export function staticFileListener(mimetypes: Map<string, string>): MyHttpListener {
     return (req, url) => {
-        return fs.promises.stat('..' + url.pathname.toLowerCase()).then(result => {
+        const decodedPath = decodeURIComponent(url.pathname)
+        return fs.promises.stat('..' + decodedPath).then(result => {
             if (result.isFile()) {
                 const forceDownload = url.searchParams.get('download') === '1';
-                const ext = url.pathname.split('.').pop().toLowerCase();
+                const ext = decodedPath.split('.').pop();
                 return {
                     headers: new Map(Object.entries(Object.assign(
                         {'Content-Type': mimetypes.get(ext) || 'application/octet-stream'},
                         forceDownload ? {'Content-Disposition': 'attachment'} : {}
                     ))),
-                    body: res => fs.createReadStream('..' + url.pathname.toLowerCase()).pipe(res)
+                    body: res => fs.createReadStream('..' + decodedPath).pipe(res)
                 } as MyHttpResponse;
             } else {
                 return pageNotFound()

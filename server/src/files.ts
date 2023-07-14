@@ -12,8 +12,8 @@ export function uploadedFileListPageRequestListener(): MyHttpListener {
 <tr>
     <td class="cell">${i + 1}</td>
     <td class="cell">${file}</td>
-    <td class="cell"><a href="../assets/files/${file}?download=1">Download</a></td>
     <td class="cell"><a href="../assets/files/${file}">Preview</a></td>
+    <td class="cell"><a href="../assets/files/${file}?download=1">Download</a></td>
 </tr>`
                 })
                 if (err) {
