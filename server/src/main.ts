@@ -1,21 +1,24 @@
 import * as http from "http";
 import * as fs from "fs";
-import {MyHttpListener, pageNotFound, staticFileListener, writeMyResToNodeResponse} from "./utility";
+import {MyHttpListener, staticFileListener, writeMyResToNodeResponse} from "./utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
 import {
     contactDeleteListener,
-    contactEditPageListener,
+    contactEditPageRequestListener,
     contactPageRequestListener,
     contactRequestListener,
     contactUpdateListener
 } from "./contact";
 import {registerPageRequestListener, registerRequestListener} from "./register";
 import {loginPageRequestListener, loginRequestListener, logout} from "./login";
-import {homeRequestListener} from "./home";
-import {submittedContactFormsRequestListener} from "./dashboard";
+import {homePageRequestListener} from "./home";
+import {submittedContactFormsPageRequestListener} from "./dashboard";
 import {aboutPageRequestListener} from "./about";
-import {redirectIfNotAuthenticated, withUserId} from "./auth";
+import {redirectIfNotAuthenticated, withUserId} from "./authentication";
+import {pageNotFound} from "./page";
+import {uploadPageRequestListener, uploadRequestListener} from "./upload";
+import {uploadedFileListPageRequestListener} from "./files";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -42,32 +45,31 @@ Promise.all([
     const contactHandler = contactRequestListener(con, smtpTransport);
     const contactPageHandler = contactPageRequestListener();
     const staticFileHandler = staticFileListener(mimetypes);
-    const homePageHandler = homeRequestListener();
-    const submittedContactFormsHandler = submittedContactFormsRequestListener(con);
+    const homePageHandler = homePageRequestListener();
+    const submittedContactFormsPageHandler = submittedContactFormsPageRequestListener(con);
     const contactDeleteHandler = contactDeleteListener(con);
     const contactUpdateHandler = contactUpdateListener(con);
-    const contactEditPageHandler = contactEditPageListener(con);
+    const contactEditPageHandler = contactEditPageRequestListener(con);
     const registerHandler = registerRequestListener(con);
     const registerPageHandler = registerPageRequestListener();
     const loginHandler = loginRequestListener(con);
     const loginPageHandler = loginPageRequestListener();
     const logoutHandler = logout(con);
+    const uploadPageHandler = uploadPageRequestListener();
+    const uploadSubmitHandler = uploadRequestListener();
+    const fileListPageHandler = uploadedFileListPageRequestListener();
 
 
     http.createServer((req, res) => {
         const parsedUrl = new URL('http://' + req.headers.host + req.url);
         const pathLowerCase = parsedUrl.pathname.toLowerCase();
         const method = req.method;
-        const pageParams: Object = {
-            path: parsedUrl.pathname.toLowerCase(),
-            method: req.method
-        }
         const handlerFound: MyHttpListener =
             pathLowerCase === '/about' && method === 'GET' ? aboutPageHandler :
                 pathLowerCase === '/contact' && method === 'POST' ? contactHandler :
                     pathLowerCase === '/contact' && method === 'GET' ? redirectIfNotAuthenticated(contactPageHandler) :
                         (pathLowerCase === "/" || pathLowerCase === "/home") && method === "GET" ? homePageHandler :
-                            pathLowerCase === "/dashboard" && method === "GET" ? redirectIfNotAuthenticated(submittedContactFormsHandler) :
+                            pathLowerCase === "/dashboard" && method === "GET" ? redirectIfNotAuthenticated(submittedContactFormsPageHandler) :
                                 pathLowerCase.match(/^\/dashboard\/\d+\/delete$/) && method === "POST" ? redirectIfNotAuthenticated(contactDeleteHandler) :
                                     pathLowerCase.match(/^\/dashboard\/\d+$/) && method === "GET" ? redirectIfNotAuthenticated(contactEditPageHandler) :
                                         pathLowerCase.match(/^\/dashboard\/\d+$/) && method === "POST" ? redirectIfNotAuthenticated(contactUpdateHandler) :
@@ -77,7 +79,10 @@ Promise.all([
                                                         pathLowerCase === '/login' && method === 'POST' ? loginHandler :
                                                             pathLowerCase === '/login' && method === 'GET' ? loginPageHandler :
                                                                 pathLowerCase === '/logout' && method === 'GET' ? logoutHandler :
-                                                                    pageNotFound;
+                                                                    pathLowerCase === '/upload' && method === 'GET' ? uploadPageHandler :
+                                                                        pathLowerCase === '/upload' && method === 'POST' ? uploadSubmitHandler :
+                                                                            pathLowerCase === '/file-list' && method === 'GET' ? fileListPageHandler :
+                                                                                pageNotFound;
 
 
         withUserId(con, handlerFound)(req, parsedUrl)

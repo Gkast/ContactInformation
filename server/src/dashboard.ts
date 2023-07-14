@@ -2,13 +2,17 @@ import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse} from "./utility";
 import {format as dateFormat} from "fecha";
 import {pageHtml} from "./page";
+import * as fs from "fs";
 
-export function submittedContactFormsRequestListener(con: Connection): MyHttpListener {
+export function submittedContactFormsPageRequestListener(con: Connection): MyHttpListener {
     return (req, url, user) => {
         return new Promise((resolve, reject) => {
-            con.query(`SELECT *
-                       FROM contact_form_submits ${user.admin ? `` : `WHERE user_id = ?`}
-                       ORDER BY datetime_submitted DESC`, user.admin ? [] : [user.id], (err, result) => {
+            con.query(`SELECT c.*, u.username
+                       FROM contact_form_submits c
+                                JOIN users u on u.id = c.user_id
+                           ${user.admin ? `` : `WHERE c.user_id = ?`}
+                       ORDER BY c.datetime_submitted
+            DESC`, user.admin ? [] : [user.id], (err, result) => {
                 if (err) {
                     reject(err);
                     return;
@@ -18,6 +22,7 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
                         queryToHtml += `
 <tr>
     <td class="cell">${i + 1}</td>
+    ${user.admin ? `<td class="cell">${row.username.toUpperCase()}</td>` : ''}
     <td class="cell">${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</td>
     <td class="cell">${row.firstname}</td>
     <td class="cell">${row.lastname}</td>
@@ -26,7 +31,7 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
     <td class="cell">${row.message}</td>
     <td class="cell"><a href="/dashboard/${row.id}">Edit</a></td>
     <td class="cell">
-        <form data-confirm-text="Are you sure111?" action="/dashboard/${row.id}/delete" method="post" class="action-button">
+        <form data-confirm-text="Are you sure?" action="/dashboard/${row.id}/delete" method="post" class="action-button">
         <button>DELETE</button>
         </form>
     </td>
@@ -36,6 +41,7 @@ export function submittedContactFormsRequestListener(con: Connection): MyHttpLis
     <thead>
     <tr>
         <th class="cell">#</th>
+        ${user.admin ? `<th class="cell">Username</th>` : ``}
         <th class="cell">Submitted Time</th>
         <th class="cell">Firstname</th>
         <th class="cell">Lastname</th>

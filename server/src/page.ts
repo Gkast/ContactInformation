@@ -1,4 +1,7 @@
-export function pageHtml(title, user, contentHtml): string {
+import {MyHttpResponse} from "./utility";
+import {UserDetails} from "./authentication";
+
+export function pageHtml(title:string, user:UserDetails, contentHtml:string): string {
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +25,22 @@ export function pageHtml(title, user, contentHtml): string {
     <script src="../assets/js/main.js"></script>
 </body>
 </html>`;
+}
+
+export function pageNotFound(): Promise<MyHttpResponse> {
+    return Promise.resolve({
+        status: 404,
+        headers: new Map(Object.entries({'Content-Type': 'text/html',})),
+        body: '<h1>Page Not Found</h1>'
+    } as MyHttpResponse)
+}
+
+export function wrongCredentials(): Promise<MyHttpResponse>{
+    return Promise.resolve({
+        status: 401,
+        headers: new Map(Object.entries({'Content-Type': 'text/html',})),
+        body: '<h1>Wrong Credentials</h1>'
+    } as MyHttpResponse)
 }
 
 function headerHtml(user) {

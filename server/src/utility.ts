@@ -1,7 +1,8 @@
 import {IncomingMessage, ServerResponse} from "http";
 import {URL} from "url";
 import * as fs from "fs";
-import {UserDetails} from "./auth";
+import {UserDetails} from "./authentication";
+import {pageNotFound} from "./page";
 
 export interface MyHttpResponse {
     status?: number;
@@ -36,14 +37,6 @@ export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     })
 }
 
-export function pageNotFound(): Promise<MyHttpResponse> {
-    return Promise.resolve({
-        status: 404,
-        headers: new Map(Object.entries({'Content-Type': 'text/plain',})),
-        body: 'Page not found'
-    } as MyHttpResponse)
-}
-
 export function parseRequestCookies(cookie: string) {
     const allCookiesMap = new Map<string, string>();
     if (cookie) {
@@ -59,9 +52,13 @@ export function staticFileListener(mimetypes: Map<string, string>): MyHttpListen
     return (req, url) => {
         return fs.promises.stat('..' + url.pathname.toLowerCase()).then(result => {
             if (result.isFile()) {
+                const forceDownload = url.searchParams.get('download') === '1';
                 const ext = url.pathname.split('.').pop().toLowerCase();
                 return {
-                    headers: new Map(Object.entries({'Content-Type': mimetypes.get(ext) || 'application/octet-stream'})),
+                    headers: new Map(Object.entries(Object.assign(
+                        {'Content-Type': mimetypes.get(ext) || 'application/octet-stream'},
+                        forceDownload ? {'Content-Disposition': 'attachment'} : {}
+                    ))),
                     body: res => fs.createReadStream('..' + url.pathname.toLowerCase()).pipe(res)
                 } as MyHttpResponse;
             } else {

@@ -1,8 +1,8 @@
-import {MyHttpListener, MyHttpResponse, pageNotFound, streamToString} from "./utility";
+import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
-import {pageHtml} from "./page";
+import {pageHtml, pageNotFound} from "./page";
 
 export function contactPageRequestListener(): MyHttpListener {
     return (req, url, user) => {
@@ -45,7 +45,7 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
                             from: 'noreply@giorgokastanis.com',
                             to: p.email,
                             subject: typeof p.subject === 'string' ? p.subject : p.subject[0],
-                            text: 'Contact form message: \n\n' + p.message
+                            text: 'Contact form message: \n\n' + p.message + 'Thank you for submitting'
                         }, (error) => {
                             if (error) {
                                 reject(error);
@@ -88,7 +88,7 @@ export function contactDeleteListener(con: Connection): MyHttpListener {
     }
 }
 
-export function contactEditPageListener(con: Connection): MyHttpListener {
+export function contactEditPageRequestListener(con: Connection): MyHttpListener {
     return (req, url, user) => {
         return new Promise((resolve, reject) => {
             const id = parseInt(url.pathname.split('/')[2], 10);
@@ -107,7 +107,7 @@ export function contactEditPageListener(con: Connection): MyHttpListener {
                     }
                     const contentHtml = `
 <div class="form-wrapper">
-    <form method="post" id="contact-form" action="/form-dashboard/${row.id}">
+    <form method="post" id="contact-form" action="/dashboard/${row.id}">
         <label for="first-name">First Name:</label>
         <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required value="${row.firstname}">
         <label for="last-name">Last Name:</label>

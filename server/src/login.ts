@@ -2,7 +2,7 @@ import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse, parseRequestCookies, plusMinutes, streamToString} from "./utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
-import {pageHtml} from "./page";
+import {pageHtml, wrongCredentials} from "./page";
 
 export function loginRequestListener(con: Connection): MyHttpListener {
     return (req) => {
@@ -19,13 +19,7 @@ export function loginRequestListener(con: Connection): MyHttpListener {
                             return;
                         } else {
                             if (results.length === 0) {
-                                resolve({
-                                    status: 401,
-                                    headers: new Map(Object.entries({
-                                        'content-type': 'text/plain'
-                                    })),
-                                    body: "wrong credentials"
-                                } as MyHttpResponse);
+                                resolve(wrongCredentials());
                             } else {
                                 const rememberMe = p['remember_me'] === '1';
                                 const cookieString = randomstring.generate();
