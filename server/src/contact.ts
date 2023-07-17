@@ -7,19 +7,21 @@ import {pageHtml, pageNotFound} from "./page";
 export function contactPage(): MyHttpListener {
     return (req, user) => {
         const contentHtml = `
-<form method="post" id="contact-form" action="http://localhost:3000/contact">
-    <label for="first-name">Firstname:</label>
-    <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required>
-    <label for="last-name">Lastname:</label>
-    <input type="text" placeholder="Last Name" name="lastname" id="last-name" class="form-inputs" required>
-    <label for="email">Email:</label>
-    <input type="email" placeholder="Email" name="email" id="email" class="form-inputs" required>
-    <label for="subject">Subject:</label>
-    <input type="text" placeholder="Subject" name="subject" id="subject" class="form-inputs" required>
-    <label for="message-area">Message:</label>
-    <textarea placeholder="Write a message..." name="message" id="message-area" class="form-inputs" required></textarea>
-    <button type="submit" id="submit-button">Submit</button>
-</form>`
+<div class="contact-form-wrapper">
+    <form method="post" class="contact-form" action="http://localhost:3000/contact">
+        <label for="first-name">Firstname:</label>
+        <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required>
+        <label for="last-name">Lastname:</label>
+        <input type="text" placeholder="Last Name" name="lastname" id="last-name" class="form-inputs" required>
+        <label for="email">Email:</label>
+        <input type="email" placeholder="Email" name="email" id="email" class="form-inputs" required>
+        <label for="subject">Subject:</label>
+        <input type="text" placeholder="Subject" name="subject" id="subject" class="form-inputs" required>
+        <label for="message-area">Message:</label>
+        <textarea placeholder="Write a message..." name="message" id="message-area" class="form-inputs" required></textarea>
+        <button type="submit" id="submit-button" class="btn">Submit</button>
+    </form>
+</div>`
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
             body: pageHtml({user: user, title: "Contact us"}, contentHtml)
@@ -106,8 +108,8 @@ export function contactEditPage(con: Connection): MyHttpListener {
                         return;
                     }
                     const contentHtml = `
-<div class="form-wrapper">
-    <form method="post" id="contact-edit-form" action="/contact-list/${row.id}">
+<div class="contact-form-wrapper">
+    <form method="post" class="contact-form" action="/contact-list/${row.id}">
         <label for="first-name">First Name:</label>
         <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required value="${row.firstname}">
         <label for="last-name">Last Name:</label>

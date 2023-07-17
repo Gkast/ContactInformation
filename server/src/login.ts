@@ -57,7 +57,7 @@ export function loginPage(): MyHttpListener {
   <label for="remember_me">Remember me:</label>
   <input type="checkbox" name="remember_me" id="remember_me" value="1">
   <div class="g-recaptcha" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
-  <button type="submit" id="submit-button">Login</button>
+  <button type="submit" id="submit-button" class="btn">Login</button>
 </form>`
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),

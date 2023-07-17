@@ -21,9 +21,6 @@ export interface MyHttpResponse {
 }
 
 export type MyHttpListener = (req: MyHttpRequest, user?: UserDetails) => Promise<MyHttpResponse>
-// export interface MyHttpListener {
-//     (req: MyHttpRequest, user?: UserDetails): Promise<MyHttpResponse>
-// }
 
 export function nodeJsToMyHttpRequest(req: IncomingMessage): MyHttpRequest {
     return {
@@ -100,4 +97,8 @@ export function plusMinutes(date: Date, minutes_diff: number): Date {
 
 export function singleParam<T>(value: T | T[]): T {
     return value instanceof Array ? value[0] : value;
+}
+
+export function upperCaseFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }

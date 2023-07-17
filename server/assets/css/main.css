@@ -13,13 +13,14 @@ body {
 header {
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     box-shadow: 2px 5px 10px #c0c0c0;
 }
 
 .header-box {
-    margin: 10px 50px;
+    display: flex;
+    align-items: center;
 }
 
 .no-underline {
@@ -48,4 +49,42 @@ header {
     padding: 10px 20px;
     margin-top: 20px;
     box-shadow: 2px 5px 10px #c0c0c0;
+}
+
+.btn {
+    background-color: white;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid black;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: black;
+    color: white;
+    transition: ease-in-out 100ms;
+}
+
+.delete-btn {
+    background-color: #c01818;
+    color: white;
+    border-color: #c01818;
+}
+
+.delete-btn:hover {
+    background-color: white;
+    color: #c01818;
+}
+
+.download-btn {
+    background-color: seagreen;
+    color: white;
+    border-color: seagreen;
+}
+
+.download-btn:hover {
+    background-color: white;
+    color: seagreen;
 }

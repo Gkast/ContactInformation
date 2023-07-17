@@ -1,18 +1,11 @@
 .contact-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#contact-form {
     width: 500px;
     height: 600px;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    padding: 20px;
-    margin: 40px 0;
+    margin: 20px 0;
 }
 
 .form-inputs {

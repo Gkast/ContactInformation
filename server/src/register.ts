@@ -18,7 +18,7 @@ export function registerHandler(con: Connection): MyHttpListener {
                         } else {
                             const contentHtml = `
 <h1>Successful Registration</h1>
-<a href="/home">Home</a>`;
+<a href="/home"><button class="btn">Home</button></a>`;
                             resolve({
                                 headers: new Map(Object.entries({
                                     'content-type': 'text/html'

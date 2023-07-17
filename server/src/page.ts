@@ -17,7 +17,7 @@ export function pageHtml(pageParams: {
 <body>
     <header>
         <div class="header-box">
-            <h1><a href="/home" class="no-underline">Contact Information</a></h1>
+            <h1><a href="/home" class="no-underline" title="Home">Contact Information</a></h1>
         </div>
         <div class="header-box">
             ${headerHtml(pageParams.user)}
@@ -53,14 +53,14 @@ export function wrongCredentials(): Promise<MyHttpResponse> {
 function headerHtml(user: UserDetails) {
     if (!user) {
         return `
-        <a href="/login" id="login-button">Log In</a>
-        <a href="/register" id="register-button">Register</a>`;
+        <a href="/login" id="login-button"><button class="btn">Log In</button></a>
+        <a href="/register" id="register-button"><button class="btn">Register</button></a>`;
     } else {
         return `
         <span id="userId">${user.username.toUpperCase()}</span>
         <div style="display: inline-block">
         <form method="post" action="/logout">
-            <button>Log out</button>
+            <button class="btn">Log out</button>
         </form>
 </div>`;
     }

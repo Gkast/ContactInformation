@@ -8,7 +8,7 @@ export function uploadPageReqList(): MyHttpListener {
         const contentHtml = `
 <form method="post" id="upload-form" action="http://localhost:3000/upload" enctype="multipart/form-data">
     <input type="file" name="uploadFile" id="upload-file" class="form-inputs" required>
-    <button type="submit" id="submit-button">Submit</button>
+    <button type="submit" id="submit-button" class="btn">Submit</button>
 </form>`
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
@@ -34,7 +34,7 @@ export function uploadHandler(): MyHttpListener {
                             } else {
                                 const contentHtml = `
 <h1>File Uploaded</h1>
-<a href="/home">Home</a>`;
+<a href="/home"><button class="btn">Home</button></a>`;
                                 resolve({
                                     headers: new Map(Object.entries({
                                         'content-type': 'text/html'
