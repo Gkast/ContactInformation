@@ -2,10 +2,9 @@ import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse} from "./utility";
 import {format as dateFormat} from "fecha";
 import {pageHtml} from "./page";
-import * as fs from "fs";
 
 export function submittedContactFormsPageRequestListener(con: Connection): MyHttpListener {
-    return (req, url, user) => {
+    return (req, user) => {
         return new Promise((resolve, reject) => {
             con.query(`SELECT c.*, u.username
                        FROM contact_form_submits c
@@ -59,7 +58,7 @@ export function submittedContactFormsPageRequestListener(con: Connection): MyHtt
 <a href="/dashboard" class="action-button">Refresh</a>`
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: pageHtml("Dashboard", user, contentHtml)
+                        body: pageHtml({user: user, title: "Dashboard"}, contentHtml)
                     } as MyHttpResponse);
                 }
             });

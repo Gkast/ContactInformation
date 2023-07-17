@@ -36,7 +36,7 @@ export function userIdFromCookie(con: Connection, loginId: string): Promise<User
 }
 
 export function withUserId(con: Connection, handler: MyHttpListener): MyHttpListener {
-    return (req, url) => {
+    return (req) => {
         const loginCookie = parseRequestCookies(req.headers.cookie).get('loginid')
         return userIdFromCookie(con, loginCookie)
             .then(user => {
@@ -50,16 +50,17 @@ export function withUserId(con: Connection, handler: MyHttpListener): MyHttpList
                             }
                         })
                 }
-                return handler(req, url, user);
+                return handler(req, user);
             });
     }
 }
 
 export function redirectIfNotAuthenticated(handler: MyHttpListener): MyHttpListener {
-    return (req, url, user) => {
-        return user ? handler(req, url, user) : Promise.resolve({
+    return (req, user) => {
+        return user ? handler(req, user) : Promise.resolve({
             status: 302,
-            headers: new Map(Object.entries({'Location': '/login?href=' + encodeURIComponent(url.toString())})),
+            headers: new Map(Object.entries({'Location': '/login?href=' + encodeURIComponent(req.url.toString())})),
         });
     }
 }
+

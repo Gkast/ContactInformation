@@ -5,7 +5,7 @@ import {Transporter} from "nodemailer";
 import {pageHtml, pageNotFound} from "./page";
 
 export function contactPageRequestListener(): MyHttpListener {
-    return (req, url, user) => {
+    return (req, user) => {
         const contentHtml = `
 <form method="post" id="contact-form" action="http://localhost:3000/contact">
     <label for="first-name">Firstname:</label>
@@ -22,14 +22,14 @@ export function contactPageRequestListener(): MyHttpListener {
 </form>`
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: pageHtml("Contact", user, contentHtml)
+            body: pageHtml({user: user, title: "Contact us"}, contentHtml)
         });
     }
 }
 
 export function contactRequestListener(con: Connection, smtpTransport: Transporter): MyHttpListener {
-    return (req, url, user) => {
-        return streamToString(req).then(bodyString => {
+    return (req, user) => {
+        return streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
             return new Promise((resolve, reject) => {
                 con.query(`INSERT INTO contact_form_submits (firstname, lastname, email, subject, message, user_id)
@@ -57,7 +57,7 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
                                     headers: new Map(Object.entries({
                                         'content-type': 'text/html'
                                     })),
-                                    body: pageHtml("Successful Submission", user, contentHtml)
+                                    body: pageHtml({user: user, title: "Successful Submission"}, contentHtml)
                                 } as MyHttpResponse)
                             }
                         });
@@ -70,7 +70,7 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
 export function contactDeleteListener(con: Connection): MyHttpListener {
     return (req, url) => {
         return new Promise((resolve, reject) => {
-            const id = parseInt(url.pathname.split('/')[2], 10);
+            const id = parseInt(req.url.pathname.split('/')[2], 10);
             if (id) {
                 con.query("DELETE FROM contact_form_submits WHERE id=?", [id], (err) => {
                     if (err) {
@@ -89,9 +89,9 @@ export function contactDeleteListener(con: Connection): MyHttpListener {
 }
 
 export function contactEditPageRequestListener(con: Connection): MyHttpListener {
-    return (req, url, user) => {
+    return (req, user) => {
         return new Promise((resolve, reject) => {
-            const id = parseInt(url.pathname.split('/')[2], 10);
+            const id = parseInt(req.url.pathname.split('/')[2], 10);
             if (!id) {
                 resolve(pageNotFound());
                 return;
@@ -107,7 +107,7 @@ export function contactEditPageRequestListener(con: Connection): MyHttpListener 
                     }
                     const contentHtml = `
 <div class="form-wrapper">
-    <form method="post" id="contact-form" action="/dashboard/${row.id}">
+    <form method="post" id="contact-edit-form" action="/dashboard/${row.id}">
         <label for="first-name">First Name:</label>
         <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required value="${row.firstname}">
         <label for="last-name">Last Name:</label>
@@ -123,7 +123,7 @@ export function contactEditPageRequestListener(con: Connection): MyHttpListener 
 </div>`
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: pageHtml("Edit Contact", user, contentHtml)
+                        body: pageHtml({user: user, title: "Edit Contact"}, contentHtml)
                     })
                 }
             })
@@ -133,11 +133,11 @@ export function contactEditPageRequestListener(con: Connection): MyHttpListener 
 
 export function contactUpdateListener(con: Connection): MyHttpListener {
     return (req, url) => {
-        const id = parseInt(url.pathname.split('/')[2], 10);
+        const id = parseInt(req.url.pathname.split('/')[2], 10);
         if (!id) {
             return Promise.resolve(pageNotFound());
         }
-        return streamToString(req).then(bodyString => {
+        return streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
             return new Promise((resolve, reject) => {
                 con.query(`UPDATE contact_form_submits

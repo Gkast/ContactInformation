@@ -6,7 +6,7 @@ import {pageHtml, wrongCredentials} from "./page";
 
 export function loginRequestListener(con: Connection): MyHttpListener {
     return (req) => {
-        return streamToString(req).then(bodyString => {
+        return streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
             return new Promise((resolve, reject) => {
                 con.query(`SELECT id
@@ -44,20 +44,21 @@ export function loginRequestListener(con: Connection): MyHttpListener {
 }
 
 export function loginPageRequestListener(): MyHttpListener {
-    return (req, url, user) => {
+    return (req, user) => {
         const contentHtml = `
-<form action="/login" method="post" id="login-form">
+<form action="/login" method="post" id="login-form" data-captcha-form="">
   <label for="username">Username:</label>
   <input type="text" placeholder="Username" name="username" id="username" required>
   <label for="password">Password:</label>
   <input type="password" placeholder="Password" name="password" id="password" required>
   <label for="remember_me">Remember me:</label>
   <input type="checkbox" name="remember_me" id="remember_me" value="1">
+  <div class="g-recaptcha" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
   <button type="submit" id="submit-button">Login</button>
 </form>`
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: pageHtml("Login", user, contentHtml)
+            body: pageHtml({user: user, title: "Login", hasCaptcha: true}, contentHtml)
         });
     }
 }

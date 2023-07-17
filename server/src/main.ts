@@ -1,6 +1,6 @@
 import * as http from "http";
 import * as fs from "fs";
-import {MyHttpListener, staticFileListener, writeMyResToNodeResponse} from "./utility";
+import {MyHttpListener, nodeJsToMyHttpRequest, staticFileListener, writeMyResToNodeResponse} from "./utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
 import {
@@ -19,6 +19,7 @@ import {redirectIfNotAuthenticated, withUserId} from "./authentication";
 import {pageNotFound} from "./page";
 import {uploadPageRequestListener, uploadRequestListener} from "./upload";
 import {uploadedFileListPageRequestListener} from "./files";
+import {captchaProtectedHandler} from "./captcha";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -40,6 +41,7 @@ Promise.all([
     })),
 ]).then(all => {
     const mimetypes = all[0];
+    const captchaSecret = process.env['CAPTCHA_SECRET'];
 
     const aboutPageHandler = aboutPageRequestListener();
     const contactHandler = contactRequestListener(con, smtpTransport);
@@ -61,7 +63,8 @@ Promise.all([
 
 
     http.createServer((req, res) => {
-        const parsedUrl = new URL('http://' + req.headers.host + req.url);
+        const myReq = nodeJsToMyHttpRequest(req);
+        const parsedUrl = myReq.url;
         const pathLowerCase = parsedUrl.pathname.toLowerCase();
         const method = req.method;
         const handlerFound: MyHttpListener =
@@ -76,7 +79,7 @@ Promise.all([
                                             pathLowerCase.startsWith('/assets/') && method === "GET" ? staticFileHandler :
                                                 pathLowerCase === '/register' && method === 'POST' ? registerHandler :
                                                     pathLowerCase === '/register' && method === 'GET' ? registerPageHandler :
-                                                        pathLowerCase === '/login' && method === 'POST' ? loginHandler :
+                                                        pathLowerCase === '/login' && method === 'POST' ? captchaProtectedHandler(captchaSecret, loginHandler) :
                                                             pathLowerCase === '/login' && method === 'GET' ? loginPageHandler :
                                                                 pathLowerCase === '/logout' && method === 'GET' ? logoutHandler :
                                                                     pathLowerCase === '/upload' && method === 'GET' ? uploadPageHandler :
@@ -85,7 +88,7 @@ Promise.all([
                                                                                 pageNotFound;
 
 
-        withUserId(con, handlerFound)(req, parsedUrl)
+        withUserId(con, handlerFound)(myReq)
             .then(myres => writeMyResToNodeResponse(myres, res))
             .catch(err => {
                 console.error(new Date(), err);

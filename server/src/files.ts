@@ -3,7 +3,7 @@ import * as fs from "fs";
 import {pageHtml} from "./page";
 
 export function uploadedFileListPageRequestListener(): MyHttpListener {
-    return (req, url, user) => {
+    return (req, user) => {
         return new Promise((resolve, reject) => {
             let fileQueryHtml = '';
             fs.readdir('../assets/files/', (err, files) => {
@@ -35,7 +35,7 @@ export function uploadedFileListPageRequestListener(): MyHttpListener {
 <a href="/file-list" class="action-button">Refresh</a>`
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: pageHtml('Files', user, contentHtml)
+                        body: pageHtml({user: user, title: "Files"}, contentHtml)
                     })
                 }
             })

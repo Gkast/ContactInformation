@@ -4,7 +4,7 @@ import * as formidable from "formidable";
 import * as fs from "fs";
 
 export function uploadPageRequestListener(): MyHttpListener {
-    return (req, url, user) => {
+    return (req, user) => {
         const contentHtml = `
 <form method="post" id="upload-form" action="http://localhost:3000/upload" enctype="multipart/form-data">
     <input type="file" name="uploadFile" id="upload-file" class="form-inputs" required>
@@ -12,15 +12,15 @@ export function uploadPageRequestListener(): MyHttpListener {
 </form>`
         return Promise.resolve({
             headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: pageHtml("Upload", user, contentHtml)
+            body: pageHtml({user: user, title: "Upload"}, contentHtml)
         });
     }
 }
 
 export function uploadRequestListener(): MyHttpListener {
-    return (req, url, user) => {
+    return (req, user) => {
         return new Promise((resolve, reject) => {
-            new formidable.IncomingForm().parse(req, (err, fields, files) => {
+            new formidable.IncomingForm().parse(req.nodeJsReqObject, (err, fields, files) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -39,7 +39,7 @@ export function uploadRequestListener(): MyHttpListener {
                                     headers: new Map(Object.entries({
                                         'content-type': 'text/html'
                                     })),
-                                    body: pageHtml("File Uploaded", user, contentHtml)
+                                    body: pageHtml({user: user, title: "File uploaded"}, contentHtml)
                                 } as MyHttpResponse)
                             }
                         })
