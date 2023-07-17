@@ -4,7 +4,7 @@ import * as querystring from "querystring";
 import * as randomstring from "randomstring";
 import {pageHtml, wrongCredentials} from "./page";
 
-export function loginRequestListener(con: Connection): MyHttpListener {
+export function loginHandler(con: Connection): MyHttpListener {
     return (req) => {
         return streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
@@ -46,7 +46,7 @@ export function loginRequestListener(con: Connection): MyHttpListener {
     }
 }
 
-export function loginPageRequestListener(): MyHttpListener {
+export function loginPage(): MyHttpListener {
     return (req, user) => {
         const contentHtml = `
 <form action="/login" method="post" id="login-form" data-captcha-form="">
@@ -66,7 +66,7 @@ export function loginPageRequestListener(): MyHttpListener {
     }
 }
 
-export function logoutRequestListener(con: Connection): MyHttpListener {
+export function logoutHandler(con: Connection): MyHttpListener {
     return (req) => {
         return new Promise((resolve, reject) => {
             const allCookiesMap = parseRequestCookies(req.headers.cookie);

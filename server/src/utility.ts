@@ -22,7 +22,7 @@ export interface MyHttpResponse {
 
 export type MyHttpListener = (req: MyHttpRequest, user?: UserDetails) => Promise<MyHttpResponse>
 // export interface MyHttpListener {
-//     (req: IncomingMessage, url: URL, user?: UserDetails): Promise<MyHttpResponse>
+//     (req: MyHttpRequest, user?: UserDetails): Promise<MyHttpResponse>
 // }
 
 export function nodeJsToMyHttpRequest(req: IncomingMessage): MyHttpRequest {
@@ -37,19 +37,19 @@ export function nodeJsToMyHttpRequest(req: IncomingMessage): MyHttpRequest {
     }
 }
 
-export function writeMyResToNodeResponse(myres: MyHttpResponse, res: ServerResponse) {
-    res.statusCode = myres.status || 200;
-    if (myres.headers) {
-        myres.headers.forEach((headerValue, name) => {
+export function writeMyResToNodeResponse(myRes: MyHttpResponse, res: ServerResponse) {
+    res.statusCode = myRes.status || 200;
+    if (myRes.headers) {
+        myRes.headers.forEach((headerValue, name) => {
             res.setHeader(name, headerValue);
         });
     }
-    if (!myres.body) {
+    if (!myRes.body) {
         res.end();
-    } else if (typeof myres.body === 'string') {
-        res.end(myres.body);
+    } else if (typeof myRes.body === 'string') {
+        res.end(myRes.body);
     } else {
-        myres.body(res);
+        myRes.body(res);
     }
 }
 
@@ -73,7 +73,7 @@ export function parseRequestCookies(cookie: string) {
     return allCookiesMap;
 }
 
-export function staticFileListener(mimetypes: Map<string, string>): MyHttpListener {
+export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListener {
     return (req) => {
         const decodedPath = decodeURIComponent(req.url.pathname)
         return fs.promises.stat('..' + decodedPath).then(result => {
@@ -94,8 +94,8 @@ export function staticFileListener(mimetypes: Map<string, string>): MyHttpListen
     }
 }
 
-export function plusMinutes(d: Date, minutes_diff: number): Date {
-    return new Date(d.getTime() + 1000 * 60 * minutes_diff);
+export function plusMinutes(date: Date, minutes_diff: number): Date {
+    return new Date(date.getTime() + 1000 * 60 * minutes_diff);
 }
 
 export function singleParam<T>(value: T | T[]): T {

@@ -1,24 +1,17 @@
 import * as http from "http";
 import * as fs from "fs";
-import {MyHttpListener, nodeJsToMyHttpRequest, staticFileListener, writeMyResToNodeResponse} from "./utility";
+import {MyHttpListener, nodeJsToMyHttpRequest, staticFileReqList, writeMyResToNodeResponse} from "./utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
-import {
-    contactDeleteListener,
-    contactEditPageRequestListener,
-    contactPageRequestListener,
-    contactRequestListener,
-    contactUpdateListener
-} from "./contact";
-import {registerPageRequestListener, registerRequestListener} from "./register";
-import {loginPageRequestListener, loginRequestListener, logoutRequestListener} from "./login";
-import {homePageRequestListener} from "./home";
-import {submittedContactFormsPageRequestListener} from "./dashboard";
-import {aboutPageRequestListener} from "./about";
-import {redirectIfNotAuthenticated, withUserId} from "./authentication";
+import {contactPage, contactHandler, contactDeleteHandler, contactEditPage, contactEditHandler} from "./contact";
+import {registerPage, registerHandler} from "./register";
+import {loginPage, loginHandler, logoutHandler} from "./login";
+import {homePage} from "./home";
+import {contactListPage, uploadsPage} from "./list";
+import {aboutPage} from "./about";
+import {authHandler, withUserId} from "./authentication";
 import {pageNotFound} from "./page";
-import {uploadPageRequestListener, uploadRequestListener} from "./upload";
-import {uploadedFileListPageRequestListener} from "./files";
+import {uploadPageReqList, uploadHandler} from "./upload";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./captcha";
 
@@ -43,36 +36,41 @@ Promise.all([
 ]).then(all => {
     const mimetypes = all[0];
     const captchaSecret = process.env['CAPTCHA_SECRET'];
+    const router = new TrekRouter();
+
+    router.add('GET', '/about', aboutPage());
+    router.add('GET', '/contact', authHandler(contactPage()));
+    router.add('POST', '/contact', contactHandler(con, smtpTransport));
+    router.add('GET', '/', homePage());
+    router.add('GET', '/home', homePage());
+    router.add('GET', "/contact-list", authHandler(contactListPage(con)));
+    router.add('POST', '/contact-list/:id/delete', authHandler(contactDeleteHandler(con)));
+    router.add('GET', '/contact-list/:id', authHandler(contactEditPage(con)));
+    router.add('POST', '/contact-list/:id', authHandler(contactEditHandler(con)));
+    router.add('GET', '/assets/*', staticFileReqList(mimetypes));
+    router.add('GET', '/uploads/*', authHandler(staticFileReqList(mimetypes)));
+    router.add('POST', '/register', captchaProtectedHandler(captchaSecret, registerHandler(con)));
+    router.add('GET', '/register', registerPage());
+    router.add('POST', '/login', captchaProtectedHandler(captchaSecret, loginHandler(con)));
+    router.add('GET', '/login', loginPage());
+    router.add('POST', '/logout', logoutHandler(con));
+    router.add('GET', '/upload', authHandler(uploadPageReqList()));
+    router.add('POST', '/upload', authHandler(uploadHandler()));
+    router.add('GET', '/file-list', uploadsPage());
+    router.add('GET', '*', pageNotFound);
+
     http.createServer((req, res) => {
         const myReq = nodeJsToMyHttpRequest(req);
         const parsedUrl = myReq.url;
-        const router = new TrekRouter();
-
-        router.add('GET', '/about', aboutPageRequestListener());
-        router.add('GET', '/contact', redirectIfNotAuthenticated(contactPageRequestListener()));
-        router.add('POST', '/contact', contactRequestListener(con, smtpTransport));
-        router.add('GET', '/', homePageRequestListener());
-        router.add('GET', '/home', homePageRequestListener());
-        router.add('GET', "/dashboard", redirectIfNotAuthenticated(submittedContactFormsPageRequestListener(con)));
-        router.add('POST', '/dashboard/:id/delete', redirectIfNotAuthenticated(contactDeleteListener(con)));
-        router.add('GET', '/dashboard/:id', redirectIfNotAuthenticated(contactEditPageRequestListener(con)));
-        router.add('POST', '/dashboard/:id', redirectIfNotAuthenticated(contactUpdateListener(con)));
-        router.add('GET', '/assets/*', staticFileListener(mimetypes));
-        router.add('GET', '/uploads/*', redirectIfNotAuthenticated(staticFileListener(mimetypes)));
-        router.add('POST', '/register', registerRequestListener(con));
-        router.add('GET', '/register', registerPageRequestListener());
-        router.add('POST', '/login', captchaProtectedHandler(captchaSecret, loginRequestListener(con)));
-        router.add('GET', '/login', loginPageRequestListener());
-        router.add('GET', '/logout', logoutRequestListener(con));
-        router.add('GET', '/upload', redirectIfNotAuthenticated(uploadPageRequestListener()));
-        router.add('POST', '/upload', redirectIfNotAuthenticated(uploadRequestListener()));
-        router.add('GET', '/file-list', uploadedFileListPageRequestListener());
-        router.add('GET', '*', pageNotFound);
-
         const handlerFoundWithParams: [MyHttpListener, any] = router.find(req.method, parsedUrl.pathname.toLowerCase())
 
+        if (!handlerFoundWithParams) {
+            res.setHeader('Content-Type', 'text/plain');
+            res.end('Not found page.')
+            return;
+        }
         withUserId(con, handlerFoundWithParams[0])(myReq)
-            .then(myres => writeMyResToNodeResponse(myres, res))
+            .then(myRes => writeMyResToNodeResponse(myRes, res))
             .catch(err => {
                 console.error(new Date(), err);
                 res.statusCode = 500;

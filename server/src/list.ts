@@ -2,8 +2,9 @@ import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse} from "./utility";
 import {format as dateFormat} from "fecha";
 import {pageHtml} from "./page";
+import * as fs from "fs";
 
-export function submittedContactFormsPageRequestListener(con: Connection): MyHttpListener {
+export function contactListPage(con: Connection): MyHttpListener {
     return (req, user) => {
         return new Promise((resolve, reject) => {
             con.query(`SELECT c.*, u.username
@@ -28,15 +29,15 @@ export function submittedContactFormsPageRequestListener(con: Connection): MyHtt
     <td class="cell">${row.email}</td>
     <td class="cell">${row.subject}</td>
     <td class="cell">${row.message}</td>
-    <td class="cell"><a href="/dashboard/${row.id}">Edit</a></td>
+    <td class="cell"><a href="/contact-list/${row.id}">Edit</a></td>
     <td class="cell">
-        <form data-confirm-text="Are you sure?" action="/dashboard/${row.id}/delete" method="post" class="action-button">
+        <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post" class="action-button">
         <button>DELETE</button>
         </form>
     </td>
 </tr>`
                     });
-                    const contentHtml = `<table class="dashboard">
+                    const contentHtml = `<table class="contact-list">
     <thead>
     <tr>
         <th class="cell">#</th>
@@ -55,13 +56,54 @@ export function submittedContactFormsPageRequestListener(con: Connection): MyHtt
         ${queryToHtml}
     </tbody>
 </table>
-<a href="/dashboard" class="action-button">Refresh</a>`
+<a href="/contact-list" class="action-button">Refresh</a>`
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: pageHtml({user: user, title: "Dashboard"}, contentHtml)
+                        body: pageHtml({user: user, title: "Contact List"}, contentHtml)
                     } as MyHttpResponse);
                 }
             });
         });
+    }
+}
+
+export function uploadsPage(): MyHttpListener {
+    return (req, user) => {
+        return new Promise((resolve, reject) => {
+            let fileQueryHtml = '';
+            fs.readdir('../uploads/', (err, files) => {
+                files.forEach((file, i) => {
+                    fileQueryHtml += `
+<tr>
+    <td class="cell">${i + 1}</td>
+    <td class="cell">${file}</td>
+    <td class="cell"><a href="/uploads/${file}">Preview</a></td>
+    <td class="cell"><a href="/uploads/${file}?download=1">Download</a></td>
+</tr>`
+                })
+                if (err) {
+                    reject(err)
+                    return;
+                } else {
+                    const contentHtml = `<table class="contact-list">
+    <thead>
+    <tr>
+        <th class="cell">#</th>
+        <th class="cell">File Name</th>
+        <th class="cell" colspan="2">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+        ${fileQueryHtml}
+    </tbody>
+</table>
+<a href="/file-list" class="action-button">Refresh</a>`
+                    resolve({
+                        headers: new Map(Object.entries({'content-type': 'text/html'})),
+                        body: pageHtml({user: user, title: "Files"}, contentHtml)
+                    })
+                }
+            })
+        })
     }
 }

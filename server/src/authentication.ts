@@ -55,7 +55,7 @@ export function withUserId(con: Connection, handler: MyHttpListener): MyHttpList
     }
 }
 
-export function redirectIfNotAuthenticated(handler: MyHttpListener): MyHttpListener {
+export function authHandler(handler: MyHttpListener): MyHttpListener {
     return (req, user) => {
         return user ? handler(req, user) : Promise.resolve({
             status: 302,

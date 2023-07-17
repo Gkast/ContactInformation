@@ -3,7 +3,7 @@ import {pageHtml} from "./page";
 import * as formidable from "formidable";
 import * as fs from "fs";
 
-export function uploadPageRequestListener(): MyHttpListener {
+export function uploadPageReqList(): MyHttpListener {
     return (req, user) => {
         const contentHtml = `
 <form method="post" id="upload-form" action="http://localhost:3000/upload" enctype="multipart/form-data">
@@ -17,7 +17,7 @@ export function uploadPageRequestListener(): MyHttpListener {
     }
 }
 
-export function uploadRequestListener(): MyHttpListener {
+export function uploadHandler(): MyHttpListener {
     return (req, user) => {
         return new Promise((resolve, reject) => {
             new formidable.IncomingForm().parse(req.nodeJsReqObject, (err, fields, files) => {

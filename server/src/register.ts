@@ -3,7 +3,7 @@ import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
 import * as querystring from "querystring";
 import {pageHtml} from "./page";
 
-export function registerRequestListener(con: Connection): MyHttpListener {
+export function registerHandler(con: Connection): MyHttpListener {
     return (req, user) => {
         return streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
@@ -18,7 +18,7 @@ export function registerRequestListener(con: Connection): MyHttpListener {
                         } else {
                             const contentHtml = `
 <h1>Successful Registration</h1>
-<a href="/home">home</a>`;
+<a href="/home">Home</a>`;
                             resolve({
                                 headers: new Map(Object.entries({
                                     'content-type': 'text/html'
@@ -32,7 +32,7 @@ export function registerRequestListener(con: Connection): MyHttpListener {
     }
 }
 
-export function registerPageRequestListener(): MyHttpListener {
+export function registerPage(): MyHttpListener {
     return (req, user) => {
         const contentHtml = `
 <form action="/register" method="post" id="register-form">

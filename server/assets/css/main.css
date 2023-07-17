@@ -1,6 +1,6 @@
 @import "about.css";
 @import "contact.css";
-@import "dashboard.css";
+@import "contact-list.css";
 @import "home.css";
 @import "login.css";
 @import "register.css";
@@ -38,5 +38,14 @@ header {
 }
 
 .main-wrapper {
+    display: flex;
+    justify-content: center;
+}
 
+.content-wrapper {
+    width: 80%;
+    background-color: #f6f6f6;
+    padding: 10px 20px;
+    margin-top: 20px;
+    box-shadow: 2px 5px 10px #c0c0c0;
 }

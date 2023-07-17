@@ -1,7 +1,7 @@
 import {MyHttpListener} from "./utility";
 import {pageHtml} from "./page";
 
-export function aboutPageRequestListener(): MyHttpListener {
+export function aboutPage(): MyHttpListener {
     return (req, user) => {
         const contentHtml = `
 <h1>ABOUT US</h1>

@@ -4,7 +4,7 @@ import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
 import {pageHtml, pageNotFound} from "./page";
 
-export function contactPageRequestListener(): MyHttpListener {
+export function contactPage(): MyHttpListener {
     return (req, user) => {
         const contentHtml = `
 <form method="post" id="contact-form" action="http://localhost:3000/contact">
@@ -27,7 +27,7 @@ export function contactPageRequestListener(): MyHttpListener {
     }
 }
 
-export function contactRequestListener(con: Connection, smtpTransport: Transporter): MyHttpListener {
+export function contactHandler(con: Connection, smtpTransport: Transporter): MyHttpListener {
     return (req, user) => {
         return streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
@@ -52,7 +52,7 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
                             } else {
                                 const contentHtml = `
 <h1>Successful Submission</h1>
-<a href="/home">home</a>`;
+<a href="/home">Home</a>`;
                                 resolve({
                                     headers: new Map(Object.entries({
                                         'content-type': 'text/html'
@@ -67,8 +67,8 @@ export function contactRequestListener(con: Connection, smtpTransport: Transport
     }
 }
 
-export function contactDeleteListener(con: Connection): MyHttpListener {
-    return (req, url) => {
+export function contactDeleteHandler(con: Connection): MyHttpListener {
+    return (req) => {
         return new Promise((resolve, reject) => {
             const id = parseInt(req.url.pathname.split('/')[2], 10);
             if (id) {
@@ -78,7 +78,7 @@ export function contactDeleteListener(con: Connection): MyHttpListener {
                     } else {
                         resolve({
                             status: 302,
-                            headers: new Map(Object.entries({'Location': '/dashboard'}))
+                            headers: new Map(Object.entries({'Location': '/contact-list'}))
                         })
                     }
                 })
@@ -88,7 +88,7 @@ export function contactDeleteListener(con: Connection): MyHttpListener {
     }
 }
 
-export function contactEditPageRequestListener(con: Connection): MyHttpListener {
+export function contactEditPage(con: Connection): MyHttpListener {
     return (req, user) => {
         return new Promise((resolve, reject) => {
             const id = parseInt(req.url.pathname.split('/')[2], 10);
@@ -107,7 +107,7 @@ export function contactEditPageRequestListener(con: Connection): MyHttpListener 
                     }
                     const contentHtml = `
 <div class="form-wrapper">
-    <form method="post" id="contact-edit-form" action="/dashboard/${row.id}">
+    <form method="post" id="contact-edit-form" action="/contact-list/${row.id}">
         <label for="first-name">First Name:</label>
         <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required value="${row.firstname}">
         <label for="last-name">Last Name:</label>
@@ -131,8 +131,8 @@ export function contactEditPageRequestListener(con: Connection): MyHttpListener 
     }
 }
 
-export function contactUpdateListener(con: Connection): MyHttpListener {
-    return (req, url) => {
+export function contactEditHandler(con: Connection): MyHttpListener {
+    return (req) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         if (!id) {
             return Promise.resolve(pageNotFound());
@@ -153,7 +153,7 @@ export function contactUpdateListener(con: Connection): MyHttpListener {
                         } else {
                             resolve({
                                 status: 302,
-                                headers: new Map(Object.entries({'Location': '/dashboard'}))
+                                headers: new Map(Object.entries({'Location': '/contact-list'}))
                             });
                         }
                     });

@@ -1,7 +1,7 @@
 import {MyHttpResponse} from "./utility";
 import {UserDetails} from "./authentication";
 
-export function pageHtml(p: {
+export function pageHtml(pageParams: {
     title: string;
     user?: UserDetails;
     hasCaptcha?: boolean
@@ -11,7 +11,7 @@ export function pageHtml(p: {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>${p.title}</title>
+    <title>${pageParams.title}</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/main.css">
 </head>
 <body>
@@ -20,14 +20,16 @@ export function pageHtml(p: {
             <h1><a href="/home" class="no-underline">Contact Information</a></h1>
         </div>
         <div class="header-box">
-            ${headerHtml(p.user)}
+            ${headerHtml(pageParams.user)}
         </div>
     </header>
     <div class="main-wrapper">
-        ${contentHtml}
+        <div class="content-wrapper">
+            ${contentHtml}
+        </div>
     </div>
     <script src="../assets/js/main.js"></script>
-    ${p.hasCaptcha ? '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' : ''}
+    ${pageParams.hasCaptcha ? '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' : ''}
 </body>
 </html>`;
 }
@@ -56,6 +58,10 @@ function headerHtml(user: UserDetails) {
     } else {
         return `
         <span id="userId">${user.username.toUpperCase()}</span>
-        <a href="/logout">Log Out</a>`;
+        <div style="display: inline-block">
+        <form method="post" action="/logout">
+            <button>Log out</button>
+        </form>
+</div>`;
     }
 }
