@@ -6,14 +6,14 @@ export function uploadedFileListPageRequestListener(): MyHttpListener {
     return (req, user) => {
         return new Promise((resolve, reject) => {
             let fileQueryHtml = '';
-            fs.readdir('../assets/files/', (err, files) => {
+            fs.readdir('../uploads/', (err, files) => {
                 files.forEach((file, i) => {
                     fileQueryHtml += `
 <tr>
     <td class="cell">${i + 1}</td>
     <td class="cell">${file}</td>
-    <td class="cell"><a href="../assets/files/${file}">Preview</a></td>
-    <td class="cell"><a href="../assets/files/${file}?download=1">Download</a></td>
+    <td class="cell"><a href="/uploads/${file}">Preview</a></td>
+    <td class="cell"><a href="/uploads/${file}?download=1">Download</a></td>
 </tr>`
                 })
                 if (err) {

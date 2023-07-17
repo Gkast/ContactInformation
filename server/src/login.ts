@@ -23,8 +23,11 @@ export function loginRequestListener(con: Connection): MyHttpListener {
                             } else {
                                 const rememberMe = p['remember_me'] === '1';
                                 const cookieString = randomstring.generate();
-                                con.query(`INSERT INTO login_cookies (cookie_value, user_id, expires_interval_minutes, remember_me) VALUE (?, ?, ?, ?)`,
-                                    [cookieString, results[0].id, rememberMe ? 24 * 7 * 60 : 30, rememberMe ? 1 : 0],
+                                con.query(`INSERT INTO login_cookies (cookie_value, user_id, expires_interval_minutes,
+                                                                      remember_me, ip_address,
+                                                                      user_agent) VALUE (?, ?, ?, ?, ?, ?)`,
+                                    [cookieString, results[0].id, rememberMe ? 24 * 7 * 60 : 30, rememberMe ? 1 : 0,
+                                        req.remoteAddr, req.headers["user-agent"]],
                                     err1 => {
                                         reject(err1)
                                     });
@@ -63,7 +66,7 @@ export function loginPageRequestListener(): MyHttpListener {
     }
 }
 
-export function logout(con: Connection): MyHttpListener {
+export function logoutRequestListener(con: Connection): MyHttpListener {
     return (req) => {
         return new Promise((resolve, reject) => {
             const allCookiesMap = parseRequestCookies(req.headers.cookie);

@@ -11,7 +11,7 @@ import {
     contactUpdateListener
 } from "./contact";
 import {registerPageRequestListener, registerRequestListener} from "./register";
-import {loginPageRequestListener, loginRequestListener, logout} from "./login";
+import {loginPageRequestListener, loginRequestListener, logoutRequestListener} from "./login";
 import {homePageRequestListener} from "./home";
 import {submittedContactFormsPageRequestListener} from "./dashboard";
 import {aboutPageRequestListener} from "./about";
@@ -19,6 +19,7 @@ import {redirectIfNotAuthenticated, withUserId} from "./authentication";
 import {pageNotFound} from "./page";
 import {uploadPageRequestListener, uploadRequestListener} from "./upload";
 import {uploadedFileListPageRequestListener} from "./files";
+import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./captcha";
 
 const smtpTransport = nodemailer.createTransport({
@@ -42,53 +43,35 @@ Promise.all([
 ]).then(all => {
     const mimetypes = all[0];
     const captchaSecret = process.env['CAPTCHA_SECRET'];
-
-    const aboutPageHandler = aboutPageRequestListener();
-    const contactHandler = contactRequestListener(con, smtpTransport);
-    const contactPageHandler = contactPageRequestListener();
-    const staticFileHandler = staticFileListener(mimetypes);
-    const homePageHandler = homePageRequestListener();
-    const submittedContactFormsPageHandler = submittedContactFormsPageRequestListener(con);
-    const contactDeleteHandler = contactDeleteListener(con);
-    const contactUpdateHandler = contactUpdateListener(con);
-    const contactEditPageHandler = contactEditPageRequestListener(con);
-    const registerHandler = registerRequestListener(con);
-    const registerPageHandler = registerPageRequestListener();
-    const loginHandler = loginRequestListener(con);
-    const loginPageHandler = loginPageRequestListener();
-    const logoutHandler = logout(con);
-    const uploadPageHandler = uploadPageRequestListener();
-    const uploadSubmitHandler = uploadRequestListener();
-    const fileListPageHandler = uploadedFileListPageRequestListener();
-
-
     http.createServer((req, res) => {
         const myReq = nodeJsToMyHttpRequest(req);
         const parsedUrl = myReq.url;
-        const pathLowerCase = parsedUrl.pathname.toLowerCase();
-        const method = req.method;
-        const handlerFound: MyHttpListener =
-            pathLowerCase === '/about' && method === 'GET' ? aboutPageHandler :
-                pathLowerCase === '/contact' && method === 'POST' ? contactHandler :
-                    pathLowerCase === '/contact' && method === 'GET' ? redirectIfNotAuthenticated(contactPageHandler) :
-                        (pathLowerCase === "/" || pathLowerCase === "/home") && method === "GET" ? homePageHandler :
-                            pathLowerCase === "/dashboard" && method === "GET" ? redirectIfNotAuthenticated(submittedContactFormsPageHandler) :
-                                pathLowerCase.match(/^\/dashboard\/\d+\/delete$/) && method === "POST" ? redirectIfNotAuthenticated(contactDeleteHandler) :
-                                    pathLowerCase.match(/^\/dashboard\/\d+$/) && method === "GET" ? redirectIfNotAuthenticated(contactEditPageHandler) :
-                                        pathLowerCase.match(/^\/dashboard\/\d+$/) && method === "POST" ? redirectIfNotAuthenticated(contactUpdateHandler) :
-                                            pathLowerCase.startsWith('/assets/') && method === "GET" ? staticFileHandler :
-                                                pathLowerCase === '/register' && method === 'POST' ? registerHandler :
-                                                    pathLowerCase === '/register' && method === 'GET' ? registerPageHandler :
-                                                        pathLowerCase === '/login' && method === 'POST' ? captchaProtectedHandler(captchaSecret, loginHandler) :
-                                                            pathLowerCase === '/login' && method === 'GET' ? loginPageHandler :
-                                                                pathLowerCase === '/logout' && method === 'GET' ? logoutHandler :
-                                                                    pathLowerCase === '/upload' && method === 'GET' ? uploadPageHandler :
-                                                                        pathLowerCase === '/upload' && method === 'POST' ? uploadSubmitHandler :
-                                                                            pathLowerCase === '/file-list' && method === 'GET' ? fileListPageHandler :
-                                                                                pageNotFound;
+        const router = new TrekRouter();
 
+        router.add('GET', '/about', aboutPageRequestListener());
+        router.add('GET', '/contact', redirectIfNotAuthenticated(contactPageRequestListener()));
+        router.add('POST', '/contact', contactRequestListener(con, smtpTransport));
+        router.add('GET', '/', homePageRequestListener());
+        router.add('GET', '/home', homePageRequestListener());
+        router.add('GET', "/dashboard", redirectIfNotAuthenticated(submittedContactFormsPageRequestListener(con)));
+        router.add('POST', '/dashboard/:id/delete', redirectIfNotAuthenticated(contactDeleteListener(con)));
+        router.add('GET', '/dashboard/:id', redirectIfNotAuthenticated(contactEditPageRequestListener(con)));
+        router.add('POST', '/dashboard/:id', redirectIfNotAuthenticated(contactUpdateListener(con)));
+        router.add('GET', '/assets/*', staticFileListener(mimetypes));
+        router.add('GET', '/uploads/*', redirectIfNotAuthenticated(staticFileListener(mimetypes)));
+        router.add('POST', '/register', registerRequestListener(con));
+        router.add('GET', '/register', registerPageRequestListener());
+        router.add('POST', '/login', captchaProtectedHandler(captchaSecret, loginRequestListener(con)));
+        router.add('GET', '/login', loginPageRequestListener());
+        router.add('GET', '/logout', logoutRequestListener(con));
+        router.add('GET', '/upload', redirectIfNotAuthenticated(uploadPageRequestListener()));
+        router.add('POST', '/upload', redirectIfNotAuthenticated(uploadRequestListener()));
+        router.add('GET', '/file-list', uploadedFileListPageRequestListener());
+        router.add('GET', '*', pageNotFound);
 
-        withUserId(con, handlerFound)(myReq)
+        const handlerFoundWithParams: [MyHttpListener, any] = router.find(req.method, parsedUrl.pathname.toLowerCase())
+
+        withUserId(con, handlerFoundWithParams[0])(myReq)
             .then(myres => writeMyResToNodeResponse(myres, res))
             .catch(err => {
                 console.error(new Date(), err);

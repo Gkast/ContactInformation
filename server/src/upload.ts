@@ -28,7 +28,7 @@ export function uploadRequestListener(): MyHttpListener {
                         (files['uploadFile'] as formidable.File[])[0] :
                         (files['uploadFile'] as formidable.File);
                     if (file) {
-                        fs.rename(file.filepath, '../assets/files/' + file.originalFilename, (err) => {
+                        fs.rename(file.filepath, '../uploads/' + file.originalFilename, (err) => {
                             if (err) {
                                 reject(err)
                             } else {
