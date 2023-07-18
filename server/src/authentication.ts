@@ -1,7 +1,6 @@
 import {Connection} from "mysql";
 import {MyHttpListener, parseRequestCookies} from "./utility";
 
-
 export interface UserDetails {
     id: number;
     username?: string;

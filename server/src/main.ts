@@ -3,17 +3,18 @@ import * as fs from "fs";
 import {MyHttpListener, nodeJsToMyHttpRequest, staticFileReqList, writeMyResToNodeResponse} from "./utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
-import {contactPage, contactHandler, contactDeleteHandler, contactEditPage, contactEditHandler} from "./contact";
-import {registerPage, registerHandler} from "./register";
-import {loginPage, loginHandler, logoutHandler} from "./login";
+import {contactDeleteHandler, contactEditHandler, contactEditPage, contactHandler, contactPage} from "./contact";
+import {registerHandler, registerPage} from "./register";
+import {loginHandler, loginPage, logoutHandler} from "./login";
 import {homePage} from "./home";
-import {contactListPage, uploadsPage} from "./list";
+import {contactListPage, contactListPageVersion2, uploadsPage} from "./list";
 import {aboutPage} from "./about";
 import {authHandler, withUserId} from "./authentication";
 import {pageNotFound} from "./page";
-import {uploadPageReqList, uploadHandler} from "./upload";
+import {uploadHandler, uploadPageReqList} from "./upload";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./captcha";
+import {exportCSVContacts} from "./csv";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -43,6 +44,8 @@ Promise.all([
     router.add('POST', '/contact', contactHandler(con, smtpTransport));
     router.add('GET', '/', homePage());
     router.add('GET', '/home', homePage());
+    router.add('GET', "/contact-list-csv/:id", authHandler(exportCSVContacts(con)));
+    router.add('GET', "/contact-list2", authHandler(contactListPageVersion2(con)));
     router.add('GET', "/contact-list", authHandler(contactListPage(con)));
     router.add('POST', '/contact-list/:id/delete', authHandler(contactDeleteHandler(con)));
     router.add('GET', '/contact-list/:id', authHandler(contactEditPage(con)));

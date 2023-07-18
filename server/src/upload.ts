@@ -34,7 +34,7 @@ export function uploadHandler(): MyHttpListener {
                             } else {
                                 const contentHtml = `
 <h1>File Uploaded</h1>
-<a href="/home"><button class="btn">Home</button></a>`;
+<a href="/home" class="no-underline"><button class="btn">Home</button></a>`;
                                 resolve({
                                     headers: new Map(Object.entries({
                                         'content-type': 'text/html'

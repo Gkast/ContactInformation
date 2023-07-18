@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "csv-stringify": "^6.4.0",
     "fecha": "^4.2.3",
     "formidable": "^3.5.0",
     "mysql": "^2.18.1",
@@ -21,12 +22,10 @@
   "devDependencies": {
     "@types/dateformat": "^5.0.0",
     "@types/formidable": "^3.4.0",
-    "@types/isomorphic-fetch": "^0.0.36",
     "@types/mysql": "^2.15.21",
     "@types/node": "^20.3.3",
     "@types/nodemailer": "^6.4.8",
     "@types/randomstring": "^1.1.8",
-    "isomorphic-fetch": "^3.0.0",
     "typescript": "^4.7.4"
   }
 }

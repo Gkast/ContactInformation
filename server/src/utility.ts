@@ -79,7 +79,10 @@ export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListene
                 const ext = decodedPath.split('.').pop();
                 return {
                     headers: new Map(Object.entries(Object.assign(
-                        {'Content-Type': mimetypes.get(ext) || 'application/octet-stream'},
+                        {
+                            'Content-Type': mimetypes.get(ext) || 'application/octet-stream',
+                            'Content-Length': result.size
+                        },
                         forceDownload ? {'Content-Disposition': 'attachment'} : {}
                     ))),
                     body: res => fs.createReadStream('..' + decodedPath).pipe(res)

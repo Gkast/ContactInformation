@@ -54,7 +54,7 @@ export function contactHandler(con: Connection, smtpTransport: Transporter): MyH
                             } else {
                                 const contentHtml = `
 <h1>Successful Submission</h1>
-<a href="/home">Home</a>`;
+<a href="/home" >Home</a>`;
                                 resolve({
                                     headers: new Map(Object.entries({
                                         'content-type': 'text/html'

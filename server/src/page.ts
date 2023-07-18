@@ -1,13 +1,13 @@
 import {MyHttpResponse} from "./utility";
 import {UserDetails} from "./authentication";
 
-export function pageHtml(pageParams: {
-    title: string;
-    user?: UserDetails;
-    hasCaptcha?: boolean
-} & NodeJS.Dict<any>, contentHtml: string): string {
-    return `
-<!DOCTYPE html>
+export function pageHtmlTop(
+    pageParams: {
+        title: string;
+        user?: UserDetails;
+        hasCaptcha?: boolean
+    } & NodeJS.Dict<any>): string {
+    return  `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -24,14 +24,29 @@ export function pageHtml(pageParams: {
         </div>
     </header>
     <div class="main-wrapper">
-        <div class="content-wrapper">
-            ${contentHtml}
-        </div>
+        <div class="content-wrapper">`;
+}
+
+export function pageHtmlBottom(
+    pageParams: {
+        title: string;
+        user?: UserDetails;
+        hasCaptcha?: boolean
+    } & NodeJS.Dict<any>): string {
+    return  `</div>
     </div>
     <script src="../assets/js/main.js"></script>
     ${pageParams.hasCaptcha ? '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' : ''}
 </body>
 </html>`;
+}
+
+export function pageHtml(pageParams: {
+    title: string;
+    user?: UserDetails;
+    hasCaptcha?: boolean
+} & NodeJS.Dict<any>, contentHtml: string): string {
+    return pageHtmlTop(pageParams) + contentHtml + pageHtmlBottom(pageParams);
 }
 
 export function pageNotFound(): Promise<MyHttpResponse> {
@@ -53,8 +68,8 @@ export function wrongCredentials(): Promise<MyHttpResponse> {
 function headerHtml(user: UserDetails) {
     if (!user) {
         return `
-        <a href="/login" id="login-button"><button class="btn">Log In</button></a>
-        <a href="/register" id="register-button"><button class="btn">Register</button></a>`;
+        <a href="/login" id="login-button" class="no-underline"><button class="btn">Log In</button></a>
+        <a href="/register" id="register-button" class="no-underline"><button class="btn">Register</button></a>`;
     } else {
         return `
         <span id="userId">${user.username.toUpperCase()}</span>

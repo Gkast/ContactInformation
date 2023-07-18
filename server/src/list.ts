@@ -1,8 +1,73 @@
 import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse, upperCaseFirstLetter} from "./utility";
 import {format as dateFormat} from "fecha";
-import {pageHtml} from "./page";
+import {pageHtml, pageHtmlBottom, pageHtmlTop} from "./page";
 import * as fs from "fs";
+import {Transform, TransformCallback} from "stream";
+
+export function contactListPageVersion2(con: Connection): MyHttpListener {
+    return (req, user) => {
+        return Promise.resolve({
+            status: 200,
+            headers: new Map(Object.entries({'content-type': 'text/html'})),
+            body: res => {
+                let i = 0;
+                res.write(pageHtmlTop({user: user, title: "Contact List"}));
+                res.write(`<table class="contact-list">
+    <thead>
+    <tr>
+        <th class="cell">#</th>
+        ${user.admin ? `<th class="cell">Username</th>` : ``}
+        <th class="cell">Submitted Time</th>
+        <th class="cell">Firstname</th>
+        <th class="cell">Lastname</th>
+        <th class="cell">Email</th>
+        <th class="cell">Subject</th>
+        <th class="cell">Message</th>
+        <th class="cell" colspan="2">Action</th>
+    </tr>
+    </thead>
+    <tbody>`);
+                con.query(`SELECT c.*, u.username
+                           FROM contact_form_submits c
+                                    JOIN users u on u.id = c.user_id
+                               ${user.admin ? `` : `WHERE c.user_id = ?`}
+                           ORDER BY c.datetime_submitted
+                DESC`, user.admin ? [] : [user.id]).stream().pipe(new Transform({
+                    objectMode: true,
+                    transform(row: any, encoding: BufferEncoding, callback: TransformCallback) {
+                        i++;
+                        callback(null, `
+<tr>
+    <td class="cell">${i}</td>
+    ${user.admin ? `<td class="cell">${upperCaseFirstLetter(row.username)}</td>` : ''}
+    <td class="cell">${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</td>
+    <td class="cell">${row.firstname}</td>
+    <td class="cell">${row.lastname}</td>
+    <td class="cell">${row.email}</td>
+    <td class="cell">${row.subject}</td>
+    <td class="cell">${row.message}</td>
+    <td class="cell"><a href="/contact-list/${row.id}" class="no-underline"><button class="btn">Edit</button></a></td>
+    <td class="cell">
+        <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
+        <button class="btn delete-btn">DELETE</button>
+        </form>
+    </td>
+</tr>`)
+                    }
+                })).on('end', function () {
+                    res.write(`</tbody>
+</table>
+<a href="/contact-list">
+    <button class="btn">Refresh</button>
+</a>`);
+                    res.end(pageHtmlBottom({user: user, title: "Contact List"}));
+                }).pipe(res, {end: false})
+            }
+        });
+    }
+}
+
 
 export function contactListPage(con: Connection): MyHttpListener {
     return (req, user) => {
@@ -17,7 +82,6 @@ export function contactListPage(con: Connection): MyHttpListener {
                     reject(err);
                     return;
                 } else {
-                    console.log(fields.map(f => f.name))
                     let queryToHtml = "";
                     (result as any[]).forEach((row, i) => {
                         queryToHtml += `
@@ -30,7 +94,7 @@ export function contactListPage(con: Connection): MyHttpListener {
     <td class="cell">${row.email}</td>
     <td class="cell">${row.subject}</td>
     <td class="cell">${row.message}</td>
-    <td class="cell"><a href="/contact-list/${row.id}"><button class="btn">Edit</button></a></td>
+    <td class="cell"><a href="/contact-list/${row.id} class="no-underline""><button class="btn">Edit</button></a></td>
     <td class="cell">
         <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
         <button class="btn delete-btn">DELETE</button>
@@ -56,8 +120,11 @@ export function contactListPage(con: Connection): MyHttpListener {
         ${queryToHtml}
     </tbody>
 </table>
-<a href="/contact-list">
+<a href="/contact-list" class="no-underline">
     <button class="btn">Refresh</button>
+</a>
+<a href="/contact-list-csv/${user.id}" class="no-underline">
+    <button class="btn">Export to CSV</button>
 </a>`
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
@@ -79,8 +146,8 @@ export function uploadsPage(): MyHttpListener {
 <tr>
     <td class="cell">${i + 1}</td>
     <td class="cell">${file}</td>
-    <td class="cell"><a href="/uploads/${file}"><button class="btn">Preview</button></a></td>
-    <td class="cell"><a href="/uploads/${file}?download=1"><button class="btn download-btn">Download</button></a></td>
+    <td class="cell"><a href="/uploads/${file}" class="no-underline"><button class="btn">Preview</button></a></td>
+    <td class="cell"><a href="/uploads/${file}?download=1" class="no-underline"><button class="btn download-btn">Download</button></a></td>
 </tr>`
                 })
                 if (err) {
@@ -99,7 +166,7 @@ export function uploadsPage(): MyHttpListener {
         ${fileQueryHtml}
     </tbody>
 </table>
-<a href="/file-list" class="action-button">Refresh</a>`
+<a href="/file-list" class="no-underline"><button class="btn">Refresh</button></a>`
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
                         body: pageHtml({user: user, title: "Files"}, contentHtml)
