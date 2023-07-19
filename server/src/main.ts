@@ -7,14 +7,14 @@ import {contactDeleteHandler, contactEditHandler, contactEditPage, contactHandle
 import {registerHandler, registerPage} from "./register";
 import {loginHandler, loginPage, logoutHandler} from "./login";
 import {homePage} from "./home";
-import {contactListPage, contactListPageVersion2, uploadsPage} from "./list";
+import {contactListPage, uploadsPage} from "./list";
 import {aboutPage} from "./about";
 import {authHandler, withUserId} from "./authentication";
 import {pageNotFound} from "./page";
 import {uploadHandler, uploadPageReqList} from "./upload";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./captcha";
-import {exportCSVContacts} from "./csv";
+import {testCSV, TestCSVStream, TestCSVStreamPipe, exportCSVContacts} from "./csv";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -44,12 +44,14 @@ Promise.all([
     router.add('POST', '/contact', contactHandler(con, smtpTransport));
     router.add('GET', '/', homePage());
     router.add('GET', '/home', homePage());
-    router.add('GET', "/contact-list-csv/:id", authHandler(exportCSVContacts(con)));
-    router.add('GET', "/contact-list2", authHandler(contactListPageVersion2(con)));
     router.add('GET', "/contact-list", authHandler(contactListPage(con)));
     router.add('POST', '/contact-list/:id/delete', authHandler(contactDeleteHandler(con)));
     router.add('GET', '/contact-list/:id', authHandler(contactEditPage(con)));
     router.add('POST', '/contact-list/:id', authHandler(contactEditHandler(con)));
+    router.add('GET', "/contact-list-csv/:id", authHandler(exportCSVContacts(con)));
+    router.add('GET', "/csv", testCSV(con));
+    router.add('GET', "/csv-stream", TestCSVStream(con));
+    router.add('GET', "/csv-stream-pipe", TestCSVStreamPipe(con));
     router.add('GET', '/assets/*', staticFileReqList(mimetypes));
     router.add('GET', '/uploads/*', authHandler(staticFileReqList(mimetypes)));
     router.add('POST', '/register', captchaProtectedHandler(captchaSecret, registerHandler(con)));
@@ -65,14 +67,14 @@ Promise.all([
     http.createServer((req, res) => {
         const myReq = nodeJsToMyHttpRequest(req);
         const parsedUrl = myReq.url;
-        const handlerFoundWithParams: [MyHttpListener, any] = router.find(req.method, parsedUrl.pathname.toLowerCase())
+        const handlerFound: [MyHttpListener, any] = router.find(req.method, parsedUrl.pathname.toLowerCase())
 
-        if (!handlerFoundWithParams) {
+        if (!handlerFound) {
             res.setHeader('Content-Type', 'text/plain');
             res.end('Not found page.')
             return;
         }
-        withUserId(con, handlerFoundWithParams[0])(myReq)
+        withUserId(con, handlerFound[0])(myReq)
             .then(myRes => writeMyResToNodeResponse(myRes, res))
             .catch(err => {
                 console.error(new Date(), err);
