@@ -3,6 +3,7 @@ import {URL} from "url";
 import * as fs from "fs";
 import {UserDetails} from "./authentication";
 import {pageNotFound} from "./page";
+import * as xmlEscapeLib from "xml-escape";
 
 export interface MyHttpRequest {
     remoteAddr?: string;
@@ -104,4 +105,8 @@ export function singleParam<T>(value: T | T[]): T {
 
 export function upperCaseFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export function xmlEscape(s: string): string {
+    return xmlEscapeLib(s);
 }

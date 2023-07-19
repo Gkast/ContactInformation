@@ -14,7 +14,8 @@ import {pageNotFound} from "./page";
 import {uploadHandler, uploadPageReqList} from "./upload";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./captcha";
-import {testCSV, TestCSVStream, TestCSVStreamPipe, exportCSVContacts} from "./csv";
+import {testCSV, TestCSVStream, TestCSVStreamPipe} from "./csv";
+import {exportCSVContacts, exportJSONContacts, exportXMLContacts} from "./export";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -48,7 +49,9 @@ Promise.all([
     router.add('POST', '/contact-list/:id/delete', authHandler(contactDeleteHandler(con)));
     router.add('GET', '/contact-list/:id', authHandler(contactEditPage(con)));
     router.add('POST', '/contact-list/:id', authHandler(contactEditHandler(con)));
-    router.add('GET', "/contact-list-csv/:id", authHandler(exportCSVContacts(con)));
+    router.add('GET', "/contact-list-csv", authHandler(exportCSVContacts(con)));
+    router.add('GET', "/contact-list-xml", authHandler(exportXMLContacts(con)));
+    router.add('GET', "/contact-list-json", authHandler(exportJSONContacts(con)));
     router.add('GET', "/csv", testCSV(con));
     router.add('GET', "/csv-stream", TestCSVStream(con));
     router.add('GET', "/csv-stream-pipe", TestCSVStreamPipe(con));

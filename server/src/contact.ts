@@ -1,4 +1,4 @@
-import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
+import {MyHttpListener, MyHttpResponse, streamToString, xmlEscape} from "./utility";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
@@ -111,16 +111,16 @@ export function contactEditPage(con: Connection): MyHttpListener {
 <div class="contact-form-wrapper">
     <form method="post" class="contact-form" action="/contact-list/${row.id}">
         <label for="first-name">First Name:</label>
-        <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required value="${row.firstname}">
+        <input type="text" placeholder="First Name" name="firstname" id="first-name" class="form-inputs" required value="${xmlEscape(row.firstname)}">
         <label for="last-name">Last Name:</label>
-        <input type="text" placeholder="Last Name" name="lastname" id="last-name" class="form-inputs" required value="${row.lastname}">
+        <input type="text" placeholder="Last Name" name="lastname" id="last-name" class="form-inputs" required value="${xmlEscape(row.lastname)}">
         <label for="email">Email:</label>
-        <input type="email" placeholder="Email" name="email" id="email" class="form-inputs" required value="${row.email}">
+        <input type="email" placeholder="Email" name="email" id="email" class="form-inputs" required value="${xmlEscape(row.email)}">
         <label for="subject">Subject:</label>
-        <input type="text" placeholder="Subject" name="subject" id="subject" class="form-inputs" required value="${row.subject}">
+        <input type="text" placeholder="Subject" name="subject" id="subject" class="form-inputs" required value="${xmlEscape(row.subject)}">
         <label for="message-area">Message:</label>
-        <textarea placeholder="Write a message..." name="message" id="message-area" class="form-inputs" required>${row.message}</textarea>
-        <button type="submit" id="submit-button">Submit</button>
+        <textarea placeholder="Write a message..." name="message" id="message-area" class="form-inputs" required>${xmlEscape(row.message)}</textarea>
+        <button type="submit" class="btn">Submit</button>
     </form>
 </div>`
                     resolve({

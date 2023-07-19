@@ -1,5 +1,5 @@
 import {Connection} from "mysql";
-import {MyHttpListener, MyHttpResponse, upperCaseFirstLetter} from "./utility";
+import {MyHttpListener, MyHttpResponse, upperCaseFirstLetter, xmlEscape} from "./utility";
 import {format as dateFormat} from "fecha";
 import {pageHtml, pageHtmlBottom, pageHtmlTop} from "./page";
 import * as fs from "fs";
@@ -23,13 +23,13 @@ export function contactListPage(con: Connection): MyHttpListener {
                         queryToHtml += `
 <tr>
     <td class="cell">${i + 1}</td>
-    ${user.admin ? `<td class="cell">${upperCaseFirstLetter(row.username)}</td>` : ''}
+    ${user.admin ? `<td class="cell">${xmlEscape(row.username)}</td>` : ''}
     <td class="cell">${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</td>
-    <td class="cell">${row.firstname}</td>
-    <td class="cell">${row.lastname}</td>
-    <td class="cell">${row.email}</td>
-    <td class="cell">${row.subject}</td>
-    <td class="cell">${row.message}</td>
+    <td class="cell">${xmlEscape(row.firstname)}</td>
+    <td class="cell">${xmlEscape(row.lastname)}</td>
+    <td class="cell">${xmlEscape(row.email)}</td>
+    <td class="cell">${xmlEscape(row.subject)}</td>
+    <td class="cell">${xmlEscape(row.message)}</td>
     <td class="cell"><a href="/contact-list/${row.id}" class="no-underline"><button class="btn">Edit</button></a></td>
     <td class="cell">
         <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
@@ -59,8 +59,14 @@ export function contactListPage(con: Connection): MyHttpListener {
 <a href="/contact-list" class="no-underline">
     <button class="btn">Refresh</button>
 </a>
-<a href="/contact-list-csv/${user.id}" class="no-underline">
+<a href="/contact-list-csv" class="no-underline">
     <button class="btn">Export to CSV</button>
+</a>
+<a href="/contact-list-xml" class="no-underline">
+    <button class="btn">Export to XML</button>
+</a>
+<a href="/contact-list-json" class="no-underline">
+    <button class="btn">Export to JSON</button>
 </a>`
                     resolve({
                         headers: new Map(Object.entries({'content-type': 'text/html'})),
