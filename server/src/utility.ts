@@ -107,6 +107,6 @@ export function upperCaseFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function xmlEscape(s: string): string {
-    return xmlEscapeLib(s);
+export function xmlEscape(xmlString: string): string {
+    return xmlEscapeLib(xmlString);
 }

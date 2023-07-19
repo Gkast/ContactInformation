@@ -16,6 +16,7 @@ import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./captcha";
 import {testCSV, TestCSVStream, TestCSVStreamPipe} from "./csv";
 import {exportCSVContacts, exportJSONContacts, exportXMLContacts} from "./export";
+import {hotelDetailsPage} from "./hotel-details-page";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -55,6 +56,7 @@ Promise.all([
     router.add('GET', "/csv", testCSV(con));
     router.add('GET', "/csv-stream", TestCSVStream(con));
     router.add('GET', "/csv-stream-pipe", TestCSVStreamPipe(con));
+    router.add('GET', '/hotel-details-page', hotelDetailsPage());
     router.add('GET', '/assets/*', staticFileReqList(mimetypes));
     router.add('GET', '/uploads/*', authHandler(staticFileReqList(mimetypes)));
     router.add('POST', '/register', captchaProtectedHandler(captchaSecret, registerHandler(con)));

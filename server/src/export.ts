@@ -34,7 +34,7 @@ export function exportXMLContacts(con: Connection): MyHttpListener {
             res.write(`<?xml version="1.0" encoding="UTF-8"?>
                 <data>`);
             con.query(`SELECT id,
-                              DATE_FORMAT(datetime_submitted, '%d/%m/%Y') AS dt,
+                              DATE_FORMAT(datetime_submitted, '%d/%m/%Y') AS date,
                               firstname,
                               lastname,
                               email,
@@ -45,7 +45,7 @@ export function exportXMLContacts(con: Connection): MyHttpListener {
                 res.write(`
 <row id="${row.id}">
     <datetime_submitted>
-        ${row.dt}
+        ${row.date}
     </datetime_submitted>
     <firstname>
         ${xmlEscape(row.firstname)}
@@ -64,8 +64,7 @@ export function exportXMLContacts(con: Connection): MyHttpListener {
     </message>
 </row>`)
             }).on('end', () => {
-                res.write(`</data>`);
-                res.end();
+                res.end(`</data>`);
             });
         }
     } as MyHttpResponse)
@@ -78,7 +77,7 @@ export function exportJSONContacts(con: Connection): MyHttpListener {
         })),
         body: res => {
             con.query(`SELECT id,
-                              DATE_FORMAT(datetime_submitted, '%d/%m/%Y') AS dt,
+                              DATE_FORMAT(datetime_submitted, '%d/%m/%Y') AS date,
                               firstname,
                               lastname,
                               email,
@@ -88,8 +87,7 @@ export function exportJSONContacts(con: Connection): MyHttpListener {
                 user.admin ? [] : [user.id]).stream().on('data', row => {
                 res.write(JSON.stringify(row, null, 4) + "\n\n")
             }).on('end', () => {
-                res.end()
-            })
+                res.end()})
         }
     })
 }

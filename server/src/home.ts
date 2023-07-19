@@ -11,6 +11,7 @@ ${user ? `<p>Welcome ${user.username.toUpperCase()}</p>` : ''}
     <li><a href="/csv">CSV</a></li>
     <li><a href="/csv-stream">CSV Stream</a></li>
     <li><a href="/csv-stream-pipe">CSV Stream Pipe</a></li>
+    <li><a href="/hotel-details-page">Hotel Details</a></li>
     ${user ? `<li><a href="/contact">Contact</a></li>
               <li><a href="/contact-list">Contact List</a></li>
               <li><a href="/upload">Upload File</a></li>
