@@ -29,7 +29,7 @@ export function contactListPage(con: Connection): MyHttpListener {
     <td class="cell">${xmlEscape(row.lastname)}</td>
     <td class="cell">${xmlEscape(row.email)}</td>
     <td class="cell">${xmlEscape(row.subject)}</td>
-    <td class="cell">${xmlEscape(row.message)}</td>
+    <td class="cell"><pre>${xmlEscape(row.message)}</pre></td>
     <td class="cell"><a href="/contact-list/${row.id}" class="no-underline"><button class="btn">Edit</button></a></td>
     <td class="cell">
         <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
