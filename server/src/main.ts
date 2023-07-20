@@ -10,7 +10,6 @@ import {homePage} from "./page/home";
 import {contactListPage, uploadsPage} from "./page/list";
 import {aboutPage} from "./page/about";
 import {authHandler, withUserId} from "./authentication/authentication";
-import {pageNotFound} from "./page/skeleton-page/page";
 import {uploadHandler, uploadPageReqList} from "./page/upload";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./authentication/captcha";
@@ -24,6 +23,9 @@ import {
 } from "./page/reset-password";
 import {recoveryTokenGenerator} from "./util/recovery-token";
 import {MyHttpListener, nodeJsToMyHttpRequest, writeMyResToNodeResponse} from "./util/my-http";
+
+
+import {pageNotFoundResponse} from "./util/page-responses";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -80,7 +82,7 @@ Promise.all([
     router.add('GET', '/token-verify', recoveryTokenVerificationPage());
     router.add('GET', '/change-password', changePasswordPage());
     router.add('POST', '/change-password', changePassword(con));
-    router.add('GET', '*', pageNotFound);
+    router.add('GET', '*', pageNotFoundResponse);
 
     http.createServer((req, res) => {
         const myReq = nodeJsToMyHttpRequest(req);

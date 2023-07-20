@@ -1,10 +1,9 @@
 import {Connection} from "mysql";
-import {upperCaseFirstLetter, xmlEscape} from "../util/utility";
+import {xmlEscape} from "../util/utility";
 import {format as dateFormat} from "fecha";
-import {pageHtml} from "./skeleton-page/page";
 import * as fs from "fs";
-import {Transform, TransformCallback} from "stream";
-import {MyHttpListener, MyHttpResponse} from "../util/my-http";
+import {MyHttpListener} from "../util/my-http";
+import {pageHtmlResponse} from "../util/page-responses";
 
 export function contactListPage(con: Connection): MyHttpListener {
     return (req, user) =>
@@ -69,10 +68,7 @@ export function contactListPage(con: Connection): MyHttpListener {
 <a href="/contact-list-json" class="no-underline">
     <button class="btn">Export to JSON</button>
 </a>`
-                    resolve({
-                        headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: pageHtml({user: user, title: "Contact List"}, contentHtml)
-                    } as MyHttpResponse);
+                    resolve(pageHtmlResponse({user: user, title: "Contact List"}, contentHtml));
                 }
             });
         })
@@ -109,10 +105,7 @@ export function uploadsPage(): MyHttpListener {
     </tbody>
 </table>
 <a href="/file-list" class="no-underline"><button class="btn">Refresh</button></a>`
-                    resolve({
-                        headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: pageHtml({user: user, title: "Files"}, contentHtml)
-                    })
+                    resolve(pageHtmlResponse({user: user, title: "Files"}, contentHtml));
                 }
             })
         })

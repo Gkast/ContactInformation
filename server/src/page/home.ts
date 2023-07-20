@@ -1,5 +1,6 @@
-import {pageHtml} from "./skeleton-page/page";
 import {MyHttpListener} from "../util/my-http";
+import {skeletonHtmlPage} from "../util/html-snippets";
+import {pageHtmlResponse} from "../util/page-responses";
 
 export function homePage(): MyHttpListener {
     return (req, user) => {
@@ -17,9 +18,6 @@ ${user ? `<p>Welcome ${user.username.toUpperCase()}</p>` : ''}
               <li><a href="/upload">Upload File</a></li>
               <li><a href="/file-list" class="action-button">File List</a></li>` : ``}
 </ul>`
-        return Promise.resolve({
-            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: pageHtml({user: user, title: "Home"}, contentHtml)
-        });
+        return Promise.resolve(pageHtmlResponse({user: user, title: "Home"}, contentHtml));
     }
 }

@@ -2,9 +2,11 @@ import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
 import {streamToString} from "./utility";
 import * as querystring from "querystring";
-import {wrongCredentials} from "../page/skeleton-page/page";
 import * as randomstring from "randomstring";
-import {MyHttpListener, MyHttpResponse} from "./my-http";
+import {MyHttpListener} from "./my-http";
+
+
+import {redirectResponse, wrongCredentialsResponse} from "./page-responses";
 
 export function recoveryTokenGenerator(con: Connection, smtpTransport: Transporter): MyHttpListener {
     return (req, user) =>
@@ -19,7 +21,7 @@ export function recoveryTokenGenerator(con: Connection, smtpTransport: Transport
                         return;
                     } else {
                         if (results.length === 0) {
-                            resolve(wrongCredentials())
+                            resolve(wrongCredentialsResponse())
                         } else {
                             const recoveryToken = randomstring.generate({
                                 length: 6,
@@ -41,12 +43,7 @@ export function recoveryTokenGenerator(con: Connection, smtpTransport: Transport
                                             if (error) {
                                                 reject(error);
                                             } else {
-                                                resolve({
-                                                    status: 302,
-                                                    headers: new Map(Object.entries({
-                                                        'Location': '/token-verify'
-                                                    })),
-                                                } as MyHttpResponse)
+                                                resolve(redirectResponse('/token-verify'))
                                             }
                                         });
                                     }

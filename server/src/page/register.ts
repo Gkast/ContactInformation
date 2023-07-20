@@ -1,8 +1,9 @@
 import {Connection} from "mysql";
 import {streamToString} from "../util/utility";
 import * as querystring from "querystring";
-import {pageHtml} from "./skeleton-page/page";
 import {MyHttpListener, MyHttpResponse} from "../util/my-http";
+import {skeletonHtmlPage} from "../util/html-snippets";
+import {pageHtmlResponse} from "../util/page-responses";
 
 export function registerHandler(con: Connection): MyHttpListener {
     return (req, user) =>
@@ -20,12 +21,7 @@ export function registerHandler(con: Connection): MyHttpListener {
                             const contentHtml = `
 <h1>Successful Registration</h1>
 <a href="/home" class="no-underline"><button class="btn">Home</button></a>`;
-                            resolve({
-                                headers: new Map(Object.entries({
-                                    'content-type': 'text/html'
-                                })),
-                                body: pageHtml({user: user, title: "Successful Registration"}, contentHtml)
-                            } as MyHttpResponse);
+                            resolve(pageHtmlResponse({user: user, title: "Successful Registration"}, contentHtml));
                         }
                     });
             })
@@ -45,9 +41,6 @@ export function registerPage(): MyHttpListener {
     <div class="g-recaptcha" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
     <button type="submit" id="submit-button">Register</button>
 </form>`
-        return Promise.resolve({
-            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: pageHtml({user: user, title: "Register", hasCaptcha: true}, contentHtml)
-        });
+        return Promise.resolve(pageHtmlResponse({user: user, title: "Register", hasCaptcha: true}, contentHtml));
     }
 }

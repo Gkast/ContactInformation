@@ -1,8 +1,9 @@
 import {streamToString, xmlEscape} from "../util/utility";
-import {pageHtml} from "./skeleton-page/page";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {MyHttpListener} from "../util/my-http";
+import {skeletonHtmlPage} from "../util/html-snippets";
+import {pageHtmlResponse} from "../util/page-responses";
 
 export function forgotPasswordPage(): MyHttpListener {
     return (req, user) => {
@@ -11,14 +12,7 @@ export function forgotPasswordPage(): MyHttpListener {
     <input type="text" placeholder="Enter Username" name="username">
     <button type="submit">Send Recovery Token</button>
 </form>`;
-        return Promise.resolve({
-            headers: new Map(Object.entries({
-                "Content-Type": "text/html"
-            })),
-            body: pageHtml({
-                title: "Forgot Password",
-            }, contentHtml)
-        })
+        return Promise.resolve(pageHtmlResponse({user: user, title: "Forgot Password"}, contentHtml))
     }
 }
 
@@ -33,7 +27,7 @@ export function recoveryTokenVerificationPage(): MyHttpListener {
             headers: new Map(Object.entries({
                 "Content-Type": "text/html"
             })),
-            body: pageHtml({
+            body: skeletonHtmlPage({
                 title: "Token Verification",
             }, contentHtml)
         })
@@ -50,14 +44,7 @@ export function changePasswordPage(): MyHttpListener {
     <input type="hidden" name="token" value="${xmlEscape(token)}">         
     <button type="submit">Change Password</button>   
 </form>`;
-            resolve({
-                headers: new Map(Object.entries({
-                    "Content-Type": "text/html"
-                })),
-                body: pageHtml({
-                    title: "Change Password"
-                }, contentHtml)
-            })
+            resolve(pageHtmlResponse({user: user, title: "Change Password"}, contentHtml))
         })
 }
 
@@ -78,23 +65,9 @@ export function changePassword(con: Connection): MyHttpListener {
                         return;
                     } else {
                         if (results.affectedRows > 0) {
-                            resolve({
-                                headers: new Map(Object.entries({
-                                    "Content-Type": "text/html"
-                                })),
-                                body: pageHtml({
-                                    title: "Success"
-                                }, `<h1>Password Changed</h1>`)
-                            })
+                            resolve(pageHtmlResponse({user: user, title: "Success"}, `<h1>Password Changed</h1>`))
                         } else {
-                            resolve({
-                                headers: new Map(Object.entries({
-                                    "Content-Type": "text/html"
-                                })),
-                                body: pageHtml({
-                                    title: "Expired"
-                                }, `<h1>Token Expired</h1>`)
-                            })
+                            resolve(pageHtmlResponse({user: user, title: "Token Expired"}, `<h1>Token Expired</h1>`))
                         }
                     }
                 })

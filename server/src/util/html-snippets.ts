@@ -1,26 +1,25 @@
-import {UserDetails} from "../../authentication/authentication";
-import {MyHttpResponse} from "../../util/my-http";
+import {UserDetails} from "../authentication/authentication";
 
-export function pageHtml(pageParams: {
+export function skeletonHtmlPage(pageParams: {
     title: string;
     user?: UserDetails;
     hasCaptcha?: boolean
 } & NodeJS.Dict<any>, contentHtml: string): string {
-    return pageHtmlTop(pageParams) + contentHtml + pageHtmlBottom(pageParams);
+    return pageHtmlTop(pageParams) + contentHtml + pageHtmlBottom(pageParams)
 }
 
-function pageHtmlTop(
+export function pageHtmlTop(
     pageParams: {
         title: string;
         user?: UserDetails;
         hasCaptcha?: boolean
     } & NodeJS.Dict<any>): string {
-    return  `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>${pageParams.title}</title>
-    <link rel="stylesheet" type="text/css" href="../../../assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="../../assets/css/main.css">
 </head>
 <body>
     <header>
@@ -33,6 +32,23 @@ function pageHtmlTop(
     </header>
     <div class="main-wrapper">
         <div class="content-wrapper">`;
+}
+
+export function pageHtmlBottom(
+    pageParams: {
+        title: string;
+        user?: UserDetails;
+        hasCaptcha?: boolean
+    } & NodeJS.Dict<any>): string {
+    return `</div>
+    </div>
+    <footer>
+        ${footerHtml()}
+    </footer>
+    <script src="../../assets/js/main.js"></script>
+    ${pageParams.hasCaptcha ? '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' : ''}
+</body>
+</html>`;
 }
 
 function headerHtml(user: UserDetails) {
@@ -51,32 +67,6 @@ function headerHtml(user: UserDetails) {
     }
 }
 
-function pageHtmlBottom(
-    pageParams: {
-        title: string;
-        user?: UserDetails;
-        hasCaptcha?: boolean
-    } & NodeJS.Dict<any>): string {
-    return  `</div>
-    </div>
-    <script src="../../../assets/js/main.js"></script>
-    ${pageParams.hasCaptcha ? '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' : ''}
-</body>
-</html>`;
-}
-
-export function pageNotFound(): Promise<MyHttpResponse> {
-    return Promise.resolve({
-        status: 404,
-        headers: new Map(Object.entries({'Content-Type': 'text/html',})),
-        body: '<h1>Page Not Found</h1>'
-    } as MyHttpResponse)
-}
-
-export function wrongCredentials(): Promise<MyHttpResponse> {
-    return Promise.resolve({
-        status: 401,
-        headers: new Map(Object.entries({'Content-Type': 'text/html',})),
-        body: '<h1>Wrong Credentials</h1>'
-    } as MyHttpResponse)
+function footerHtml() {
+    return ``;
 }

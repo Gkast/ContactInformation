@@ -33,7 +33,7 @@ export function captchaProtectedHandler(secret: string, handler: MyHttpListener)
                 singleParam(querystring.parse(bodyString)['g-recaptcha-response']);
             return captchaVerification(responseKey, secret).then(captchaResult =>
                 captchaResult ? handler(Object.assign({}, req, {body: stringAsStream(bodyString)}), user) : {
-                    status: 302,
+                    status: 400,
                     headers: new Map(Object.entries({
                         'Content-Type': 'type/html'
                     })),

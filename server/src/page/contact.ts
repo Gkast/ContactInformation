@@ -2,8 +2,8 @@ import {streamToString, xmlEscape} from "../util/utility";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
-import {pageHtml, pageNotFound} from "./skeleton-page/page";
-import {MyHttpListener, MyHttpResponse} from "../util/my-http";
+import {pageHtmlResponse, pageNotFoundResponse, redirectResponse} from "../util/page-responses";
+import {MyHttpListener} from "../util/my-http";
 
 export function contactPage(): MyHttpListener {
     return (req, user) => {
@@ -23,10 +23,7 @@ export function contactPage(): MyHttpListener {
         <button type="submit" id="submit-button" class="btn">Submit</button>
     </form>
 </div>`
-        return Promise.resolve({
-            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: pageHtml({user: user, title: "Contact us"}, contentHtml)
-        });
+        return Promise.resolve(pageHtmlResponse({user: user, title: "Contact us"}, contentHtml));
     }
 }
 
@@ -56,12 +53,7 @@ export function contactHandler(con: Connection, smtpTransport: Transporter): MyH
                                 const contentHtml = `
 <h1>Successful Submission</h1>
 <a href="/home" >Home</a>`;
-                                resolve({
-                                    headers: new Map(Object.entries({
-                                        'content-type': 'text/html'
-                                    })),
-                                    body: pageHtml({user: user, title: "Successful Submission"}, contentHtml)
-                                } as MyHttpResponse)
+                                resolve(pageHtmlResponse({user: user, title: "Successful Submission"}, contentHtml));
                             }
                         });
                     });
@@ -78,10 +70,7 @@ export function contactDeleteHandler(con: Connection): MyHttpListener {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve({
-                            status: 302,
-                            headers: new Map(Object.entries({'Location': '/contact-list'}))
-                        })
+                        resolve(redirectResponse('/contact-list'))
                     }
                 })
             }
@@ -93,7 +82,7 @@ export function contactEditPage(con: Connection): MyHttpListener {
         new Promise((resolve, reject) => {
             const id = parseInt(req.url.pathname.split('/')[2], 10);
             if (!id) {
-                resolve(pageNotFound());
+                resolve(pageNotFoundResponse());
                 return;
             }
             con.query("SELECT * FROM contact_form_submits WHERE id=?", [id], (err, results) => {
@@ -102,7 +91,7 @@ export function contactEditPage(con: Connection): MyHttpListener {
                 } else {
                     const row = results[0];
                     if (!row) {
-                        resolve(pageNotFound());
+                        resolve(pageNotFoundResponse());
                         return;
                     }
                     const contentHtml = `
@@ -121,10 +110,7 @@ export function contactEditPage(con: Connection): MyHttpListener {
         <button type="submit" class="btn">Submit</button>
     </form>
 </div>`
-                    resolve({
-                        headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: pageHtml({user: user, title: "Edit Contact"}, contentHtml)
-                    })
+                    resolve(pageHtmlResponse({user: user, title: "Edit Contact"}, contentHtml));
                 }
             })
         })
@@ -134,7 +120,7 @@ export function contactEditHandler(con: Connection): MyHttpListener {
     return (req) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         if (!id) {
-            return Promise.resolve(pageNotFound());
+            return Promise.resolve(pageNotFoundResponse());
         }
         return streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
@@ -150,10 +136,7 @@ export function contactEditHandler(con: Connection): MyHttpListener {
                         if (err != null) {
                             reject(err)
                         } else {
-                            resolve({
-                                status: 302,
-                                headers: new Map(Object.entries({'Location': '/contact-list'}))
-                            });
+                            resolve(redirectResponse('/contact-list'));
                         }
                     });
             })

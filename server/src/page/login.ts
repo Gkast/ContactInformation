@@ -2,8 +2,8 @@ import {Connection} from "mysql";
 import {parseRequestCookies, plusMinutes, streamToString} from "../util/utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
-import {pageHtml, wrongCredentials} from "./skeleton-page/page";
-import {MyHttpListener, MyHttpResponse} from "../util/my-http";
+import {pageHtmlResponse, redirectResponse, wrongCredentialsResponse} from "../util/page-responses";
+import {MyHttpListener} from "../util/my-http";
 
 export function loginHandler(con: Connection): MyHttpListener {
     return (req) =>
@@ -20,7 +20,7 @@ export function loginHandler(con: Connection): MyHttpListener {
                             return;
                         } else {
                             if (results.length === 0) {
-                                resolve(wrongCredentials());
+                                resolve(wrongCredentialsResponse());
                             } else {
                                 const rememberMe = p['remember_me'] === '1';
                                 const cookieString = randomstring.generate();
@@ -32,13 +32,9 @@ export function loginHandler(con: Connection): MyHttpListener {
                                     err1 => {
                                         reject(err1)
                                     });
-                                resolve({
-                                    status: 302,
-                                    headers: new Map(Object.entries({
-                                        'Location': '/home',
-                                        'Set-Cookie': `loginid=${cookieString}${rememberMe ? `; Expires=${plusMinutes(new Date(), 60 * 24 * 7).toUTCString()}` : ''};Path=/;HttpOnly`
-                                    })),
-                                } as MyHttpResponse);
+                                const rsp = redirectResponse('/home');
+                                rsp.headers.set('Set-Cookie', `loginid=${cookieString}${rememberMe ? `; Expires=${plusMinutes(new Date(), 60 * 24 * 7).toUTCString()}` : ''};Path=/;HttpOnly`);
+                                resolve(rsp);
                             }
                         }
                     });
@@ -60,10 +56,7 @@ export function loginPage(): MyHttpListener {
   <div class="g-recaptcha" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
   <button type="submit" id="submit-button" class="btn">Login</button>
 </form>`
-        return Promise.resolve({
-            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: pageHtml({user: user, title: "Login", hasCaptcha: true}, contentHtml)
-        });
+        return Promise.resolve(pageHtmlResponse({user: user, title: "Login", hasCaptcha: true}, contentHtml));
     }
 }
 
@@ -80,10 +73,7 @@ export function logoutHandler(con: Connection): MyHttpListener {
                         reject(err);
                         return;
                     } else {
-                        resolve({
-                            status: 302,
-                            headers: new Map(Object.entries({'Location': '/home'}))
-                        } as MyHttpResponse)
+                        resolve(redirectResponse('/home'));
                     }
                 });
         })

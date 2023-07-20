@@ -1,7 +1,9 @@
 import * as fs from "fs";
-import {pageNotFound} from "../page/skeleton-page/page";
 import * as xmlEscapeLib from "xml-escape";
 import {MyHttpListener, MyHttpResponse} from "./my-http";
+
+
+import {pageNotFoundResponse} from "./page-responses";
 
 export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     const chunks = [];
@@ -41,9 +43,9 @@ export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListene
                     body: res => fs.createReadStream('..' + decodedPath).pipe(res)
                 } as MyHttpResponse;
             } else {
-                return pageNotFound()
+                return pageNotFoundResponse()
             }
-        }).catch(pageNotFound);
+        }).catch(pageNotFoundResponse);
     }
 }
 
@@ -61,4 +63,12 @@ export function upperCaseFirstLetter(string: string) {
 
 export function xmlEscape(xmlString: string): string {
     return xmlEscapeLib(xmlString);
+}
+
+export function starRating(stars: number): string {
+    let rating = "";
+    for (let i = 0; i < stars; i++) {
+        rating += "★ ";
+    }
+    return rating;
 }

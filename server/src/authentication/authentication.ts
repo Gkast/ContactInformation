@@ -1,6 +1,7 @@
 import {Connection} from "mysql";
 import {parseRequestCookies} from "../util/utility";
 import {MyHttpListener} from "../util/my-http";
+import {redirectResponse} from "../util/page-responses";
 
 export interface UserDetails {
     id: number;
@@ -57,9 +58,7 @@ export function withUserId(con: Connection, handler: MyHttpListener): MyHttpList
 
 export function authHandler(handler: MyHttpListener): MyHttpListener {
     return (req, user) =>
-        user ? handler(req, user) : Promise.resolve({
-            status: 302,
-            headers: new Map(Object.entries({'Location': '/login?href=' + encodeURIComponent(req.url.toString())})),
-        })
+        user ? handler(req, user) :
+            Promise.resolve(redirectResponse('/login?href=' + encodeURIComponent(req.url.toString())))
 }
 

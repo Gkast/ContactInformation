@@ -1,7 +1,7 @@
-import {pageHtml} from "./skeleton-page/page";
 import * as formidable from "formidable";
 import * as fs from "fs";
-import {MyHttpListener, MyHttpResponse} from "../util/my-http";
+import {MyHttpListener} from "../util/my-http";
+import {pageHtmlResponse} from "../util/page-responses";
 
 export function uploadPageReqList(): MyHttpListener {
     return (req, user) => {
@@ -10,10 +10,7 @@ export function uploadPageReqList(): MyHttpListener {
     <input type="file" name="uploadFile" id="upload-file" class="form-inputs" required>
     <button type="submit" id="submit-button" class="btn">Submit</button>
 </form>`
-        return Promise.resolve({
-            headers: new Map(Object.entries({'Content-Type': 'text/html'})),
-            body: pageHtml({user: user, title: "Upload"}, contentHtml)
-        });
+        return Promise.resolve(pageHtmlResponse({user: user, title: "Upload"}, contentHtml));
     }
 }
 
@@ -35,12 +32,7 @@ export function uploadHandler(): MyHttpListener {
                                 const contentHtml = `
 <h1>File Uploaded</h1>
 <a href="/home" class="no-underline"><button class="btn">Home</button></a>`;
-                                resolve({
-                                    headers: new Map(Object.entries({
-                                        'content-type': 'text/html'
-                                    })),
-                                    body: pageHtml({user: user, title: "File uploaded"}, contentHtml)
-                                } as MyHttpResponse)
+                                resolve(pageHtmlResponse({user: user, title: "File uploaded"}, contentHtml))
                             }
                         })
                     } else {

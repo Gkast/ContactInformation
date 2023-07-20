@@ -1,8 +1,8 @@
-import {streamToString, xmlEscape} from "../util/utility";
+import {starRating, streamToString, xmlEscape} from "../util/utility";
 import {XMLParser} from "fast-xml-parser";
 import * as https from "https";
-import {pageHtml} from "./skeleton-page/page";
-import {MyHttpListener, MyHttpResponse} from "../util/my-http";
+import {MyHttpListener} from "../util/my-http";
+import {pageHtmlResponse} from "../util/page-responses";
 
 export function hotelDetailsPage(): MyHttpListener {
     return (req, user) =>
@@ -36,19 +36,9 @@ export function hotelDetailsPage(): MyHttpListener {
     ${(h.Hotel_Facilities.Facility as string[]).map(facilities => `<li>${xmlEscape(facilities)}</li>`).join("")}
 </ul>
 `;
-                    resolve({
-                        headers: new Map(Object.entries({'content-type': 'text/html'})),
-                        body: pageHtml({user: user, title: 'Hotel details for ' + parsed.HtSearchRq.HID}, contentHtml)
-                    } as MyHttpResponse);
+                    resolve(pageHtmlResponse({user: user, title: 'Hotel details for ' + parsed.HtSearchRq.HID}, contentHtml));
                 })
             });
         })
 }
 
-function starRating(stars: number): string {
-    let rating = "";
-    for (let i = 0; i < stars; i++) {
-        rating += "★ ";
-    }
-    return rating;
-}
