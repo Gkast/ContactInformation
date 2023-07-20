@@ -55,11 +55,10 @@ export function withUserId(con: Connection, handler: MyHttpListener): MyHttpList
 }
 
 export function authHandler(handler: MyHttpListener): MyHttpListener {
-    return (req, user) => {
-        return user ? handler(req, user) : Promise.resolve({
+    return (req, user) =>
+        user ? handler(req, user) : Promise.resolve({
             status: 302,
             headers: new Map(Object.entries({'Location': '/login?href=' + encodeURIComponent(req.url.toString())})),
-        });
-    }
+        })
 }
 

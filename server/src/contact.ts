@@ -30,8 +30,8 @@ export function contactPage(): MyHttpListener {
 }
 
 export function contactHandler(con: Connection, smtpTransport: Transporter): MyHttpListener {
-    return (req, user) => {
-        return streamToString(req.body).then(bodyString => {
+    return (req, user) =>
+        streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
             return new Promise((resolve, reject) => {
                 con.query(`INSERT INTO contact_form_submits (firstname, lastname, email, subject, message, user_id)
@@ -65,13 +65,12 @@ export function contactHandler(con: Connection, smtpTransport: Transporter): MyH
                         });
                     });
             })
-        });
-    }
+        })
 }
 
 export function contactDeleteHandler(con: Connection): MyHttpListener {
-    return (req) => {
-        return new Promise((resolve, reject) => {
+    return (req) =>
+        new Promise((resolve, reject) => {
             const id = parseInt(req.url.pathname.split('/')[2], 10);
             if (id) {
                 con.query("DELETE FROM contact_form_submits WHERE id=?", [id], (err) => {
@@ -86,13 +85,11 @@ export function contactDeleteHandler(con: Connection): MyHttpListener {
                 })
             }
         })
-
-    }
 }
 
 export function contactEditPage(con: Connection): MyHttpListener {
-    return (req, user) => {
-        return new Promise((resolve, reject) => {
+    return (req, user) =>
+        new Promise((resolve, reject) => {
             const id = parseInt(req.url.pathname.split('/')[2], 10);
             if (!id) {
                 resolve(pageNotFound());
@@ -130,7 +127,6 @@ export function contactEditPage(con: Connection): MyHttpListener {
                 }
             })
         })
-    }
 }
 
 export function contactEditHandler(con: Connection): MyHttpListener {

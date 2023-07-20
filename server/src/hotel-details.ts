@@ -4,8 +4,8 @@ import * as https from "https";
 import {pageHtml} from "./page";
 
 export function hotelDetailsPage(): MyHttpListener {
-    return (req, user) => {
-        return new Promise((resolve, reject) => {
+    return (req, user) =>
+        new Promise((resolve, reject) => {
             const startTime = performance.now();
             console.log("Request Started");
             https.get(`${process.env["XML_REQUEST_URL"]}`, res => {
@@ -41,8 +41,7 @@ export function hotelDetailsPage(): MyHttpListener {
                     } as MyHttpResponse);
                 })
             });
-        });
-    }
+        })
 }
 
 function starRating(stars: number): string {

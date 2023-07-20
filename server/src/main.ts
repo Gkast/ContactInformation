@@ -16,7 +16,13 @@ import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./captcha";
 import {testCSV, TestCSVStream, TestCSVStreamPipe} from "./csv";
 import {exportCSVContacts, exportJSONContacts, exportXMLContacts} from "./export";
-import {hotelDetailsPage} from "./hotel-details-page";
+import {hotelDetailsPage} from "./hotel-details";
+import {
+    changePassword,
+    changePasswordPage,
+    forgotPasswordPage
+} from "./reset-password";
+import {recoveryTokenGenerator, recoveryTokenVerificationPage} from "./recovery-token";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -67,6 +73,12 @@ Promise.all([
     router.add('GET', '/upload', authHandler(uploadPageReqList()));
     router.add('POST', '/upload', authHandler(uploadHandler()));
     router.add('GET', '/file-list', uploadsPage());
+    router.add('GET', '/forgot-password', forgotPasswordPage());
+    router.add('GET', '/forgot-password', forgotPasswordPage());
+    router.add('POST', '/token-generator', recoveryTokenGenerator(con, smtpTransport));
+    router.add('GET', '/token-verify', recoveryTokenVerificationPage());
+    router.add('GET', '/change-password', changePasswordPage());
+    router.add('POST', '/change-password', changePassword(con));
     router.add('GET', '*', pageNotFound);
 
     http.createServer((req, res) => {

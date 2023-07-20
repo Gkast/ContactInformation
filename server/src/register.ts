@@ -4,8 +4,8 @@ import * as querystring from "querystring";
 import {pageHtml} from "./page";
 
 export function registerHandler(con: Connection): MyHttpListener {
-    return (req, user) => {
-        return streamToString(req.body).then(bodyString => {
+    return (req, user) =>
+        streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
 
             return new Promise((resolve, reject) => {
@@ -28,8 +28,7 @@ export function registerHandler(con: Connection): MyHttpListener {
                         }
                     });
             })
-        });
-    }
+        })
 }
 
 export function registerPage(): MyHttpListener {

@@ -18,8 +18,8 @@ export function uploadPageReqList(): MyHttpListener {
 }
 
 export function uploadHandler(): MyHttpListener {
-    return (req, user) => {
-        return new Promise((resolve, reject) => {
+    return (req, user) =>
+        new Promise((resolve, reject) => {
             new formidable.IncomingForm().parse(req.nodeJsReqObject, (err, fields, files) => {
                 if (err) {
                     reject(err);
@@ -49,5 +49,4 @@ export function uploadHandler(): MyHttpListener {
                 }
             })
         })
-    }
 }

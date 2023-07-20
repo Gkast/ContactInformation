@@ -5,8 +5,8 @@ import * as randomstring from "randomstring";
 import {pageHtml, wrongCredentials} from "./page";
 
 export function loginHandler(con: Connection): MyHttpListener {
-    return (req) => {
-        return streamToString(req.body).then(bodyString => {
+    return (req) =>
+        streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
             return new Promise((resolve, reject) => {
                 con.query(`SELECT id
@@ -42,8 +42,7 @@ export function loginHandler(con: Connection): MyHttpListener {
                         }
                     });
             })
-        });
-    }
+        })
 }
 
 export function loginPage(): MyHttpListener {
@@ -56,6 +55,7 @@ export function loginPage(): MyHttpListener {
   <input type="password" placeholder="Password" name="password" id="password" required>
   <label for="remember_me">Remember me:</label>
   <input type="checkbox" name="remember_me" id="remember_me" value="1">
+  <a href="/forgot-password">Forgot Password?</a>
   <div class="g-recaptcha" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
   <button type="submit" id="submit-button" class="btn">Login</button>
 </form>`
@@ -67,8 +67,8 @@ export function loginPage(): MyHttpListener {
 }
 
 export function logoutHandler(con: Connection): MyHttpListener {
-    return (req) => {
-        return new Promise((resolve, reject) => {
+    return (req) =>
+        new Promise((resolve, reject) => {
             const allCookiesMap = parseRequestCookies(req.headers.cookie);
             con.query(`UPDATE login_cookies
                        SET has_logged_out=?,
@@ -86,5 +86,4 @@ export function logoutHandler(con: Connection): MyHttpListener {
                     }
                 });
         })
-    }
 }

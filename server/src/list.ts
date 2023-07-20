@@ -1,13 +1,13 @@
 import {Connection} from "mysql";
 import {MyHttpListener, MyHttpResponse, upperCaseFirstLetter, xmlEscape} from "./utility";
 import {format as dateFormat} from "fecha";
-import {pageHtml, pageHtmlBottom, pageHtmlTop} from "./page";
+import {pageHtml} from "./page";
 import * as fs from "fs";
 import {Transform, TransformCallback} from "stream";
 
 export function contactListPage(con: Connection): MyHttpListener {
-    return (req, user) => {
-        return new Promise((resolve, reject) => {
+    return (req, user) =>
+        new Promise((resolve, reject) => {
             con.query(`SELECT c.*, u.username
                        FROM contact_form_submits c
                                 JOIN users u on u.id = c.user_id
@@ -74,13 +74,12 @@ export function contactListPage(con: Connection): MyHttpListener {
                     } as MyHttpResponse);
                 }
             });
-        });
-    }
+        })
 }
 
 export function uploadsPage(): MyHttpListener {
-    return (req, user) => {
-        return new Promise((resolve, reject) => {
+    return (req, user) =>
+        new Promise((resolve, reject) => {
             let fileQueryHtml = '';
             fs.readdir('../uploads/', (err, files) => {
                 files.forEach((file, i) => {
@@ -116,7 +115,6 @@ export function uploadsPage(): MyHttpListener {
                 }
             })
         })
-    }
 }
 
 // export function contactListPageVersion2(con: Connection): MyHttpListener {

@@ -1,7 +1,15 @@
 import {MyHttpResponse} from "./utility";
 import {UserDetails} from "./authentication";
 
-export function pageHtmlTop(
+export function pageHtml(pageParams: {
+    title: string;
+    user?: UserDetails;
+    hasCaptcha?: boolean
+} & NodeJS.Dict<any>, contentHtml: string): string {
+    return pageHtmlTop(pageParams) + contentHtml + pageHtmlBottom(pageParams);
+}
+
+function pageHtmlTop(
     pageParams: {
         title: string;
         user?: UserDetails;
@@ -27,7 +35,23 @@ export function pageHtmlTop(
         <div class="content-wrapper">`;
 }
 
-export function pageHtmlBottom(
+function headerHtml(user: UserDetails) {
+    if (!user) {
+        return `
+        <a href="/login" id="login-button" class="no-underline"><button class="btn">Log In</button></a>
+        <a href="/register" id="register-button" class="no-underline"><button class="btn">Register</button></a>`;
+    } else {
+        return `
+        <span id="userId">${user.username.toUpperCase()}</span>
+        <div style="display: inline-block">
+        <form method="post" action="/logout">
+            <button class="btn">Log out</button>
+        </form>
+</div>`;
+    }
+}
+
+function pageHtmlBottom(
     pageParams: {
         title: string;
         user?: UserDetails;
@@ -39,14 +63,6 @@ export function pageHtmlBottom(
     ${pageParams.hasCaptcha ? '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' : ''}
 </body>
 </html>`;
-}
-
-export function pageHtml(pageParams: {
-    title: string;
-    user?: UserDetails;
-    hasCaptcha?: boolean
-} & NodeJS.Dict<any>, contentHtml: string): string {
-    return pageHtmlTop(pageParams) + contentHtml + pageHtmlBottom(pageParams);
 }
 
 export function pageNotFound(): Promise<MyHttpResponse> {
@@ -63,20 +79,4 @@ export function wrongCredentials(): Promise<MyHttpResponse> {
         headers: new Map(Object.entries({'Content-Type': 'text/html',})),
         body: '<h1>Wrong Credentials</h1>'
     } as MyHttpResponse)
-}
-
-function headerHtml(user: UserDetails) {
-    if (!user) {
-        return `
-        <a href="/login" id="login-button" class="no-underline"><button class="btn">Log In</button></a>
-        <a href="/register" id="register-button" class="no-underline"><button class="btn">Register</button></a>`;
-    } else {
-        return `
-        <span id="userId">${user.username.toUpperCase()}</span>
-        <div style="display: inline-block">
-        <form method="post" action="/logout">
-            <button class="btn">Log out</button>
-        </form>
-</div>`;
-    }
 }

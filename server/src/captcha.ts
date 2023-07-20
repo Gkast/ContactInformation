@@ -4,7 +4,7 @@ import * as querystring from "querystring";
 import {Readable} from "stream";
 
 export function captchaVerification(responseKey: string, secretKey: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) =>
         https.request({
             host: 'www.google.com',
             path: '/recaptcha/api/siteverify',
@@ -21,13 +21,12 @@ export function captchaVerification(responseKey: string, secretKey: string): Pro
                 resolve(false);
             }
         }).end(`secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(responseKey)}`)
-            .on('error', reject)
-    })
+            .on('error', reject))
 }
 
 export function captchaProtectedHandler(secret: string, handler: MyHttpListener): MyHttpListener {
-    return (req, user) => {
-        return streamToString(req.body).then(bodyString => {
+    return (req, user) =>
+        streamToString(req.body).then(bodyString => {
             const responseKey = req.method === 'GET' ?
                 req.url.searchParams.get('g-recaptcha-response') :
                 singleParam(querystring.parse(bodyString)['g-recaptcha-response']);
@@ -39,8 +38,7 @@ export function captchaProtectedHandler(secret: string, handler: MyHttpListener)
                     })),
                     body: `<h1>Captcha wasn't verified</h1>`
                 })
-        });
-    }
+        })
 }
 
 
