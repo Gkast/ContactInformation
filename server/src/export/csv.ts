@@ -1,7 +1,7 @@
 import {Connection} from "mysql";
-import {MyHttpListener, MyHttpResponse} from "./utility";
 import {stringify} from "csv-stringify/sync";
 import {stringify as stringifyStream} from "csv-stringify";
+import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
 export function testCSV(con: Connection): MyHttpListener {
     return (req, user) =>

@@ -1,7 +1,8 @@
-import {MyHttpListener, MyHttpResponse, streamToString, xmlEscape} from "./utility";
+import {streamToString, xmlEscape} from "../util/utility";
 import {XMLParser} from "fast-xml-parser";
 import * as https from "https";
-import {pageHtml} from "./page";
+import {pageHtml} from "./skeleton-page/page";
+import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
 export function hotelDetailsPage(): MyHttpListener {
     return (req, user) =>

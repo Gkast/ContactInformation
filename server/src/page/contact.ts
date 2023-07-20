@@ -1,8 +1,9 @@
-import {MyHttpListener, MyHttpResponse, streamToString, xmlEscape} from "./utility";
+import {streamToString, xmlEscape} from "../util/utility";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
-import {pageHtml, pageNotFound} from "./page";
+import {pageHtml, pageNotFound} from "./skeleton-page/page";
+import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
 export function contactPage(): MyHttpListener {
     return (req, user) => {

@@ -1,7 +1,8 @@
-import {MyHttpListener, streamToString, xmlEscape} from "./utility";
-import {pageHtml, pageNotFound} from "./page";
+import {streamToString, xmlEscape} from "../util/utility";
+import {pageHtml, pageNotFound} from "./skeleton-page/page";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
+import {MyHttpListener} from "../util/my-http";
 
 export function forgotPasswordPage(): MyHttpListener {
     return (req, user) => {

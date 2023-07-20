@@ -1,9 +1,10 @@
 import {Connection} from "mysql";
-import {MyHttpListener, MyHttpResponse, upperCaseFirstLetter, xmlEscape} from "./utility";
+import {upperCaseFirstLetter, xmlEscape} from "../util/utility";
 import {format as dateFormat} from "fecha";
-import {pageHtml} from "./page";
+import {pageHtml} from "./skeleton-page/page";
 import * as fs from "fs";
 import {Transform, TransformCallback} from "stream";
+import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
 export function contactListPage(con: Connection): MyHttpListener {
     return (req, user) =>

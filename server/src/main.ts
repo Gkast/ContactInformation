@@ -1,28 +1,29 @@
 import * as http from "http";
 import * as fs from "fs";
-import {MyHttpListener, nodeJsToMyHttpRequest, staticFileReqList, writeMyResToNodeResponse} from "./utility";
+import {staticFileReqList} from "./util/utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
-import {contactDeleteHandler, contactEditHandler, contactEditPage, contactHandler, contactPage} from "./contact";
-import {registerHandler, registerPage} from "./register";
-import {loginHandler, loginPage, logoutHandler} from "./login";
-import {homePage} from "./home";
-import {contactListPage, uploadsPage} from "./list";
-import {aboutPage} from "./about";
-import {authHandler, withUserId} from "./authentication";
-import {pageNotFound} from "./page";
-import {uploadHandler, uploadPageReqList} from "./upload";
+import {contactDeleteHandler, contactEditHandler, contactEditPage, contactHandler, contactPage} from "./page/contact";
+import {registerHandler, registerPage} from "./page/register";
+import {loginHandler, loginPage, logoutHandler} from "./page/login";
+import {homePage} from "./page/home";
+import {contactListPage, uploadsPage} from "./page/list";
+import {aboutPage} from "./page/about";
+import {authHandler, withUserId} from "./authentication/authentication";
+import {pageNotFound} from "./page/skeleton-page/page";
+import {uploadHandler, uploadPageReqList} from "./page/upload";
 import * as TrekRouter from 'trek-router';
-import {captchaProtectedHandler} from "./captcha";
-import {testCSV, TestCSVStream, TestCSVStreamPipe} from "./csv";
-import {exportCSVContacts, exportJSONContacts, exportXMLContacts} from "./export";
-import {hotelDetailsPage} from "./hotel-details";
+import {captchaProtectedHandler} from "./authentication/captcha";
+import {testCSV, TestCSVStream, TestCSVStreamPipe} from "./export/csv";
+import {exportCSVContacts, exportJSONContacts, exportXMLContacts} from "./export/export";
+import {hotelDetailsPage} from "./page/hotel-details";
 import {
     changePassword,
     changePasswordPage,
     forgotPasswordPage
-} from "./reset-password";
-import {recoveryTokenGenerator, recoveryTokenVerificationPage} from "./recovery-token";
+} from "./page/reset-password";
+import {recoveryTokenGenerator, recoveryTokenVerificationPage} from "./util/recovery-token";
+import {MyHttpListener, nodeJsToMyHttpRequest, writeMyResToNodeResponse} from "./util/my-http";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",

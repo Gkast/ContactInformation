@@ -1,5 +1,5 @@
-import {MyHttpResponse} from "./utility";
-import {UserDetails} from "./authentication";
+import {UserDetails} from "../../authentication/authentication";
+import {MyHttpResponse} from "../../util/my-http";
 
 export function pageHtml(pageParams: {
     title: string;
@@ -20,7 +20,7 @@ function pageHtmlTop(
 <head>
     <meta charset="UTF-8">
     <title>${pageParams.title}</title>
-    <link rel="stylesheet" type="text/css" href="../assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="../../../assets/css/main.css">
 </head>
 <body>
     <header>
@@ -59,7 +59,7 @@ function pageHtmlBottom(
     } & NodeJS.Dict<any>): string {
     return  `</div>
     </div>
-    <script src="../assets/js/main.js"></script>
+    <script src="../../../assets/js/main.js"></script>
     ${pageParams.hasCaptcha ? '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' : ''}
 </body>
 </html>`;

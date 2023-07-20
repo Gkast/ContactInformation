@@ -1,8 +1,9 @@
 import {Connection} from "mysql";
-import {MyHttpListener, MyHttpResponse, parseRequestCookies, plusMinutes, streamToString} from "./utility";
+import {parseRequestCookies, plusMinutes, streamToString} from "../util/utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
-import {pageHtml, wrongCredentials} from "./page";
+import {pageHtml, wrongCredentials} from "./skeleton-page/page";
+import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
 export function loginHandler(con: Connection): MyHttpListener {
     return (req) =>

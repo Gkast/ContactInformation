@@ -1,5 +1,5 @@
-import {MyHttpListener} from "./utility";
-import {pageHtml} from "./page";
+import {pageHtml} from "./skeleton-page/page";
+import {MyHttpListener} from "../util/my-http";
 
 export function aboutPage(): MyHttpListener {
     return (req, user) => {

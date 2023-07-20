@@ -1,9 +1,10 @@
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
-import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
+import {streamToString} from "./utility";
 import * as querystring from "querystring";
-import {pageHtml, wrongCredentials} from "./page";
+import {pageHtml, wrongCredentials} from "../page/skeleton-page/page";
 import * as randomstring from "randomstring";
+import {MyHttpListener, MyHttpResponse} from "./my-http";
 
 export function recoveryTokenGenerator(con: Connection, smtpTransport: Transporter): MyHttpListener {
     return (req, user) =>

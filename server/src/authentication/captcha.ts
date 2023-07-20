@@ -1,7 +1,8 @@
 import * as https from "https";
-import {MyHttpListener, singleParam, streamToString} from "./utility";
+import {singleParam, streamToString} from "../util/utility";
 import * as querystring from "querystring";
 import {Readable} from "stream";
+import {MyHttpListener} from "../util/my-http";
 
 export function captchaVerification(responseKey: string, secretKey: string): Promise<boolean> {
     return new Promise((resolve, reject) =>

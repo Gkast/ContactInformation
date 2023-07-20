@@ -1,7 +1,8 @@
 import {Connection} from "mysql";
-import {MyHttpListener, MyHttpResponse, streamToString} from "./utility";
+import {streamToString} from "../util/utility";
 import * as querystring from "querystring";
-import {pageHtml} from "./page";
+import {pageHtml} from "./skeleton-page/page";
+import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
 export function registerHandler(con: Connection): MyHttpListener {
     return (req, user) =>

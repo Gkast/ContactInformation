@@ -1,5 +1,6 @@
 import {Connection} from "mysql";
-import {MyHttpListener, parseRequestCookies} from "./utility";
+import {parseRequestCookies} from "../util/utility";
+import {MyHttpListener} from "../util/my-http";
 
 export interface UserDetails {
     id: number;

@@ -1,7 +1,7 @@
-import {MyHttpListener, MyHttpResponse} from "./utility";
-import {pageHtml} from "./page";
+import {pageHtml} from "./skeleton-page/page";
 import * as formidable from "formidable";
 import * as fs from "fs";
+import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
 export function uploadPageReqList(): MyHttpListener {
     return (req, user) => {
