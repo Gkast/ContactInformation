@@ -1,5 +1,5 @@
 import {streamToString, xmlEscape} from "../util/utility";
-import {pageHtml, pageNotFound} from "./skeleton-page/page";
+import {pageHtml} from "./skeleton-page/page";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {MyHttpListener} from "../util/my-http";
@@ -17,6 +17,24 @@ export function forgotPasswordPage(): MyHttpListener {
             })),
             body: pageHtml({
                 title: "Forgot Password",
+            }, contentHtml)
+        })
+    }
+}
+
+export function recoveryTokenVerificationPage(): MyHttpListener {
+    return (req, user) => {
+        const contentHtml = `
+<form method="get" action="/change-password">
+    <input type="text" placeholder="Enter Token" name="token">        
+    <button type="submit">Verify Token</button>
+</form>`;
+        return Promise.resolve({
+            headers: new Map(Object.entries({
+                "Content-Type": "text/html"
+            })),
+            body: pageHtml({
+                title: "Token Verification",
             }, contentHtml)
         })
     }

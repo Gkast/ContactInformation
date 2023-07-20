@@ -20,9 +20,9 @@ import {hotelDetailsPage} from "./page/hotel-details";
 import {
     changePassword,
     changePasswordPage,
-    forgotPasswordPage
+    forgotPasswordPage, recoveryTokenVerificationPage
 } from "./page/reset-password";
-import {recoveryTokenGenerator, recoveryTokenVerificationPage} from "./util/recovery-token";
+import {recoveryTokenGenerator} from "./util/recovery-token";
 import {MyHttpListener, nodeJsToMyHttpRequest, writeMyResToNodeResponse} from "./util/my-http";
 
 const smtpTransport = nodemailer.createTransport({

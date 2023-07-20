@@ -2,7 +2,7 @@ import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
 import {streamToString} from "./utility";
 import * as querystring from "querystring";
-import {pageHtml, wrongCredentials} from "../page/skeleton-page/page";
+import {wrongCredentials} from "../page/skeleton-page/page";
 import * as randomstring from "randomstring";
 import {MyHttpListener, MyHttpResponse} from "./my-http";
 
@@ -56,24 +56,6 @@ export function recoveryTokenGenerator(con: Connection, smtpTransport: Transport
                 })
             })
         })
-}
-
-export function recoveryTokenVerificationPage(): MyHttpListener {
-    return (req, user) => {
-        const contentHtml = `
-<form method="get" action="/change-password">
-    <input type="text" placeholder="Enter Token" name="token">        
-    <button type="submit">Verify Token</button>
-</form>`;
-        return Promise.resolve({
-            headers: new Map(Object.entries({
-                "Content-Type": "text/html"
-            })),
-            body: pageHtml({
-                title: "Token Verification",
-            }, contentHtml)
-        })
-    }
 }
 
 // export function recoveryTokenVerifier(con: Connection): MyHttpListener {
