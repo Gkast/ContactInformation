@@ -7,20 +7,21 @@ export function testCSV(con: Connection): MyHttpListener {
     return (req, user) =>
         new Promise((resolve, reject) => {
             con.query(`SELECT a.*
-                       FROM authors a, authors a2`, (err, result: any[], fields) => {
-                    if (err) {
-                        reject(err)
-                    } else {
-                        resolve({
-                            headers: new Map(Object.entries({
-                                'Content-Disposition': 'attachment; filename="test.csv"'
-                            })),
-                            body: stringify([['Id', 'Firstname', 'Lastname',
-                                    'E-Mail', 'Birthdate', 'Added']]) +
-                                stringify(result)
-                        })
-                    }
-                })
+                       FROM authors a,
+                            authors a2`, (err, result: any[], fields) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve({
+                        headers: new Map(Object.entries({
+                            'Content-Disposition': 'attachment; filename="test.csv"'
+                        })),
+                        body: stringify([['Id', 'Firstname', 'Lastname',
+                                'E-Mail', 'Birthdate', 'Added']]) +
+                            stringify(result)
+                    })
+                }
+            })
         })
 }
 
@@ -34,7 +35,8 @@ export function TestCSVStream(con: Connection): MyHttpListener {
                 res.write(stringify([['Id', 'Firstname', 'Lastname',
                     'E-Mail', 'Birthdate', 'Added']]));
                 con.query(`SELECT a.*
-                           FROM authors a, authors a2`).stream().on('data', function (row) {
+                           FROM authors a,
+                                authors a2`).stream().on('data', function (row) {
                     res.write(stringify(Object.values([row])))
                 }).on('end', function () {
                     res.end();
@@ -54,7 +56,8 @@ export function TestCSVStreamPipe(con: Connection): MyHttpListener {
                 res.write(stringify([['Id', 'Firstname', 'Lastname',
                     'E-Mail', 'Birthdate', 'Added']]));
                 con.query(`SELECT a.*
-                           FROM authors a, authors a2`).stream().pipe(stringifyStream()).pipe(res)
+                           FROM authors a,
+                                authors a2`).stream().pipe(stringifyStream()).pipe(res)
                 return;
             }
         } as MyHttpResponse)

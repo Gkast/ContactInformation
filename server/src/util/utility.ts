@@ -49,6 +49,21 @@ export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListene
     }
 }
 
+export function range(start: number, end: number, step = 1) {
+    return {
+        [Symbol.iterator]() {
+            return this;
+        },
+        next() {
+            if (start < end) {
+                start += step;
+                return {value: start, done: false};
+            }
+            return {value: end, done: true};
+        }
+    }
+}
+
 export function plusMinutes(date: Date, minutes_diff: number): Date {
     return new Date(date.getTime() + 1000 * 60 * minutes_diff);
 }

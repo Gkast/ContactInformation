@@ -14,18 +14,20 @@ import {uploadHandler, uploadPageReqList} from "./page/upload";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./authentication/captcha";
 import {testCSV, TestCSVStream, TestCSVStreamPipe} from "./export/csv";
-import {exportCSVContacts, exportJSONContacts, exportXMLContacts} from "./export/export";
+import {exportCSVContacts, exportJSONContacts, exportXMLContacts} from "./export/export-contacts";
 import {hotelDetailsPage} from "./page/hotel-details";
 import {
     changePassword,
     changePasswordPage,
-    forgotPasswordPage, recoveryTokenVerificationPage
+    forgotPasswordPage,
+    recoveryTokenVerificationPage
 } from "./page/reset-password";
 import {recoveryTokenGenerator} from "./util/recovery-token";
 import {MyHttpListener, nodeJsToMyHttpRequest, writeMyResToNodeResponse} from "./util/my-http";
 
 
 import {pageNotFoundResponse} from "./util/page-responses";
+import {imgResize, imgResizePage} from "./page/img-resize";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -66,6 +68,8 @@ Promise.all([
     router.add('GET', "/csv-stream", TestCSVStream(con));
     router.add('GET', "/csv-stream-pipe", TestCSVStreamPipe(con));
     router.add('GET', '/hotel-details-page', hotelDetailsPage());
+    router.add('GET', '/img-resize-page', imgResizePage());
+    router.add('GET', '/img-resize', imgResize());
     router.add('GET', '/assets/*', staticFileReqList(mimetypes));
     router.add('GET', '/uploads/*', authHandler(staticFileReqList(mimetypes)));
     router.add('POST', '/register', captchaProtectedHandler(captchaSecret, registerHandler(con)));

@@ -36,7 +36,10 @@ export function hotelDetailsPage(): MyHttpListener {
     ${(h.Hotel_Facilities.Facility as string[]).map(facilities => `<li>${xmlEscape(facilities)}</li>`).join("")}
 </ul>
 `;
-                    resolve(pageHtmlResponse({user: user, title: 'Hotel details for ' + parsed.HtSearchRq.HID}, contentHtml));
+                    resolve(pageHtmlResponse({
+                        user: user,
+                        title: 'Hotel details for ' + parsed.HtSearchRq.HID
+                    }, contentHtml));
                 })
             });
         })

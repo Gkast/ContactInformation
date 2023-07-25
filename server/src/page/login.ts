@@ -33,7 +33,9 @@ export function loginHandler(con: Connection): MyHttpListener {
                                         reject(err1)
                                     });
                                 const rsp = redirectResponse('/home');
-                                rsp.headers.set('Set-Cookie', `loginid=${cookieString}${rememberMe ? `; Expires=${plusMinutes(new Date(), 60 * 24 * 7).toUTCString()}` : ''};Path=/;HttpOnly`);
+                                rsp.headers.set('Set-Cookie', `loginid=${cookieString}
+                                ${rememberMe ? `; Expires=${plusMinutes(new Date(), 60 * 24 * 7).toUTCString()}` : ''}
+                                ;Path=/;HttpOnly`);
                                 resolve(rsp);
                             }
                         }

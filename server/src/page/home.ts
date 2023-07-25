@@ -13,6 +13,7 @@ ${user ? `<p>Welcome ${user.username.toUpperCase()}</p>` : ''}
     <li><a href="/csv-stream">Export CSV Stream Test</a></li>
     <li><a href="/csv-stream-pipe">Export CSV Stream Pipe Test</a></li>
     <li><a href="/hotel-details-page">Hotel Details</a></li>
+    <li><a href="/img-resize-page">Image Resizer</a></li>
     ${user ? `<li><a href="/contact">Contact</a></li>
               <li><a href="/contact-list">Contact List</a></li>
               <li><a href="/upload">Upload File</a></li>
