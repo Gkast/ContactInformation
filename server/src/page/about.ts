@@ -1,5 +1,5 @@
 import {MyHttpListener} from "../util/my-http";
-import {pageHtmlResponse} from "../util/page-responses";
+import {pageHtmlResponse} from "../util/my-http-responses";
 
 export function aboutPage(): MyHttpListener {
     return (req, user) => {

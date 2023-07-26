@@ -3,7 +3,7 @@ import * as xmlEscapeLib from "xml-escape";
 import {MyHttpListener, MyHttpResponse} from "./my-http";
 
 
-import {pageNotFoundResponse} from "./page-responses";
+import {pageNotFoundResponse} from "./my-http-responses";
 
 export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     const chunks = [];

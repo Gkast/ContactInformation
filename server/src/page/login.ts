@@ -2,10 +2,10 @@ import {Connection} from "mysql";
 import {parseRequestCookies, plusMinutes, streamToString} from "../util/utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
-import {pageHtmlResponse, redirectResponse, wrongCredentialsResponse} from "../util/page-responses";
+import {pageHtmlResponse, redirectResponse, wrongCredentialsResponse} from "../util/my-http-responses";
 import {MyHttpListener} from "../util/my-http";
 
-export function loginHandler(con: Connection): MyHttpListener {
+export function loginReqList(con: Connection): MyHttpListener {
     return (req) =>
         streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
@@ -33,9 +33,7 @@ export function loginHandler(con: Connection): MyHttpListener {
                                         reject(err1)
                                     });
                                 const rsp = redirectResponse('/home');
-                                rsp.headers.set('Set-Cookie', `loginid=${cookieString}
-                                ${rememberMe ? `; Expires=${plusMinutes(new Date(), 60 * 24 * 7).toUTCString()}` : ''}
-                                ;Path=/;HttpOnly`);
+                                rsp.headers.set('Set-Cookie', `loginid=${cookieString}${rememberMe ? `; Expires=${plusMinutes(new Date(), 60 * 24 * 7).toUTCString()}` : ''};Path=/;HttpOnly`);
                                 resolve(rsp);
                             }
                         }
@@ -62,7 +60,7 @@ export function loginPage(): MyHttpListener {
     }
 }
 
-export function logoutHandler(con: Connection): MyHttpListener {
+export function logoutReqList(con: Connection): MyHttpListener {
     return (req) =>
         new Promise((resolve, reject) => {
             const allCookiesMap = parseRequestCookies(req.headers.cookie);

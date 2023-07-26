@@ -3,7 +3,7 @@ import {stringify} from "csv-stringify/sync";
 import {stringify as stringifyStream} from "csv-stringify";
 import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
-export function testCSV(con: Connection): MyHttpListener {
+export function testCSVReqList(con: Connection): MyHttpListener {
     return (req, user) =>
         new Promise((resolve, reject) => {
             con.query(`SELECT a.*
@@ -25,7 +25,7 @@ export function testCSV(con: Connection): MyHttpListener {
         })
 }
 
-export function TestCSVStream(con: Connection): MyHttpListener {
+export function TestCSVStreamReqList(con: Connection): MyHttpListener {
     return (req, user) =>
         Promise.resolve({
             headers: new Map(Object.entries({
@@ -46,7 +46,7 @@ export function TestCSVStream(con: Connection): MyHttpListener {
         } as MyHttpResponse)
 }
 
-export function TestCSVStreamPipe(con: Connection): MyHttpListener {
+export function TestCSVStreamPipeReqList(con: Connection): MyHttpListener {
     return (req, user) =>
         Promise.resolve({
             headers: new Map(Object.entries({

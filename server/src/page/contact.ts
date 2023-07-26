@@ -2,7 +2,7 @@ import {streamToString, xmlEscape} from "../util/utility";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
-import {pageHtmlResponse, pageNotFoundResponse, redirectResponse} from "../util/page-responses";
+import {pageHtmlResponse, pageNotFoundResponse, redirectResponse} from "../util/my-http-responses";
 import {MyHttpListener} from "../util/my-http";
 
 export function contactPage(): MyHttpListener {
@@ -27,7 +27,7 @@ export function contactPage(): MyHttpListener {
     }
 }
 
-export function contactHandler(con: Connection, smtpTransport: Transporter): MyHttpListener {
+export function contactReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
     return (req, user) =>
         streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
@@ -61,7 +61,7 @@ export function contactHandler(con: Connection, smtpTransport: Transporter): MyH
         })
 }
 
-export function contactDeleteHandler(con: Connection): MyHttpListener {
+export function contactDeleteReqList(con: Connection): MyHttpListener {
     return (req) =>
         new Promise((resolve, reject) => {
             const id = parseInt(req.url.pathname.split('/')[2], 10);
@@ -116,7 +116,7 @@ export function contactEditPage(con: Connection): MyHttpListener {
         })
 }
 
-export function contactEditHandler(con: Connection): MyHttpListener {
+export function contactEditReqList(con: Connection): MyHttpListener {
     return (req) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         if (!id) {

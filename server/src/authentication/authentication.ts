@@ -1,7 +1,7 @@
 import {Connection} from "mysql";
 import {parseRequestCookies} from "../util/utility";
 import {MyHttpListener} from "../util/my-http";
-import {redirectResponse} from "../util/page-responses";
+import {redirectResponse} from "../util/my-http-responses";
 
 export interface UserDetails {
     id: number;

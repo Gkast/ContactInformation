@@ -3,31 +3,30 @@ import * as fs from "fs";
 import {staticFileReqList} from "./util/utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
-import {contactDeleteHandler, contactEditHandler, contactEditPage, contactHandler, contactPage} from "./page/contact";
-import {registerHandler, registerPage} from "./page/register";
-import {loginHandler, loginPage, logoutHandler} from "./page/login";
+import {contactDeleteReqList, contactEditPage, contactEditReqList, contactPage, contactReqList} from "./page/contact";
+import {registerPage, registerReqList} from "./page/register";
+import {loginPage, loginReqList, logoutReqList} from "./page/login";
 import {homePage} from "./page/home";
-import {contactListPage, uploadsPage} from "./page/list";
+import {contactListPage, uploadListPage} from "./page/list";
 import {aboutPage} from "./page/about";
 import {authHandler, withUserId} from "./authentication/authentication";
-import {uploadHandler, uploadPageReqList} from "./page/upload";
+import {uploadFilePage, uploadFileReqList} from "./page/upload-files";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./authentication/captcha";
-import {testCSV, TestCSVStream, TestCSVStreamPipe} from "./export/csv";
-import {exportCSVContacts, exportJSONContacts, exportXMLContacts} from "./export/export-contacts";
+import {testCSVReqList, TestCSVStreamPipeReqList, TestCSVStreamReqList} from "./export/csv";
+import {exportCSVContactsReqList, exportJSONContactsReqList, exportXMLContactsReqList} from "./export/export-contacts";
 import {hotelDetailsPage} from "./page/hotel-details";
 import {
-    changePassword,
     changePasswordPage,
+    changePasswordReqList,
     forgotPasswordPage,
     recoveryTokenVerificationPage
 } from "./page/reset-password";
-import {recoveryTokenGenerator} from "./util/recovery-token";
+import {recoveryTokenGeneratorReqList} from "./util/recovery-token";
 import {MyHttpListener, nodeJsToMyHttpRequest, writeMyResToNodeResponse} from "./util/my-http";
-
-
-import {pageNotFoundResponse} from "./util/page-responses";
-import {imgResize, imgResizePage} from "./page/img-resize";
+import {pageNotFoundResponse} from "./util/my-http-responses";
+import {imgResizePage, imgResizeReqList} from "./page/img-resize";
+import {downloadUploadFilesReqList} from "./util/compress";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -54,39 +53,39 @@ Promise.all([
 
     router.add('GET', '/about', aboutPage());
     router.add('GET', '/contact', authHandler(contactPage()));
-    router.add('POST', '/contact', contactHandler(con, smtpTransport));
+    router.add('POST', '/contact', contactReqList(con, smtpTransport));
     router.add('GET', '/', homePage());
     router.add('GET', '/home', homePage());
     router.add('GET', "/contact-list", authHandler(contactListPage(con)));
-    router.add('POST', '/contact-list/:id/delete', authHandler(contactDeleteHandler(con)));
+    router.add('POST', '/contact-list/:id/delete', authHandler(contactDeleteReqList(con)));
     router.add('GET', '/contact-list/:id', authHandler(contactEditPage(con)));
-    router.add('POST', '/contact-list/:id', authHandler(contactEditHandler(con)));
-    router.add('GET', "/contact-list-csv", authHandler(exportCSVContacts(con)));
-    router.add('GET', "/contact-list-xml", authHandler(exportXMLContacts(con)));
-    router.add('GET', "/contact-list-json", authHandler(exportJSONContacts(con)));
-    router.add('GET', "/csv", testCSV(con));
-    router.add('GET', "/csv-stream", TestCSVStream(con));
-    router.add('GET', "/csv-stream-pipe", TestCSVStreamPipe(con));
+    router.add('POST', '/contact-list/:id', authHandler(contactEditReqList(con)));
+    router.add('GET', "/contact-list-csv", authHandler(exportCSVContactsReqList(con)));
+    router.add('GET', "/contact-list-xml", authHandler(exportXMLContactsReqList(con)));
+    router.add('GET', "/contact-list-json", authHandler(exportJSONContactsReqList(con)));
+    router.add('GET', "/csv", testCSVReqList(con));
+    router.add('GET', "/csv-stream", TestCSVStreamReqList(con));
+    router.add('GET', "/csv-stream-pipe", TestCSVStreamPipeReqList(con));
     router.add('GET', '/hotel-details-page', hotelDetailsPage());
     router.add('GET', '/img-resize-page', imgResizePage());
-    router.add('GET', '/img-resize', imgResize());
+    router.add('GET', '/img-resize', imgResizeReqList());
     router.add('GET', '/assets/*', staticFileReqList(mimetypes));
     router.add('GET', '/uploads/*', authHandler(staticFileReqList(mimetypes)));
-    router.add('POST', '/register', captchaProtectedHandler(captchaSecret, registerHandler(con)));
+    router.add('POST', '/register', captchaProtectedHandler(captchaSecret, registerReqList(con)));
     router.add('GET', '/register', registerPage());
-    router.add('POST', '/login', captchaProtectedHandler(captchaSecret, loginHandler(con)));
+    router.add('POST', '/login', captchaProtectedHandler(captchaSecret, loginReqList(con)));
     router.add('GET', '/login', loginPage());
-    router.add('POST', '/logout', logoutHandler(con));
-    router.add('GET', '/upload', authHandler(uploadPageReqList()));
-    router.add('POST', '/upload', authHandler(uploadHandler()));
-    router.add('GET', '/file-list', uploadsPage());
+    router.add('POST', '/logout', logoutReqList(con));
+    router.add('GET', '/upload-file', authHandler(uploadFilePage()));
+    router.add('POST', '/upload-file', authHandler(uploadFileReqList()));
+    router.add('GET', '/file-list', authHandler(uploadListPage()));
     router.add('GET', '/forgot-password', forgotPasswordPage());
-    router.add('GET', '/forgot-password', forgotPasswordPage());
-    router.add('POST', '/token-generator', recoveryTokenGenerator(con, smtpTransport));
+    router.add('POST', '/token-generator', recoveryTokenGeneratorReqList(con, smtpTransport));
     router.add('GET', '/token-verify', recoveryTokenVerificationPage());
     router.add('GET', '/change-password', changePasswordPage());
-    router.add('POST', '/change-password', changePassword(con));
-    router.add('GET', '*', pageNotFoundResponse);
+    router.add('POST', '/change-password', changePasswordReqList(con));
+    router.add('GET', '/download-upload-files', downloadUploadFilesReqList());
+    router.add('GET', '*', pageNotFoundResponse());
 
     http.createServer((req, res) => {
         const myReq = nodeJsToMyHttpRequest(req);

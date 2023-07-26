@@ -2,10 +2,9 @@ import {Connection} from "mysql";
 import {streamToString} from "../util/utility";
 import * as querystring from "querystring";
 import {MyHttpListener, MyHttpResponse} from "../util/my-http";
-import {skeletonHtmlPage} from "../util/html-snippets";
-import {pageHtmlResponse} from "../util/page-responses";
+import {pageHtmlResponse} from "../util/my-http-responses";
 
-export function registerHandler(con: Connection): MyHttpListener {
+export function registerReqList(con: Connection): MyHttpListener {
     return (req, user) =>
         streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);

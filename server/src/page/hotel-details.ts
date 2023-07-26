@@ -2,22 +2,18 @@ import {starRating, streamToString, xmlEscape} from "../util/utility";
 import {XMLParser} from "fast-xml-parser";
 import * as https from "https";
 import {MyHttpListener} from "../util/my-http";
-import {pageHtmlResponse} from "../util/page-responses";
+import {pageHtmlResponse} from "../util/my-http-responses";
 
 export function hotelDetailsPage(): MyHttpListener {
     return (req, user) =>
         new Promise((resolve, reject) => {
             const startTime = performance.now();
-            console.log("Request Started");
             https.get(`${process.env["XML_REQUEST_URL"]}`, res => {
-                console.log("Headers Received: " + (performance.now() - startTime))
                 streamToString(res).then(xmlString => {
-                    console.log("Body has been read: " + (performance.now() - startTime));
                     const xmlParser = new XMLParser({
                         ignoreAttributes: false,
                     });
                     const parsed = xmlParser.parse(xmlString);
-                    console.log("Parse Finished: " + (performance.now() - startTime));
                     const h = parsed.HtSearchRq.Hotel;
                     const contentHtml = `
 <h2>Hotel name  ${xmlEscape(h['@_Name'])}</h2>

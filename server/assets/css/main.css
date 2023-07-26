@@ -1,10 +1,4 @@
-@import "about.css";
 @import "contact.css";
-@import "contact-list.css";
-@import "home.css";
-@import "login.css";
-@import "register.css";
-@import "successful-action.css";
 
 body {
     margin: 0;

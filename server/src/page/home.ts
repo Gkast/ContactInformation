@@ -1,6 +1,5 @@
 import {MyHttpListener} from "../util/my-http";
-import {skeletonHtmlPage} from "../util/html-snippets";
-import {pageHtmlResponse} from "../util/page-responses";
+import {pageHtmlResponse} from "../util/my-http-responses";
 
 export function homePage(): MyHttpListener {
     return (req, user) => {
@@ -16,7 +15,8 @@ ${user ? `<p>Welcome ${user.username.toUpperCase()}</p>` : ''}
     <li><a href="/img-resize-page">Image Resizer</a></li>
     ${user ? `<li><a href="/contact">Contact</a></li>
               <li><a href="/contact-list">Contact List</a></li>
-              <li><a href="/upload">Upload File</a></li>
+              <li><a href="/upload-file">Upload File</a></li>
+              <li><a href="/upload-image">Upload Image</a></li>
               <li><a href="/file-list" class="action-button">File List</a></li>` : ``}
 </ul>`
         return Promise.resolve(pageHtmlResponse({user: user, title: "Home"}, contentHtml));

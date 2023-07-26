@@ -4,11 +4,9 @@ import {streamToString} from "./utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
 import {MyHttpListener} from "./my-http";
+import {redirectResponse, wrongCredentialsResponse} from "./my-http-responses";
 
-
-import {redirectResponse, wrongCredentialsResponse} from "./page-responses";
-
-export function recoveryTokenGenerator(con: Connection, smtpTransport: Transporter): MyHttpListener {
+export function recoveryTokenGeneratorReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
     return (req, user) =>
         streamToString(req.body).then(bodyString => {
             const p = querystring.parse(bodyString);
@@ -25,10 +23,12 @@ export function recoveryTokenGenerator(con: Connection, smtpTransport: Transport
                         } else {
                             const recoveryToken = randomstring.generate({
                                 length: 6,
-                                charset: "numeric"
+                                charset: "alphanumeric",
+                                capitalization: "lowercase"
                             });
-                            con.query(`INSERT INTO recovery_tokens (token_value, user_id)
-                                           VALUE (?, ?)`, [recoveryToken, results[0].id],
+                            con.query(`INSERT INTO recovery_tokens (token_value, user_id, ip_address, user_agent)
+                                           VALUE (?, ?, ?, ?)`, [recoveryToken, results[0].id, req.remoteAddr,
+                                    req.headers["user-agent"]],
                                 (err1, results1) => {
                                     if (err1) {
                                         reject(err1);

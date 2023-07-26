@@ -2,8 +2,7 @@ import {streamToString, xmlEscape} from "../util/utility";
 import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {MyHttpListener} from "../util/my-http";
-import {skeletonHtmlPage} from "../util/html-snippets";
-import {pageHtmlResponse} from "../util/page-responses";
+import {pageHtmlResponse} from "../util/my-http-responses";
 
 export function forgotPasswordPage(): MyHttpListener {
     return (req, user) => {
@@ -23,14 +22,7 @@ export function recoveryTokenVerificationPage(): MyHttpListener {
     <input type="text" placeholder="Enter Token" name="token">        
     <button type="submit">Verify Token</button>
 </form>`;
-        return Promise.resolve({
-            headers: new Map(Object.entries({
-                "Content-Type": "text/html"
-            })),
-            body: skeletonHtmlPage({
-                title: "Token Verification",
-            }, contentHtml)
-        })
+        return Promise.resolve(pageHtmlResponse({user: user, title: "Token Verification"}, contentHtml))
     }
 }
 
@@ -48,7 +40,7 @@ export function changePasswordPage(): MyHttpListener {
         })
 }
 
-export function changePassword(con: Connection): MyHttpListener {
+export function changePasswordReqList(con: Connection): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return new Promise((resolve, reject) => {

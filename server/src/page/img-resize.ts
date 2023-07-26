@@ -1,5 +1,5 @@
 import {MyHttpListener} from "../util/my-http";
-import {pageHtmlResponse} from "../util/page-responses";
+import {pageHtmlResponse} from "../util/my-http-responses";
 import * as sharp from "sharp";
 import * as https from "https";
 
@@ -16,7 +16,7 @@ export function imgResizePage(): MyHttpListener {
 </div>`))
 }
 
-export function imgResize(): MyHttpListener {
+export function imgResizeReqList(): MyHttpListener {
     return (req, user) => {
         const url = decodeURIComponent(req.url.searchParams.get('url'));
         const width = decodeURIComponent(req.url.searchParams.get('width')) ?

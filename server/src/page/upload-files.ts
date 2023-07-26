@@ -1,22 +1,21 @@
 import * as formidable from "formidable";
 import * as fs from "fs";
 import {MyHttpListener} from "../util/my-http";
-import {pageHtmlResponse} from "../util/page-responses";
+import {pageHtmlResponse} from "../util/my-http-responses";
 
-export function uploadPageReqList(): MyHttpListener {
+export function uploadFilePage(): MyHttpListener {
     return (req, user) => {
         const contentHtml = `
-<form method="post" id="upload-form" action="http://localhost:3000/upload" enctype="multipart/form-data">
+<form method="post" id="upload-form" action="http://localhost:3000/upload-file" enctype="multipart/form-data">
     <input type="file" name="uploadFile" id="upload-file" class="form-inputs" required>
-    <button type="submit" id="submit-button" class="btn">Submit</button>
+    <button type="submit" id="submit-button" class="btn">Upload</button>
 </form>`
-        return Promise.resolve(pageHtmlResponse({user: user, title: "Upload"}, contentHtml));
+        return Promise.resolve(pageHtmlResponse({user: user, title: "Upload File"}, contentHtml));
     }
 }
 
-export function uploadHandler(): MyHttpListener {
-    return (req, user) =>
-        new Promise((resolve, reject) => {
+export function uploadFileReqList(): MyHttpListener {
+    return (req, user) => new Promise((resolve, reject) =>
             new formidable.IncomingForm().parse(req.nodeJsReqObject, (err, fields, files) => {
                 if (err) {
                     reject(err);
@@ -39,6 +38,5 @@ export function uploadHandler(): MyHttpListener {
                         reject('Missing "uploadFile" param');
                     }
                 }
-            })
-        })
+            }))
 }

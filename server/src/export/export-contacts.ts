@@ -5,7 +5,7 @@ import {stringify as stringifyStream} from "csv-stringify";
 import {MyHttpListener, MyHttpResponse} from "../util/my-http";
 
 
-export function exportCSVContacts(con: Connection): MyHttpListener {
+export function exportCSVContactsReqList(con: Connection): MyHttpListener {
     return (req, user) => Promise.resolve({
         headers: new Map(Object.entries({
             'Content-Type': 'text/plain'
@@ -26,7 +26,7 @@ export function exportCSVContacts(con: Connection): MyHttpListener {
     } as MyHttpResponse)
 }
 
-export function exportXMLContacts(con: Connection): MyHttpListener {
+export function exportXMLContactsReqList(con: Connection): MyHttpListener {
     return (req, user) => Promise.resolve({
         headers: new Map(Object.entries({
             'Content-Type': 'text/xml'
@@ -71,7 +71,7 @@ export function exportXMLContacts(con: Connection): MyHttpListener {
     } as MyHttpResponse)
 }
 
-export function exportJSONContacts(con: Connection): MyHttpListener {
+export function exportJSONContactsReqList(con: Connection): MyHttpListener {
     return (req, user) => Promise.resolve({
         headers: new Map(Object.entries({
             'Content-Type': 'text/json'

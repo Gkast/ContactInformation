@@ -3,7 +3,7 @@ import {xmlEscape} from "../util/utility";
 import {format as dateFormat} from "fecha";
 import * as fs from "fs";
 import {MyHttpListener} from "../util/my-http";
-import {pageHtmlResponse} from "../util/page-responses";
+import {pageHtmlResponse} from "../util/my-http-responses";
 
 export function contactListPage(con: Connection): MyHttpListener {
     return (req, user) =>
@@ -29,7 +29,7 @@ export function contactListPage(con: Connection): MyHttpListener {
     <td class="cell">${xmlEscape(row.lastname)}</td>
     <td class="cell">${xmlEscape(row.email)}</td>
     <td class="cell">${xmlEscape(row.subject)}</td>
-    <td class="cell"><pre>${xmlEscape(row.message)}</pre></td>
+    <td class="cell" data-message="message cell"><pre>${xmlEscape(row.message)}</pre></td>
     <td class="cell"><a href="/contact-list/${row.id}" class="no-underline"><button class="btn">Edit</button></a></td>
     <td class="cell">
         <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
@@ -38,7 +38,9 @@ export function contactListPage(con: Connection): MyHttpListener {
     </td>
 </tr>`
                     });
-                    const contentHtml = `<table class="contact-list">
+                    const contentHtml = `
+<input type="text" placeholder="Search messages" data-contact-search="contact-search">
+<table class="contact-list">
     <thead>
     <tr>
         <th class="cell">#</th>
@@ -74,16 +76,16 @@ export function contactListPage(con: Connection): MyHttpListener {
         })
 }
 
-export function uploadsPage(): MyHttpListener {
+export function uploadListPage(): MyHttpListener {
     return (req, user) =>
         new Promise((resolve, reject) => {
             let fileQueryHtml = '';
             fs.readdir('../uploads/', (err, files) => {
-                files.forEach((file, i) => {
+                files.forEach((file, index) => {
                     fileQueryHtml += `
 <tr>
-    <td class="cell">${i + 1}</td>
-    <td class="cell">${file}</td>
+    <td class="cell">${index + 1}</td>
+    <td class="cell" data-file-name><span>${file}</span></td>
     <td class="cell"><a href="/uploads/${file}" class="no-underline"><button class="btn">Preview</button></a></td>
     <td class="cell"><a href="/uploads/${file}?download=1" class="no-underline"><button class="btn download-btn">Download</button></a></td>
 </tr>`
@@ -92,7 +94,9 @@ export function uploadsPage(): MyHttpListener {
                     reject(err)
                     return;
                 } else {
-                    const contentHtml = `<table class="contact-list">
+                    const contentHtml = `
+<input type="text" placeholder="Search files" data-file-search="file-search">
+<table class="contact-list">
     <thead>
     <tr>
         <th class="cell">#</th>
@@ -104,7 +108,8 @@ export function uploadsPage(): MyHttpListener {
         ${fileQueryHtml}
     </tbody>
 </table>
-<a href="/file-list" class="no-underline"><button class="btn">Refresh</button></a>`
+<a href="/file-list" class="no-underline"><button class="btn">Refresh</button></a>
+<a href="/download-upload-files" class="no-underline"><button class="btn">Download All</button></a>`
                     resolve(pageHtmlResponse({user: user, title: "Files"}, contentHtml));
                 }
             })
