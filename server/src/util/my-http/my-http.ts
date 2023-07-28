@@ -1,6 +1,6 @@
 import {IncomingHttpHeaders, IncomingMessage, ServerResponse} from "http";
 import {URL} from "url";
-import {UserDetails} from "../authentication/authentication";
+import {UserDetails} from "../../auth/authentication";
 
 export interface MyHttpRequest {
     remoteAddr?: string;
@@ -9,13 +9,13 @@ export interface MyHttpRequest {
     httpVersion?: string;
     headers?: IncomingHttpHeaders;
     body?: NodeJS.ReadableStream;
-    nodeJsReqObject?: IncomingMessage
+    nodeJsReqObject?: IncomingMessage;
 }
 
 export interface MyHttpResponse {
     status?: number;
-    headers?: Map<string, string | string[]>
-    body?: string | ((res: NodeJS.WritableStream) => void)
+    headers?: IncomingHttpHeaders;
+    body?: string | ((res: NodeJS.WritableStream) => void);
 }
 
 export type MyHttpListener = (req: MyHttpRequest, user?: UserDetails) => Promise<MyHttpResponse>
@@ -35,9 +35,9 @@ export function nodeJsToMyHttpRequest(req: IncomingMessage): MyHttpRequest {
 export function writeMyResToNodeResponse(myRes: MyHttpResponse, res: ServerResponse) {
     res.statusCode = myRes.status || 200;
     if (myRes.headers) {
-        myRes.headers.forEach((headerValue, name) => {
-            res.setHeader(name, headerValue);
-        });
+        Object.keys(myRes.headers).forEach(name => {
+            res.setHeader(name, myRes.headers[name]);
+        })
     }
     if (!myRes.body) {
         res.end();
@@ -46,4 +46,11 @@ export function writeMyResToNodeResponse(myRes: MyHttpResponse, res: ServerRespo
     } else {
         myRes.body(res);
     }
+}
+
+
+export interface HttpRouter<T, X = any> {
+    add(method: string, path: string, t: T);
+
+    find(method: string, path: string): [T, X];
 }

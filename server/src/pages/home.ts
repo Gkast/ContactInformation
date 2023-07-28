@@ -1,9 +1,8 @@
-import {MyHttpListener} from "../util/my-http";
-import {pageHtmlResponse} from "../util/my-http-responses";
+import {MyHttpListener} from "../util/my-http/my-http";
+import {pageHtmlResponse} from "../util/my-http/responses/200";
 
 export function homePage(): MyHttpListener {
-    return (req, user) => {
-        const contentHtml = `
+    return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Home"}, `
 <h1>Home</h1>
 ${user ? `<p>Welcome ${user.username.toUpperCase()}</p>` : ''}
 <ul>
@@ -15,10 +14,8 @@ ${user ? `<p>Welcome ${user.username.toUpperCase()}</p>` : ''}
     <li><a href="/img-resize-page">Image Resizer</a></li>
     ${user ? `<li><a href="/contact">Contact</a></li>
               <li><a href="/contact-list">Contact List</a></li>
+              <li><a href="/contact-list-stream">Contact List Stream</a></li>
               <li><a href="/upload-file">Upload File</a></li>
-              <li><a href="/upload-image">Upload Image</a></li>
-              <li><a href="/file-list" class="action-button">File List</a></li>` : ``}
-</ul>`
-        return Promise.resolve(pageHtmlResponse({user: user, title: "Home"}, contentHtml));
-    }
+              <li><a href="/file-list">File List</a></li>` : ``}
+</ul>`));
 }

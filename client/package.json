@@ -1,0 +1,16 @@
+{
+  "name": "giorgostest",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build2": "tsc --project tsconfig.json",
+    "build": "tsc ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/grecaptcha": "^3.0.4",
+    "typescript": "^4.7.4"
+  }
+}

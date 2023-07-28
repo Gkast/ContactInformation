@@ -1,18 +1,21 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "AMD",
     "target": "es6",
-    "lib": ["es6"],
-    "moduleResolution": "node",
-    "types": ["node"],
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "jsx": "react",
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "outDir": "build"
+    "outFile": "../server/assets/js/main.js"
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx"
+    "src/**/*.tsx",
+    "node_modules/@types/grecaptcha/index.d.ts"
   ],
   "exclude": [
     "build",

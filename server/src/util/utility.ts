@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as xmlEscapeLib from "xml-escape";
-import {MyHttpListener, MyHttpResponse} from "./my-http";
-
-
-import {pageNotFoundResponse} from "./my-http-responses";
+import {MyHttpListener, MyHttpResponse} from "./my-http/my-http";
+import {IncomingHttpHeaders} from "http";
+import {Readable} from "stream";
+import {pageNotFoundResponse} from "./my-http/responses/400";
 
 export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     const chunks = [];
@@ -33,13 +33,12 @@ export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListene
                 const forceDownload = req.url.searchParams.get('download') === '1';
                 const ext = decodedPath.split('.').pop();
                 return {
-                    headers: new Map(Object.entries(Object.assign(
-                        {
-                            'Content-Type': mimetypes.get(ext) || 'application/octet-stream',
-                            'Content-Length': result.size
-                        },
-                        forceDownload ? {'Content-Disposition': 'attachment'} : {}
-                    ))),
+                    headers: Object.assign({
+                            'content-type': mimetypes.get(ext) || 'application/octet-stream',
+                            "content-length": result.size.toString()
+                        } as IncomingHttpHeaders,
+                        forceDownload ? {"content-disposition": 'attachment'} as IncomingHttpHeaders : {}
+                    ),
                     body: res => fs.createReadStream('..' + decodedPath).pipe(res)
                 } as MyHttpResponse;
             } else {
@@ -47,6 +46,16 @@ export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListene
             }
         }).catch(pageNotFoundResponse);
     }
+}
+
+function intRange(start, arraySize, increment) {
+    let range = [];
+    let temp = start;
+    for (let i = 0; i < arraySize; i++) {
+        range.push(temp);
+        temp += increment;
+    }
+    return range;
 }
 
 export function range(start: number, end: number, step = 1) {
@@ -68,7 +77,7 @@ export function plusMinutes(date: Date, minutes_diff: number): Date {
     return new Date(date.getTime() + 1000 * 60 * minutes_diff);
 }
 
-export function singleParam<T>(value: T | T[]): T {
+export function firstParam<T>(value: T | T[]): T {
     return value instanceof Array ? value[0] : value;
 }
 
@@ -86,4 +95,8 @@ export function starRating(stars: number): string {
         rating += "★ ";
     }
     return rating;
+}
+
+export function stringAsStream(s: string): NodeJS.ReadableStream {
+    return Readable.from(s);
 }

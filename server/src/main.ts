@@ -3,30 +3,34 @@ import * as fs from "fs";
 import {staticFileReqList} from "./util/utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
-import {contactDeleteReqList, contactEditPage, contactEditReqList, contactPage, contactReqList} from "./page/contact";
-import {registerPage, registerReqList} from "./page/register";
-import {loginPage, loginReqList, logoutReqList} from "./page/login";
-import {homePage} from "./page/home";
-import {contactListPage, uploadListPage} from "./page/list";
-import {aboutPage} from "./page/about";
-import {authHandler, withUserId} from "./authentication/authentication";
-import {uploadFilePage, uploadFileReqList} from "./page/upload-files";
+import {contactDeleteReqList, contactEditPage, contactEditReqList, contactPage, contactReqList} from "./pages/contact";
+import {registerPage, registerReqList} from "./pages/register";
+import {loginPage, loginReqList, logoutReqList} from "./pages/login";
+import {homePage} from "./pages/home";
+import {contactListPage, streamableContactListPage, uploadListPage} from "./pages/list";
+import {aboutPage} from "./pages/about";
+import {authHandler, withUserId} from "./auth/authentication";
+import {uploadFilePage, uploadFileReqList} from "./pages/upload-files";
 import * as TrekRouter from 'trek-router';
-import {captchaProtectedHandler} from "./authentication/captcha";
-import {testCSVReqList, TestCSVStreamPipeReqList, TestCSVStreamReqList} from "./export/csv";
-import {exportCSVContactsReqList, exportJSONContactsReqList, exportXMLContactsReqList} from "./export/export-contacts";
-import {hotelDetailsPage} from "./page/hotel-details";
+import {captchaProtectedHandler} from "./auth/captcha";
+import {testCSVReqList, TestCSVStreamPipeReqList, TestCSVStreamReqList} from "./util/export/csv";
+import {
+    exportCSVContactsReqList,
+    exportJSONContactsReqList,
+    exportXMLContactsReqList
+} from "./util/export/export-contacts";
+import {hotelDetailsPage} from "./pages/hotel-details";
 import {
     changePasswordPage,
     changePasswordReqList,
     forgotPasswordPage,
     recoveryTokenVerificationPage
-} from "./page/reset-password";
-import {recoveryTokenGeneratorReqList} from "./util/recovery-token";
-import {MyHttpListener, nodeJsToMyHttpRequest, writeMyResToNodeResponse} from "./util/my-http";
-import {pageNotFoundResponse} from "./util/my-http-responses";
-import {imgResizePage, imgResizeReqList} from "./page/img-resize";
-import {downloadUploadFilesReqList} from "./util/compress";
+} from "./pages/reset-password";
+import {recoveryTokenGeneratorReqList} from "./util/recovery/recovery-token";
+import {HttpRouter, MyHttpListener, nodeJsToMyHttpRequest, writeMyResToNodeResponse} from "./util/my-http/my-http";
+import {imgResizePage, imgResizeReqList} from "./pages/img-resize";
+import {downloadUploadFilesReqList} from "./util/compress/compress";
+import {pageNotFoundResponse} from "./util/my-http/responses/400";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -45,11 +49,11 @@ Promise.all([
         } else {
             resolve(con);
         }
-    })),
+    }))
 ]).then(all => {
     const mimetypes = all[0];
     const captchaSecret = process.env['CAPTCHA_SECRET'];
-    const router = new TrekRouter();
+    const router: HttpRouter<MyHttpListener> = new TrekRouter();
 
     router.add('GET', '/about', aboutPage());
     router.add('GET', '/contact', authHandler(contactPage()));
@@ -57,6 +61,7 @@ Promise.all([
     router.add('GET', '/', homePage());
     router.add('GET', '/home', homePage());
     router.add('GET', "/contact-list", authHandler(contactListPage(con)));
+    router.add('GET', "/contact-list-stream", authHandler(streamableContactListPage(con)));
     router.add('POST', '/contact-list/:id/delete', authHandler(contactDeleteReqList(con)));
     router.add('GET', '/contact-list/:id', authHandler(contactEditPage(con)));
     router.add('POST', '/contact-list/:id', authHandler(contactEditReqList(con)));
@@ -85,12 +90,12 @@ Promise.all([
     router.add('GET', '/change-password', changePasswordPage());
     router.add('POST', '/change-password', changePasswordReqList(con));
     router.add('GET', '/download-upload-files', downloadUploadFilesReqList());
-    router.add('GET', '*', pageNotFoundResponse());
+    router.add('GET', '*', () => pageNotFoundResponse());
 
     http.createServer((req, res) => {
         const myReq = nodeJsToMyHttpRequest(req);
         const parsedUrl = myReq.url;
-        const handlerFound: [MyHttpListener, any] = router.find(req.method, parsedUrl.pathname.toLowerCase())
+        const handlerFound = router.find(req.method, parsedUrl.pathname.toLowerCase())
 
         if (!handlerFound) {
             res.setHeader('Content-Type', 'text/plain');
