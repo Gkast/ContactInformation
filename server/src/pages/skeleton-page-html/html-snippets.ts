@@ -17,5 +17,8 @@ export function headerHtml(user: UserDetails) {
 }
 
 export function footerHtml() {
-    return `<div><span>Just a random footer</span></div>`;
+    return `
+<div>
+    <span>Just a random footer</span>
+</div>`;
 }

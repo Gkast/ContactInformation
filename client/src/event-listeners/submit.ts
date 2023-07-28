@@ -1,6 +1,6 @@
 document.addEventListener('submit', (e) => {
     if (e.target instanceof HTMLFormElement) {
-        if (e.target.hasAttribute('data-captcha-form')){
+        if (e.target.hasAttribute('data-captcha-form')) {
             if (!grecaptcha.getResponse()) {
                 e.preventDefault();
                 console.error("captcha not completed");

@@ -6,11 +6,11 @@ import {pageHtmlResponse} from "../util/my-http/responses/200";
 
 export function hotelDetailsPage(): MyHttpListener {
     return (req, user) => new Promise((resolve, reject) => https.get(`${process.env["XML_REQUEST_URL"]}`, res =>
-            streamToString(res).then(xmlString => {
-                const xmlParser = new XMLParser({ignoreAttributes: false});
-                const parsed = xmlParser.parse(xmlString);
-                const h = parsed.HtSearchRq.Hotel;
-                resolve(pageHtmlResponse({user: user, title: 'Hotel details for ' + parsed.HtSearchRq.HID}, `
+        streamToString(res).then(xmlString => {
+            const xmlParser = new XMLParser({ignoreAttributes: false});
+            const parsed = xmlParser.parse(xmlString);
+            const h = parsed.HtSearchRq.Hotel;
+            resolve(pageHtmlResponse({user: user, title: 'Hotel details for ' + parsed.HtSearchRq.HID}, `
 <h2>Hotel name  ${xmlEscape(h['@_Name'])}</h2>
 <h3>Hotel Rating:  ${starRating(parseInt(xmlEscape(h.Official_Rating).split(" ")[0]))}</h3>
 <h3>Hotel Location:  ${xmlEscape(parsed.HtSearchRq.Destination)}</h3>
@@ -27,6 +27,6 @@ export function hotelDetailsPage(): MyHttpListener {
     ${(h.Hotel_Facilities.Facility as string[]).map(facilities => `<li>${xmlEscape(facilities)}</li>`).join("")}
 </ul>
 `));
-            })));
+        })));
 }
 

@@ -45,22 +45,22 @@ export function contactListPage(con: Connection): MyHttpListener {
                 });
                 resolve(pageHtmlResponse({user: user, title: "Contact List"}, `
 <div class="center-container">
-<input type="text" placeholder="Search messages" class="search-list" data-contact-search>
-${queryToHtml}
-<div class="list-button-container">
-<a href="/contact-list" class="no-underline">
-    <button class="btn">Refresh</button>
-</a>
-<a href="/contact-list-csv" class="no-underline">
-    <button class="btn">Export to CSV</button>
-</a>
-<a href="/contact-list-xml" class="no-underline">
-    <button class="btn">Export to XML</button>
-</a>
-<a href="/contact-list-json" class="no-underline">
-    <button class="btn">Export to JSON</button>
-</a>
-</div>
+    <input type="text" placeholder="Search messages" class="search-list" data-contact-search>
+    ${queryToHtml}
+    <div class="list-button-container">
+    <a href="/contact-list" class="no-underline">
+        <button class="btn">Refresh</button>
+    </a>
+    <a href="/contact-list-csv" class="no-underline">
+        <button class="btn">Export to CSV</button>
+    </a>
+    <a href="/contact-list-xml" class="no-underline">
+        <button class="btn">Export to XML</button>
+    </a>
+    <a href="/contact-list-json" class="no-underline">
+        <button class="btn">Export to JSON</button>
+    </a>
+    </div>
 </div>`));
             }
         });
@@ -73,7 +73,7 @@ export function streamableContactListPage(con: Connection): MyHttpListener {
         res.write(pageHtmlTop({user: user, title: "Contact List"}));
         res.write(`
 <div class="center-container">
-<input type="text" placeholder="Search messages" class="search-list" data-contact-search>
+    <input type="text" placeholder="Search messages" class="search-list" data-contact-search>
 `);
         con.query(`SELECT c.*, u.username
                    FROM contact_form_submits c
@@ -109,20 +109,20 @@ export function streamableContactListPage(con: Connection): MyHttpListener {
             }
         })).on('end', () => {
             res.write(`
-<div class="list-button-container">
-<a href="/contact-list" class="no-underline">
-    <button class="btn">Refresh</button>
-</a>
-<a href="/contact-list-csv" class="no-underline">
-    <button class="btn">Export to CSV</button>
-</a>
-<a href="/contact-list-xml" class="no-underline">
-    <button class="btn">Export to XML</button>
-</a>
-<a href="/contact-list-json" class="no-underline">
-    <button class="btn">Export to JSON</button>
-</a>
-</div>
+    <div class="list-button-container">
+    <a href="/contact-list" class="no-underline">
+        <button class="btn">Refresh</button>
+    </a>
+    <a href="/contact-list-csv" class="no-underline">
+        <button class="btn">Export to CSV</button>
+    </a>
+    <a href="/contact-list-xml" class="no-underline">
+        <button class="btn">Export to XML</button>
+    </a>
+    <a href="/contact-list-json" class="no-underline">
+        <button class="btn">Export to JSON</button>
+    </a>
+    </div>
 </div>`);
             res.end(pageHtmlBottom());
         }).pipe(res, {end: false})
@@ -136,15 +136,15 @@ export function uploadListPage(): MyHttpListener {
             files.forEach((file, index) => {
                 fileQueryHtml += `
     <div class="list-container flx-rw">
-            <span class="mr-lft">${file}</span>
-            <div class="file-list-buttons mr-rgt">
+        <span class="mr-lft">${file}</span>
+        <div class="file-list-buttons mr-rgt">
             <a href="/uploads/${file}" class="no-underline mr-rgt">
                 <button class="btn">Preview</button>
             </a>
             <a href="/uploads/${file}?download=1" class="no-underline">
                 <button class="btn">Download</button>
             </a>
-            </div>
+        </div>
     </div>
 `
             });

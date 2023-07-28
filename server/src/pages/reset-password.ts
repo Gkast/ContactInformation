@@ -47,8 +47,8 @@ export function changePasswordReqList(con: Connection): MyHttpListener {
                                      AND DATE_ADD(created_token_time, INTERVAL 30 MINUTE) > CURRENT_TIMESTAMP)`,
                 [p.password, p.token],
                 (err, results, fields) => err ? reject(err) : results.affectedRows > 0 ?
-                        resolve(pageHtmlResponse({user: user, title: "Success"}, `<h1>Password Changed</h1>`)) :
-                        resolve(pageHtmlResponse({user: user, title: "Token Expired"}, `<h1>Token Expired</h1>`))
+                    resolve(pageHtmlResponse({user: user, title: "Success"}, `<h1>Password Changed</h1>`)) :
+                    resolve(pageHtmlResponse({user: user, title: "Token Expired"}, `<h1>Token Expired</h1>`))
             ));
     });
 }

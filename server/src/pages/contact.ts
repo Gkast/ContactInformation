@@ -42,7 +42,9 @@ export function contactReqList(con: Connection, smtpTransport: Transporter): MyH
                                 resolve(pageHtmlResponse({user: user, title: "Successful Submission"}, `
     <h1>Successful Submission</h1>
     <p>Your Contact ID:${results.insertId}</p>
-    <a href="/home" class="no-underline"><button class="btn">Home</button></a>`)))));
+    <a href="/home" class="no-underline">
+        <button class="btn">Home</button>
+    </a>`)))));
     })
 }
 

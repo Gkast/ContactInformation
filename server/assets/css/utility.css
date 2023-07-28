@@ -67,7 +67,7 @@ input::file-selector-button:hover {
     border-width: 1px 0 2px 0;
 }
 
-.mr-tp{
+.mr-tp {
     margin-top: 20px;
 }
 
@@ -79,11 +79,11 @@ input::file-selector-button:hover {
     margin-bottom: 20px;
 }
 
-.mr-lft{
+.mr-lft {
     margin-left: 20px;
 }
 
-.pd-10-20{
+.pd-10-20 {
     padding: 10px 20px;
 }
 

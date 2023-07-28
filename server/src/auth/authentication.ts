@@ -40,10 +40,10 @@ export function withUserId(con: Connection, handler: MyHttpListener): MyHttpList
                     con.query(`UPDATE login_cookies
                                SET last_update_datetime=CURRENT_TIMESTAMP
                                WHERE cookie_value = ?`, [loginCookie], err => {
-                            if (err) {
-                                console.error('UPDATE last action error', loginCookie, err)
-                            }
-                        })
+                        if (err) {
+                            console.error('UPDATE last action error', loginCookie, err)
+                        }
+                    })
                 }
                 return handler(req, user);
             });
