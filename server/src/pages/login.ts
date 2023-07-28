@@ -9,17 +9,20 @@ import {redirectResponse} from "../util/my-http/responses/300";
 
 export function loginPage(): MyHttpListener {
     return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Login", hasCaptcha: true}, `
-<form action="/login" method="post" data-captcha-form>
-  <label>Username:</label>
+<div class="center-container">
+<form action="/login" method="post" class="login-register-container" data-captcha-form>
   <input type="text" placeholder="Username" name="username" required>
-  <label>Password:</label>
   <input type="password" placeholder="Password" name="password" required>
-  <label>Remember me:</label>
+  <div class="login-action">
+  <label class="flx-rw">Remember me:
   <input type="checkbox" name="remember-me" value="1">
+  </label>
   <a href="/forgot-password">Forgot Password?</a>
-  <div class="g-recaptcha" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
+  </div>
+  <div class="g-recaptcha mr-btm" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
   <button type="submit" class="btn">Login</button>
-</form>`))
+</form>
+</div>`))
 }
 
 export function loginReqList(con: Connection): MyHttpListener {

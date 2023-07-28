@@ -1,16 +1,16 @@
-a{
+.no-underline {
     text-decoration: none;
     color: black;
 }
 
-ul{
+ul {
     display: block;
     list-style-type: none;
     padding-left: 0;
     margin: 0;
 }
 
-.btn{
+.btn {
     background-color: white;
     border: 2px solid black;
     border-radius: 10px;
@@ -22,7 +22,7 @@ ul{
     cursor: pointer;
 }
 
-.btn:hover{
+.btn:hover {
     background-color: black;
     color: white;
     transition: ease-in-out 100ms;
@@ -40,13 +40,13 @@ input::file-selector-button {
     cursor: pointer;
 }
 
-input::file-selector-button:hover{
+input::file-selector-button:hover {
     background-color: black;
     color: white;
     transition: ease-in-out 100ms;
 }
 
-.article-message{
+.article-message {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -55,33 +55,45 @@ input::file-selector-button:hover{
     margin: 10px 0;
 }
 
-.ul-container{
+.ul-container {
     width: 70%;
 }
 
-.li-tp-br{
+.li-tp-br {
     border-width: 2px 0 1px 0;
 }
 
-.li-btm-br{
+.li-btm-br {
     border-width: 1px 0 2px 0;
 }
 
-.mr-rgt{
+.mr-tp{
+    margin-top: 20px;
+}
+
+.mr-rgt {
     margin-right: 20px;
 }
 
-.mr-btm{
+.mr-btm {
     margin-bottom: 20px;
 }
 
-.center-container{
+.mr-lft{
+    margin-left: 20px;
+}
+
+.pd-10-20{
+    padding: 10px 20px;
+}
+
+.center-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.flx-rw{
+.flx-rw {
     display: flex;
     flex-direction: row;
     justify-content: space-between;

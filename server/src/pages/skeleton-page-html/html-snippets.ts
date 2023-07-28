@@ -2,10 +2,10 @@ import {UserDetails} from "../../auth/authentication";
 
 export function headerHtml(user: UserDetails) {
     return !user ? `
-<a href="/login">
+<a href="/login" class="no-underline">
     <button class="btn">Log In</button>
 </a>
-<a href="/register">
+<a href="/register" class="no-underline">
     <button class="btn">Register</button>
 </a>` : `
 <span class="user">${user.username}</span>

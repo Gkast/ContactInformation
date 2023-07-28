@@ -1,0 +1,32 @@
+.login-register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+    padding: 20px 40px;
+}
+
+.login-register-container input {
+    width: 80%;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid black;
+    margin-bottom: 20px;
+}
+
+.login-register-container input[type=checkbox] {
+    display: inline;
+    width: auto;
+    padding: 0;
+    margin: 0 0 0 10px;
+    accent-color: black;
+}
+
+.login-action {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin-bottom: 20px;
+}

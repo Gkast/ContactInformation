@@ -26,7 +26,7 @@ export function uploadFileReqList(): MyHttpListener {
                 file ? fs.rename(file.filepath, '../uploads/' + file.originalFilename, err =>
                     err ? reject(err) : resolve(pageHtmlResponse({user: user, title: "File uploaded"}, `
 <h1>File Uploaded</h1>
-<a href="/home">
+<a href="/home" class="no-underline">
     <button class="btn">Home</button>
 </a>`))
                 ) : reject('Missing "uploadFile" param');

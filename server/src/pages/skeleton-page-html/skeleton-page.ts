@@ -17,7 +17,7 @@ export function pageHtmlTop(params: PageParams & NodeJS.Dict<any>): string {
 <body>
     <header class="hd-cont">
         <div>
-            <h1><a href="/home" title="Home">Contact Information</a></h1>
+            <h1><a href="/home" title="Home" class="no-underline">Server Side Rendering Project</a></h1>
         </div>
         <nav class="nv-cont">
             ${headerHtml(params.user)}

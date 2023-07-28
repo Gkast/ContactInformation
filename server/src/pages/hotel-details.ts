@@ -18,7 +18,7 @@ export function hotelDetailsPage(): MyHttpListener {
 <p>${xmlEscape(h.Hotel_Desc)}</p>
 <div>
     ${(h.Hotel_Photos.Photo as string[]).slice(0, 5).map(url => `
-    <a href="${xmlEscape(url)}" target="_blank">
+    <a href="${xmlEscape(url)}" target="_blank" class="no-underline">
         <img alt="Hotel Photo" width="200px" src="${xmlEscape(url)}">
     </a>`).join('<br><br>')}
 </div>

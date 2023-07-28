@@ -11,38 +11,38 @@ export function homePage(): MyHttpListener {
 <div class="ul-container">
 <ul class="nv-home-links">
     <li class="home-li li-tp-br">
-        <a href="/about"><span>About us</span></a>
+        <a href="/about" class="no-underline"><span>About us</span></a>
     </li>
     <li class="home-li">
-        <a href="/csv"><span>Export CSV Test</span></a>
+        <a href="/csv" class="no-underline"><span>Export CSV Test</span></a>
     </li>
     <li class="home-li">
-        <a href="/csv-stream"><span>Export CSV Stream Test</span></a>
+        <a href="/csv-stream" class="no-underline"><span>Export CSV Stream Test</span></a>
     </li>
     <li class="home-li">
-        <a href="/csv-stream-pipe"><span>Export CSV Stream Pipe Test</span></a>
+        <a href="/csv-stream-pipe" class="no-underline"><span>Export CSV Stream Pipe Test</span></a>
     </li>
     <li class="home-li">
-        <a href="/hotel-details-page"><span>Hotel Details</span></a>
+        <a href="/hotel-details-page" class="no-underline"><span>Hotel Details</span></a>
     </li class="home-li">
     <li class="home-li">
-        <a href="/img-resize-page"><span>Image Resizer</span></a>
+        <a href="/img-resize-page" class="no-underline"><span>Image Resizer</span></a>
     </li>
     ${user ? `
     <li class="home-li">
-        <a href="/contact"><span>Contact</span></a>
+        <a href="/contact" class="no-underline"><span>Contact</span></a>
     </li>
     <li class="home-li">
-        <a href="/contact-list"><span>Contact List</span></a>
+        <a href="/contact-list" class="no-underline"><span>Contact List</span></a>
     </li>
     <li class="home-li">
-        <a href="/contact-list-stream"><span>Contact List Stream</span></a>
+        <a href="/contact-list-stream" class="no-underline"><span>Contact List Stream</span></a>
     </li>
     <li class="home-li">
-        <a href="/upload-file"><span>Upload File</span></a>
+        <a href="/upload-file" class="no-underline"><span>Upload File</span></a>
     </li>
     <li class="home-li li-btm-br">
-        <a href="/file-list"><span>File List</span></a>
+        <a href="/file-list" class="no-underline"><span>File List</span></a>
     </li>` : ``}
 </ul>
 </div>

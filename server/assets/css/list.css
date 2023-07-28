@@ -1,11 +1,11 @@
-.list-button-container{
+.list-button-container {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     width: 100%;
 }
 
-.list-container{
+.list-container {
     width: 100%;
     padding: 20px 0;
     margin: 20px 0;
@@ -14,12 +14,21 @@
     border-width: 1px 0;
 }
 
-.list-container span{
+.list-container span {
     display: block;
     margin-right: 15px;
 }
 
-.bottom{
+.bottom {
     display: inline-flex;
     flex-direction: row;
+}
+
+.search-list{
+    width: 80%;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid;
+    font-size: 16px;
+    margin-bottom: 20px;
 }
