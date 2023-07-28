@@ -1,0 +1,25 @@
+.form-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    padding: 20px 40px;
+}
+
+.form-container input,textarea{
+    width: 80%;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid black;
+    margin-bottom: 20px;
+}
+
+.form-container textarea{
+    height: 200px;
+    resize: none;
+}
+
+.form-container input[type=file]{
+    border: none;
+    width: auto;
+}

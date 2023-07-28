@@ -15,15 +15,15 @@ export function pageHtmlTop(params: PageParams & NodeJS.Dict<any>): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <header>
+    <header class="hd-cont">
         <div>
             <h1><a href="/home" title="Home">Contact Information</a></h1>
         </div>
-        <nav>
+        <nav class="nv-cont">
             ${headerHtml(params.user)}
         </nav>
     </header>
-    <main>
+    <main class="mn-sect">
         <article>`;
 }
 
@@ -31,7 +31,7 @@ export function pageHtmlBottom(hasCaptcha = false): string {
     return `
         </article>
     </main>
-    <footer>
+    <footer class="ft-cont">
         ${footerHtml()}
     </footer>
     <script src="../../../assets/js/main.js"></script>

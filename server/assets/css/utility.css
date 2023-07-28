@@ -1,0 +1,89 @@
+a{
+    text-decoration: none;
+    color: black;
+}
+
+ul{
+    display: block;
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.btn{
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 10px;
+    color: black;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-color: black;
+    color: white;
+    transition: ease-in-out 100ms;
+}
+
+input::file-selector-button {
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 10px;
+    color: black;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+input::file-selector-button:hover{
+    background-color: black;
+    color: white;
+    transition: ease-in-out 100ms;
+}
+
+.article-message{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%;
+    margin: 10px 0;
+}
+
+.ul-container{
+    width: 70%;
+}
+
+.li-tp-br{
+    border-width: 2px 0 1px 0;
+}
+
+.li-btm-br{
+    border-width: 1px 0 2px 0;
+}
+
+.mr-rgt{
+    margin-right: 20px;
+}
+
+.mr-btm{
+    margin-bottom: 20px;
+}
+
+.center-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flx-rw{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}

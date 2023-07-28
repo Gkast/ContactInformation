@@ -8,7 +8,7 @@ export function forgotPasswordPage(): MyHttpListener {
     return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Forgot Password"}, `
 <form method="POST" action="/token-generator">
     <input type="text" placeholder="Enter Username" name="username">
-    <button type="submit">Send Recovery Token</button>
+    <button type="submit" class="btn">Send Recovery Token</button>
 </form>`))
 }
 
@@ -16,7 +16,7 @@ export function recoveryTokenVerificationPage(): MyHttpListener {
     return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Token Verification"}, `
 <form method="get" action="/change-password">
     <input type="text" placeholder="Enter Token" name="token">        
-    <button type="submit">Verify Token</button>
+    <button type="submit" class="btn">Verify Token</button>
 </form>`))
 }
 
@@ -25,7 +25,7 @@ export function changePasswordPage(): MyHttpListener {
 <form method="POST" action="/change-password">
     <input type="password" placeholder="Enter Password" name="password">            
     <input type="hidden" name="token" value="${xmlEscape(req.url.searchParams.get('token'))}">         
-    <button type="submit">Change Password</button>   
+    <button type="submit" class="btn">Change Password</button>   
 </form>`));
 }
 

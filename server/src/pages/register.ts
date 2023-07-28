@@ -14,7 +14,7 @@ export function registerPage(): MyHttpListener {
     <label>Email:</label>
     <input type="email" placeholder="Email" name="email" required>
     <div class="g-recaptcha" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
-    <button type="submit">Register</button>
+    <button type="submit" class="btn">Register</button>
 </form>`));
 }
 
@@ -27,7 +27,7 @@ export function registerReqList(con: Connection): MyHttpListener {
                     err => err? reject(err) : resolve(pageHtmlResponse({user: user, title: "Successful Registration"}, `
 <h1>Successful Registration</h1>
 <a href="/home">
-    <button>Home</button>
+    <button class="btn">Home</button>
 </a>`))
                 ));
         });

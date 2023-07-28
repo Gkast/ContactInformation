@@ -20,21 +20,21 @@ export function pageHtmlResponse(
 
 export function PageResponseStream(
     contentType: string,
-    response: ((res: NodeJS.WritableStream) => void)): MyHttpResponse {
+    pageResponseStream: ((res: NodeJS.WritableStream) => void)): MyHttpResponse {
     return {
         status: 200,
         headers: {"content-type": contentType},
-        body: response
+        body: pageResponseStream
     }
 }
 
 export function downloadResponse(
     filename: string,
-    bodyResponse: string | ((res: NodeJS.WritableStream) => void)
+    pageResponse: string | ((res: NodeJS.WritableStream) => void)
 ): MyHttpResponse {
     return {
         status: 200,
         headers: {"content-disposition": `attachment; ${filename ? `filename=${filename}` : ''}`},
-        body: bodyResponse
+        body: pageResponse
     }
 }

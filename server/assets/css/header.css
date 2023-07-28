@@ -1,0 +1,26 @@
+.hd-cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    box-shadow: 1px 3px 10px #adadad;
+    background-color: white;
+}
+
+.nv-cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 250px;
+    padding: 10px 20px;
+}
+
+.user {
+    font-weight: bold;
+    font-size: 24px;
+}

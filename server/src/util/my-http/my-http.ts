@@ -20,7 +20,7 @@ export interface MyHttpResponse {
 
 export type MyHttpListener = (req: MyHttpRequest, user?: UserDetails) => Promise<MyHttpResponse>
 
-export function nodeJsToMyHttpRequest(req: IncomingMessage): MyHttpRequest {
+export function nodeReqToMyHttpReq(req: IncomingMessage): MyHttpRequest {
     return {
         url: new URL('http://' + req.headers.host + req.url),
         body: req,
@@ -32,20 +32,16 @@ export function nodeJsToMyHttpRequest(req: IncomingMessage): MyHttpRequest {
     }
 }
 
-export function writeMyResToNodeResponse(myRes: MyHttpResponse, res: ServerResponse) {
+export function myResToNodeRes(myRes: MyHttpResponse, res: ServerResponse) {
     res.statusCode = myRes.status || 200;
     if (myRes.headers) {
         Object.keys(myRes.headers).forEach(name => {
             res.setHeader(name, myRes.headers[name]);
         })
     }
-    if (!myRes.body) {
-        res.end();
-    } else if (typeof myRes.body === 'string') {
-        res.end(myRes.body);
-    } else {
-        myRes.body(res);
-    }
+    !myRes.body ? res.end() :
+        typeof myRes.body === 'string' ?
+            res.end(myRes.body) : myRes.body(res);
 }
 
 

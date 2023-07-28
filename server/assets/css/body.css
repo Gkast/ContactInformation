@@ -1,0 +1,23 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: sans-serif;
+    background-color: #e1e1e1;
+}
+
+article{
+    margin: auto 0;
+}
+
+.mn-sect {
+    background-color: white;
+    width: 80%;
+    padding: 40px 20px;
+    box-shadow: 1px 3px 10px #adadad;
+    margin: 40px 0;
+}

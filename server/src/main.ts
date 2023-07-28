@@ -10,7 +10,7 @@ import {homePage} from "./pages/home";
 import {contactListPage, streamableContactListPage, uploadListPage} from "./pages/list";
 import {aboutPage} from "./pages/about";
 import {authHandler, withUserId} from "./auth/authentication";
-import {uploadFilePage, uploadFileReqList} from "./pages/upload-files";
+import {uploadFilePage, uploadFileReqList} from "./pages/upload-file";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./auth/captcha";
 import {testCSVReqList, TestCSVStreamPipeReqList, TestCSVStreamReqList} from "./util/export/csv";
@@ -27,7 +27,7 @@ import {
     recoveryTokenVerificationPage
 } from "./pages/reset-password";
 import {recoveryTokenGeneratorReqList} from "./util/recovery/recovery-token";
-import {HttpRouter, MyHttpListener, nodeJsToMyHttpRequest, writeMyResToNodeResponse} from "./util/my-http/my-http";
+import {HttpRouter, MyHttpListener, nodeReqToMyHttpReq, myResToNodeRes} from "./util/my-http/my-http";
 import {imgResizePage, imgResizeReqList} from "./pages/img-resize";
 import {downloadUploadFilesReqList} from "./util/compress/compress";
 import {pageNotFoundResponse} from "./util/my-http/responses/400";
@@ -41,12 +41,15 @@ const smtpTransport = nodemailer.createTransport({
 const con = mysql.createConnection(process.env.MYSQL_CONN_STRING);
 
 Promise.all([
-    fs.promises.readFile('../misc/mimetypes.json', {encoding: 'utf-8'}).then(
-        fileContents => new Map<string, string>(Object.entries(JSON.parse(fileContents)))),
+    fs.promises.readFile('../misc/mimetypes.json', {encoding: 'utf-8'}).then(fileContents => {
+        console.log("Mimetypes.json has been read");
+        return new Map<string, string>(Object.entries(JSON.parse(fileContents)));
+    }),
     new Promise((resolve, reject) => con.connect(err => {
         if (err) {
             reject(err);
         } else {
+            console.log("Connected to database");
             resolve(con);
         }
     }))
@@ -54,6 +57,8 @@ Promise.all([
     const mimetypes = all[0];
     const captchaSecret = process.env['CAPTCHA_SECRET'];
     const router: HttpRouter<MyHttpListener> = new TrekRouter();
+
+    console.log("Initializing router");
 
     router.add('GET', '/about', aboutPage());
     router.add('GET', '/contact', authHandler(contactPage()));
@@ -90,10 +95,12 @@ Promise.all([
     router.add('GET', '/change-password', changePasswordPage());
     router.add('POST', '/change-password', changePasswordReqList(con));
     router.add('GET', '/download-upload-files', downloadUploadFilesReqList());
-    router.add('GET', '*', () => pageNotFoundResponse());
+    router.add('GET', '*', () => Promise.resolve(pageNotFoundResponse()));
+
+    console.log("Router initialized");
 
     http.createServer((req, res) => {
-        const myReq = nodeJsToMyHttpRequest(req);
+        const myReq = nodeReqToMyHttpReq(req);
         const parsedUrl = myReq.url;
         const handlerFound = router.find(req.method, parsedUrl.pathname.toLowerCase())
 
@@ -102,8 +109,9 @@ Promise.all([
             res.end('Not found page.')
             return;
         }
+
         withUserId(con, handlerFound[0])(myReq)
-            .then(myRes => writeMyResToNodeResponse(myRes, res))
+            .then(myRes => myResToNodeRes(myRes, res))
             .catch(err => {
                 console.error(new Date(), err);
                 res.statusCode = 500;
@@ -111,6 +119,7 @@ Promise.all([
                 res.end('An unexpected error occurred.')
             })
     }).listen(3000);
+    console.log("Listening on 3000");
 });
 
 

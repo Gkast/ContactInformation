@@ -22,61 +22,46 @@ export function contactListPage(con: Connection): MyHttpListener {
                 let queryToHtml = "";
                 (result as any[]).forEach((row, i) => {
                     queryToHtml += `
-<tr>
-    <td>${i + 1}</td>
-    ${user.admin ? `<td>${xmlEscape(row.username)}</td>` : ''}
-    <td>${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</td>
-    <td>${xmlEscape(row.firstname)}</td>
-    <td>${xmlEscape(row.lastname)}</td>
-    <td>${xmlEscape(row.email)}</td>
-    <td>${xmlEscape(row.subject)}</td>
-    <td data-message="message cell">
-        <pre>${xmlEscape(row.message)}</pre>
-    </td>
-    <td>
-        <a href="/contact-list/${row.id}">
-            <button>Edit</button>
-        </a>
-    </td>
-    <td>
-        <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
-            <button>DELETE</button>
-        </form>
-    </td>
-</tr>`
+<div class="list-container">
+        <div class="top mr-btm">
+            <span>Firstname: ${xmlEscape(row.firstname)}</span>
+            <span>Lastname: ${xmlEscape(row.lastname)}</span>
+            <span>Email: ${xmlEscape(row.email)}</span>
+            <span>Date: ${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</span>
+        </div>
+        <div class="body mr-btm">
+            <span>Subject: ${xmlEscape(row.subject)}</span>
+            <span>Message: <pre>${xmlEscape(row.message)}</pre></span>
+        </div>
+        <div class="bottom">
+            <a href="/contact-list/${row.id}" class="mr-rgt">
+                <button class="btn">Edit</button>
+            </a>
+            <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
+                <button class="btn">DELETE</button>
+            </form>
+        </div>
+    </div>`
                 });
                 resolve(pageHtmlResponse({user: user, title: "Contact List"}, `
-<input type="text" placeholder="Search messages" data-contact-search="contact-search">
-<table>
-    <thead>
-    <tr>
-        <th>#</th>
-        ${user.admin ? `<th>Username</th>` : ``}
-        <th>Submitted Time</th>
-        <th>Firstname</th>
-        <th>Lastname</th>
-        <th>Email</th>
-        <th>Subject</th>
-        <th>Message</th>
-        <th colspan="2">Action</th>
-    </tr>
-    </thead>
-    <tbody>
-        ${queryToHtml}
-    </tbody>
-</table>
+<input type="text" placeholder="Search messages" data-contact-search>
+<div class="center-container">
+${queryToHtml}
+<div class="list-button-container">
 <a href="/contact-list">
-    <button>Refresh</button>
+    <button class="btn">Refresh</button>
 </a>
 <a href="/contact-list-csv">
-    <button>Export to CSV</button>
+    <button class="btn">Export to CSV</button>
 </a>
 <a href="/contact-list-xml">
-    <button>Export to XML</button>
+    <button class="btn">Export to XML</button>
 </a>
 <a href="/contact-list-json">
-    <button>Export to JSON</button>
-</a>`));
+    <button class="btn">Export to JSON</button>
+</a>
+</div>
+</div>`));
             }
         });
     })
@@ -87,21 +72,9 @@ export function streamableContactListPage(con: Connection): MyHttpListener {
         let i = 0;
         res.write(pageHtmlTop({user: user, title: "Contact List"}));
         res.write(`
-<table>
-    <thead>
-        <tr>
-            <th>#</th>
-            ${user.admin ? `<th>Username</th>` : ``}
-            <th>Submitted Time</th>
-            <th>Firstname</th>
-            <th>Lastname</th>
-            <th>Email</th>
-            <th>Subject</th>
-            <th>Message</th>
-            <th colspan="2">Action</th>
-        </tr>
-    </thead>
-    <tbody>`);
+<input type="text" placeholder="Search messages" data-contact-search>
+<div class="center-container">
+`);
         con.query(`SELECT c.*, u.username
                    FROM contact_form_submits c
                             JOIN users u on u.id = c.user_id
@@ -112,45 +85,45 @@ export function streamableContactListPage(con: Connection): MyHttpListener {
             transform(row: any, encoding: BufferEncoding, callback: TransformCallback) {
                 i++;
                 callback(null, `
-<tr>
-    <td>${i}</td>
-    ${user.admin ? `<td>${xmlEscape(row.username)}</td>` : ''}
-    <td>${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</td>
-    <td>${xmlEscape(row.firstname)}</td>
-    <td>${xmlEscape(row.lastname)}</td>
-    <td>${xmlEscape(row.email)}</td>
-    <td>${xmlEscape(row.subject)}</td>
-    <td data-message="message cell">
-        <pre>${xmlEscape(row.message)}</pre>
-    </td>
-    <td>
-        <a href="/contact-list/${row.id}">
-            <button>Edit</button>
-        </a>
-    </td>
-    <td>
-        <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
-            <button>DELETE</button>
-        </form>
-    </td>
-</tr>`)
+    <div class="list-container">
+        <div class="top mr-btm">
+            <span>Firstname: ${xmlEscape(row.firstname)}</span>
+            <span>Lastname: ${xmlEscape(row.lastname)}</span>
+            <span>Email: ${xmlEscape(row.email)}</span>
+            <span>Date: ${dateFormat(row.datetime_submitted, 'DD/MM/YYYY HH:mm:ss')}</span>
+        </div>
+        <div class="body mr-btm">
+            <span>Subject: ${xmlEscape(row.subject)}</span>
+            <span>Message: <pre>${xmlEscape(row.message)}</pre></span>
+        </div>
+        <div class="bottom">
+            <a href="/contact-list/${row.id}" class="mr-rgt">
+                <button class="btn">Edit</button>
+            </a>
+            <form data-confirm-text="Are you sure?" action="/contact-list/${row.id}/delete" method="post">
+                <button class="btn">DELETE</button>
+            </form>
+        </div>
+    </div>
+`)
             }
         })).on('end', () => {
             res.write(`
-    </tbody>
-</table>
+<div class="list-button-container">
 <a href="/contact-list">
-    <button>Refresh</button>
+    <button class="btn">Refresh</button>
 </a>
 <a href="/contact-list-csv">
-    <button>Export to CSV</button>
+    <button class="btn">Export to CSV</button>
 </a>
 <a href="/contact-list-xml">
-    <button>Export to XML</button>
+    <button class="btn">Export to XML</button>
 </a>
 <a href="/contact-list-json">
-    <button>Export to JSON</button>
-</a>`);
+    <button class="btn">Export to JSON</button>
+</a>
+</div>
+</div>`);
             res.end(pageHtmlBottom());
         }).pipe(res, {end: false})
     }))
@@ -162,43 +135,32 @@ export function uploadListPage(): MyHttpListener {
         fs.readdir('../uploads/', (err, files) => {
             files.forEach((file, index) => {
                 fileQueryHtml += `
-<tr>
-    <td>${index + 1}</td>
-    <td data-file-name>
-        <span>${file}</span>
-    </td>
-    <td>
-        <a href="/uploads/${file}">
-            <button>Preview</button>
-        </a>
-    </td>
-    <td>
-        <a href="/uploads/${file}?download=1">
-            <button>Download</button>
-        </a>
-    </td>
-</tr>`
+    <div class="list-container flx-rw">
+            <span>${file}</span>
+            <div class="file-list-buttons">
+            <a href="/uploads/${file}" class="mr-rgt">
+                <button class="btn">Preview</button>
+            </a>
+            <a href="/uploads/${file}?download=1">
+                <button class="btn">Download</button>
+            </a>
+            </div>
+    </div>
+`
             });
             err ? reject(err) : resolve(pageHtmlResponse({user: user, title: "Files"}, `
-<input type="text" placeholder="Search files" data-file-search="file-search">
-<table>
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>File Name</th>
-        <th colspan="2">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-        ${fileQueryHtml}
-    </tbody>
-</table>
+<input type="text" placeholder="Search files" data-file-search>
+<div class="center-container">
+    ${fileQueryHtml}
+<div class="list-button-container">
 <a href="/file-list">
-    <button>Refresh</button>
+    <button class="btn">Refresh</button>
 </a>
 <a href="/download-upload-files">
-    <button>Download All</button>
-</a>`));
+    <button class="btn">Download All</button>
+</a>
+</div>
+</div>`));
         })
     })
 }

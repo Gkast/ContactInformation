@@ -10,7 +10,7 @@ export function imgResizePage(): MyHttpListener {
         <input type="url" placeholder="Image URL" name="url" required>
         <input type="number" placeholder="Width" name="width" required>
         <input type="number" placeholder="Height" name="height" required>
-        <button type="submit">Resize</button>
+        <button type="submit" class="btn">Resize</button>
     </form>
 </div>`))
 }

@@ -1,0 +1,10 @@
+.ft-cont{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0;
+    margin-top: auto;
+    background-color: white;
+    box-shadow: -1px -3px 10px #adadad;
+}

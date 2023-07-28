@@ -5,8 +5,8 @@
   "main": "src/main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build2": "tsc --project tsconfig.json",
-    "build": "tsc ."
+    "build": "tsc --project tsconfig.json",
+    "build2": "tsc ."
   },
   "author": "",
   "license": "ISC",

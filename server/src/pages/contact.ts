@@ -9,19 +9,16 @@ import {redirectResponse} from "../util/my-http/responses/300";
 
 export function contactPage(): MyHttpListener {
     return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Contact us"}, `
-<div>
-    <form method="post" action="/contact">
-        <label>Firstname:</label>
+<div class="center-container">
+    <form method="post" action="/contact" class="form-container">
         <input type="text" placeholder="First Name" name="firstname" required>
-        <label>Lastname:</label>
         <input type="text" placeholder="Last Name" name="lastname" required>
-        <label>Email:</label>
         <input type="email" placeholder="Email" name="email" required>
-        <label>Subject:</label>
         <input type="text" placeholder="Subject" name="subject" required>
-        <label>Message:</label>
         <textarea placeholder="Write a message..." name="message" required></textarea>
-        <button type="submit">Submit Contact Form</button>
+        <div class="form-button-container">
+            <button type="submit" class="btn">Submit Contact Form</button>
+        </div>
     </form>
 </div>`));
 }
@@ -65,19 +62,14 @@ export function contactEditPage(con: Connection): MyHttpListener {
             con.query("SELECT * FROM contact_form_submits WHERE id=?", [id], (err, results) =>
                 err ? reject(err) : !results[0] ? resolve(pageNotFoundResponse()) :
                     resolve(pageHtmlResponse({user: user, title: "Edit Contact"}, `
-<div>
-    <form method="post" action="/contact-list/${results[0].id}">
-        <label>Firstname:</label>
+<div class="center-container">
+    <form method="post" action="/contact-list/${results[0].id}" class="form-container">
         <input type="text" placeholder="First Name" name="firstname" required value="${xmlEscape(results[0].firstname)}">
-        <label>Lastname:</label>
         <input type="text" placeholder="Last Name" name="lastname" required value="${xmlEscape(results[0].lastname)}">
-        <label>Email:</label>
         <input type="email" placeholder="Email" name="email" required value="${xmlEscape(results[0].email)}">
-        <label>Subject:</label>
         <input type="text" placeholder="Subject" name="subject" required value="${xmlEscape(results[0].subject)}">
-        <label>Message:</label>
         <textarea placeholder="Write a message..." name="message" required>${xmlEscape(results[0].message)}</textarea>
-        <button type="submit">Submit</button>
+        <button type="submit" class="btn">Change Contact Form</button>
     </form>
 </div>`)))
     })
