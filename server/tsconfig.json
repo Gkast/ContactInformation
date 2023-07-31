@@ -12,7 +12,8 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "outDir": "build"
+    "outDir": "build",
+    "jsx": "react"
   },
   "include": [
     "src/**/*.ts",

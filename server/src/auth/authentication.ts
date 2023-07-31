@@ -32,7 +32,7 @@ export function userIdFromCookie(con: Connection, loginId: string): Promise<User
 }
 
 export function withUserId(con: Connection, handler: MyHttpListener): MyHttpListener {
-    return (req, user) => {
+    return (req) => {
         const loginCookie = parseRequestCookies(req.headers.cookie).get('loginid')
         return userIdFromCookie(con, loginCookie)
             .then(user => {

@@ -1,29 +1,10 @@
 import {Connection} from "mysql";
-import {parseRequestCookies, plusMinutes, streamToString} from "../util/utility";
+import {parseRequestCookies, plusMinutes, streamToString} from "../../util/utility";
 import * as querystring from "querystring";
 import * as randomstring from "randomstring";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/responses/200";
-import {wrongCredentialsResponse} from "../util/my-http/responses/400";
-import {redirectResponse} from "../util/my-http/responses/300";
-
-export function loginPage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Login", hasCaptcha: true}, `
-<div class="center-container">
-<form action="/login" method="post" class="login-register-container" data-captcha-form>
-  <input type="text" placeholder="Username" name="username" required>
-  <input type="password" placeholder="Password" name="password" required>
-  <div class="login-action">
-  <label class="flx-rw">Remember me:
-  <input type="checkbox" name="remember-me" value="1">
-  </label>
-  <a href="/forgot-password">Forgot Password?</a>
-  </div>
-  <div class="g-recaptcha mr-btm" data-sitekey="6LdbcC0nAAAAACAdqlzft43Ow4vEHkb7B-ZEFIIE"></div>
-  <button type="submit" class="btn">Login</button>
-</form>
-</div>`))
-}
+import {MyHttpListener} from "../../util/my-http/my-http";
+import {wrongCredentialsResponse} from "../../util/my-http/responses/400";
+import {redirectResponse} from "../../util/my-http/responses/300";
 
 export function loginReqList(con: Connection): MyHttpListener {
     return (req) => streamToString(req.body).then(bodyString => {

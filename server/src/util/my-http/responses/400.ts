@@ -1,6 +1,6 @@
 import {MyHttpResponse} from "../my-http";
 
-import {skeletonHtmlPage} from "../../../pages/skeleton-page-html/skeleton-page";
+import {skeletonHtmlPage} from "../../../pages/skeleton-html/skeleton";
 
 export function pageNotFoundResponse(): MyHttpResponse {
     return {

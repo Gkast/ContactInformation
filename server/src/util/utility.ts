@@ -48,6 +48,12 @@ export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListene
     }
 }
 
+export function entries_map<X, T = any>(obj: {
+    [key: string]: T
+}, fn: (key: string, value: T, index: number) => X): X[] {
+    return obj ? Object.keys(obj).map((key, index) => fn(key, obj[key], index)) : [];
+}
+
 function intRange(start, arraySize, increment) {
     let range = [];
     let temp = start;

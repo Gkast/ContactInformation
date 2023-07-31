@@ -8,12 +8,12 @@ import {wrongCredentialsResponse} from "../my-http/responses/400";
 import {redirectResponse} from "../my-http/responses/300";
 
 export function recoveryTokenGeneratorReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
-    return (req, user) => streamToString(req.body).then(bodyString => {
+    return (req) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return new Promise((resolve, reject) =>
             con.query(`SELECT id, email
                        FROM users
-                       WHERE username = ?`, [p.username], (err, results, fields) => {
+                       WHERE username = ?`, [p.username], (err, results) => {
                 if (err) {
                     reject(err);
                     return;

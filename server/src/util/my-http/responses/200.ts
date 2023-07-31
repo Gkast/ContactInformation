@@ -1,6 +1,6 @@
 import {MyHttpResponse} from "../my-http";
 import {UserDetails} from "../../../auth/authentication";
-import {skeletonHtmlPage} from "../../../pages/skeleton-page-html/skeleton-page";
+import {skeletonHtmlPage} from "../../../pages/skeleton-html/skeleton";
 
 export interface PageParams {
     title: string;

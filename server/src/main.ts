@@ -3,14 +3,13 @@ import * as fs from "fs";
 import {staticFileReqList} from "./util/utility";
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'mysql';
-import {contactDeleteReqList, contactEditPage, contactEditReqList, contactPage, contactReqList} from "./pages/contact";
-import {registerPage, registerReqList} from "./pages/register";
-import {loginPage, loginReqList, logoutReqList} from "./pages/login";
+import {contactDeleteReqList, contactEditReqList, contactReqList} from "./pages/contact/contact-req-list";
+import {registerReqList} from "./pages/client-auth/register-req-list";
+import {loginReqList, logoutReqList} from "./pages/client-auth/login-req-list";
 import {homePage} from "./pages/home";
-import {contactListPage, streamableContactListPage, uploadListPage} from "./pages/list";
 import {aboutPage} from "./pages/about";
 import {authHandler, withUserId} from "./auth/authentication";
-import {uploadFilePage, uploadFileReqList} from "./pages/upload-file";
+import {uploadFileReqList} from "./pages/upload-file/upload-file-req-list";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./auth/captcha";
 import {testCSVReqList, TestCSVStreamPipeReqList, TestCSVStreamReqList} from "./util/export/csv";
@@ -20,17 +19,24 @@ import {
     exportXMLContactsReqList
 } from "./util/export/export-contacts";
 import {hotelDetailsPage} from "./pages/hotel-details";
-import {
-    changePasswordPage,
-    changePasswordReqList,
-    forgotPasswordPage,
-    recoveryTokenVerificationPage
-} from "./pages/reset-password";
+import {changePasswordReqList} from "./pages/client-auth/reset-password-req-list";
 import {recoveryTokenGeneratorReqList} from "./util/recovery/recovery-token";
 import {HttpRouter, MyHttpListener, myResToNodeRes, nodeReqToMyHttpReq} from "./util/my-http/my-http";
-import {imgResizePage, imgResizeReqList} from "./pages/img-resize";
+import {imgResizeReqList} from "./pages/img-resize/img-resize-req-list";
 import {downloadUploadFilesReqList} from "./util/compress/compress";
 import {pageNotFoundResponse} from "./util/my-http/responses/400";
+import {contactListPage, streamableContactListPage} from "./pages/contact/contact-list";
+import {uploadListPage} from "./pages/upload-file/file-list";
+import {loginPage} from "./pages/client-auth/login";
+import {registerPage} from "./pages/client-auth/register";
+import {
+    changePasswordPage,
+    forgotPasswordPage,
+    recoveryTokenVerificationPage
+} from "./pages/client-auth/reset-password";
+import {contactEditPage, contactPage} from "./pages/contact/contact";
+import {imgResizePage} from "./pages/img-resize/img-resize";
+import {uploadFilePage} from "./pages/upload-file/upload-file";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",

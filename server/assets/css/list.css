@@ -14,10 +14,10 @@
     border-width: 1px 0;
 }
 
-.list-container span {
-    display: block;
-    margin-right: 15px;
-}
+/*.list-container span::after {*/
+/*    content: "\a";*/
+/*    white-space: pre;*/
+/*}*/
 
 .bottom {
     display: inline-flex;

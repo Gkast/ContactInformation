@@ -1,22 +1,10 @@
-import {MyHttpListener} from "../util/my-http/my-http";
+import {MyHttpListener} from "../../util/my-http/my-http";
 import * as sharp from "sharp";
 import * as https from "https";
-import {pageHtmlResponse, PageResponseStream} from "../util/my-http/responses/200";
-
-export function imgResizePage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Resize"}, `
-<div class="center-container">
-    <form method="get" action="/img-resize" class="form-container">
-        <input type="url" placeholder="Image URL" name="url" required>
-        <input type="number" placeholder="Width" name="width" required>
-        <input type="number" placeholder="Height" name="height" required>
-        <button type="submit" class="btn">Resize</button>
-    </form>
-</div>`))
-}
+import {PageResponseStream} from "../../util/my-http/responses/200";
 
 export function imgResizeReqList(): MyHttpListener {
-    return (req, user) => {
+    return (req) => {
         const url = decodeURIComponent(req.url.searchParams.get('url'));
         const width = decodeURIComponent(req.url.searchParams.get('width')) ?
             parseInt(req.url.searchParams.get('width')) : 200;

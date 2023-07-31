@@ -5,10 +5,10 @@ import {MyHttpListener} from "../my-http/my-http";
 import {downloadResponse} from "../my-http/responses/200";
 
 export function testCSVReqList(con: Connection): MyHttpListener {
-    return (req, user) => new Promise((resolve, reject) =>
+    return () => new Promise((resolve, reject) =>
         con.query(`SELECT a.*
                    FROM authors a,
-                        authors a2`, (err, result: any[], fields) => {
+                        authors a2`, (err, result: any[]) => {
             err ? reject(err) : resolve(downloadResponse('test.csv', stringify([['Id', 'Firstname', 'Lastname',
                 'E-Mail', 'Birthdate', 'Added']]) + stringify(result)))
         })
@@ -16,7 +16,7 @@ export function testCSVReqList(con: Connection): MyHttpListener {
 }
 
 export function TestCSVStreamReqList(con: Connection): MyHttpListener {
-    return (req, user) => Promise.resolve(downloadResponse('test stream.csv', res => {
+    return () => Promise.resolve(downloadResponse('test stream.csv', res => {
         res.write(stringify([['Id', 'Firstname', 'Lastname',
             'E-Mail', 'Birthdate', 'Added']]));
         con.query(`SELECT a.*
@@ -30,7 +30,7 @@ export function TestCSVStreamReqList(con: Connection): MyHttpListener {
 }
 
 export function TestCSVStreamPipeReqList(con: Connection): MyHttpListener {
-    return (req, user) => Promise.resolve(downloadResponse('test stream pipe.csv', res => {
+    return () => Promise.resolve(downloadResponse('test stream pipe.csv', res => {
         res.write(stringify([['Id', 'Firstname', 'Lastname',
             'E-Mail', 'Birthdate', 'Added']]));
         con.query(`SELECT a.*

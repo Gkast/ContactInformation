@@ -1,18 +1,7 @@
 import * as formidable from "formidable";
 import * as fs from "fs";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/responses/200";
-
-export function uploadFilePage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Upload File"}, `
-<div class="center-container">
-<form method="post" action="http://localhost:3000/upload-file" enctype="multipart/form-data" class="form-container">
-        <input type="file" name="uploadFile" required>
-    <button type="submit" class="btn">Upload</button>
-</form>
-</div>`
-    ));
-}
+import {MyHttpListener} from "../../util/my-http/my-http";
+import {pageHtmlResponse} from "../../util/my-http/responses/200";
 
 export function uploadFileReqList(): MyHttpListener {
     return (req, user) => new Promise((resolve, reject) =>

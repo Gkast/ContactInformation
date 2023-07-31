@@ -1,21 +1,28 @@
 document.addEventListener("keyup", e => {
     if (e.target instanceof HTMLInputElement) {
-        if (e.target.hasAttribute('data-contact-search')) {
-            const filter = e.target.value.toUpperCase().trim();
-            const td = document.querySelectorAll("[data-message]");
-            changeTableDataStyle(filter, td, 'pre');
+        const element = e.target;
+        if (element.hasAttribute('data-contact-search')) {
+            contactSearchListener(element);
         }
-        if (e.target.hasAttribute('data-file-search')) {
-            const filter = e.target.value.toUpperCase().trim();
-            const td = document.querySelectorAll("[data-file-name]");
-            changeTableDataStyle(filter, td, 'span');
+        if (element.hasAttribute('data-file-search')) {
+            fileSearchListener(element);
         }
     }
 });
-function changeTableDataStyle(filter, tableData, filterTarget) {
-    for (let i = 0; i < tableData.length; i++) {
-        const filterTargetValue = tableData[i].getElementsByTagName(filterTarget)[0].textContent.toUpperCase();
-        const parent = tableData[i].parentElement;
+function contactSearchListener(element) {
+    const filter = element.value.toUpperCase().trim();
+    const td = document.querySelectorAll("[data-message]");
+    changeTableDataStyle(filter, td);
+}
+function fileSearchListener(element) {
+    const filter = element.value.toUpperCase().trim();
+    const td = document.querySelectorAll("[data-file-name]");
+    changeTableDataStyle(filter, td);
+}
+function changeTableDataStyle(filter, data) {
+    for (let i = 0; i < data.length; i++) {
+        const filterTargetValue = data[i].textContent.toUpperCase();
+        const parent = document.querySelectorAll(".list-container")[i];
         if (filterTargetValue.indexOf(filter) > -1) {
             parent.style.display = "";
         }
@@ -26,16 +33,23 @@ function changeTableDataStyle(filter, tableData, filterTarget) {
 }
 document.addEventListener('submit', (e) => {
     if (e.target instanceof HTMLFormElement) {
-        if (e.target.hasAttribute('data-captcha-form')) {
-            if (!grecaptcha.getResponse()) {
-                e.preventDefault();
-                console.error("captcha not completed");
-            }
+        const element = e.target;
+        if (element.hasAttribute('data-captcha-form')) {
+            captchaListener(element);
         }
-        if (e.target.hasAttribute('data-confirm-text')) {
-            if (!confirm(e.target.getAttribute('data-confirm-text'))) {
-                e.preventDefault();
+        if (element.hasAttribute('data-confirm-text')) {
+            if (!confirm(element.getAttribute('data-confirm-text'))) {
+                confirmTextListener(element);
             }
         }
     }
 });
+function captchaListener(element) {
+    if (!grecaptcha.getResponse()) {
+        element.preventDefault();
+        console.error("captcha not completed");
+    }
+}
+function confirmTextListener(element) {
+    element.preventDefault();
+}
