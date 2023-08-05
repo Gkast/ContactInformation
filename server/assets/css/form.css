@@ -23,3 +23,10 @@
     border: none;
     width: auto;
 }
+
+.form-input {
+    width: 70%;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid black;
+}

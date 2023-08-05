@@ -11,7 +11,7 @@ export function forgotPasswordPage(): MyHttpListener {
                 <button type="submit" class="btn">Send Recovery Token</button>
             </form>
         </div>
-    ));
+    ))
 }
 
 export function recoveryTokenVerificationPage(): MyHttpListener {
@@ -34,5 +34,5 @@ export function changePasswordPage(): MyHttpListener {
                 <button type="submit" class="btn">Change Password</button>
             </form>
         </div>
-    ));
+    ))
 }

@@ -55,3 +55,7 @@ export function authHandler(handler: MyHttpListener): MyHttpListener {
         Promise.resolve(redirectResponse('/login?href=' + encodeURIComponent(req.url.toString())))
 }
 
+export function adminHandler(handler: MyHttpListener): MyHttpListener {
+    return (req, user) => user.admin ? handler(req, user) : Promise.resolve(redirectResponse('/home'))
+}
+

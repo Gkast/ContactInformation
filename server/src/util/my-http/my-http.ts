@@ -46,7 +46,7 @@ export function myResToNodeRes(myRes: MyHttpResponse, res: ServerResponse) {
 
 
 export interface HttpRouter<T, X = any> {
-    add(method: string, path: string, t: T);
+    add(method: string, path: string, t: T): void;
 
     find(method: string, path: string): [T, X];
 }

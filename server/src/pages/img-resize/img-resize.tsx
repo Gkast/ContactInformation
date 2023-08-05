@@ -12,5 +12,5 @@ export function imgResizePage(): MyHttpListener {
                 <button type="submit" class="btn">Resize</button>
             </form>
         </div>
-    ));
+    ))
 }

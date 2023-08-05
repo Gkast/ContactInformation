@@ -19,7 +19,7 @@ export function contactPage(): MyHttpListener {
                 </div>
             </form>
         </div>
-    ));
+    ))
 }
 
 export function contactEditPage(con: Connection): MyHttpListener {

@@ -11,5 +11,5 @@ export function uploadFilePage(): MyHttpListener {
                 <button type="submit" class="btn">Upload</button>
             </form>
         </div>
-    ));
+    ))
 }

@@ -6,9 +6,9 @@ import * as mysql from 'mysql';
 import {contactDeleteReqList, contactEditReqList, contactReqList} from "./pages/contact/contact-req-list";
 import {registerReqList} from "./pages/client-auth/register-req-list";
 import {loginReqList, logoutReqList} from "./pages/client-auth/login-req-list";
-import {homePage} from "./pages/home";
-import {aboutPage} from "./pages/about";
-import {authHandler, withUserId} from "./auth/authentication";
+import {homePage} from "./pages/home/home";
+import {aboutPage} from "./pages/about/about";
+import {adminHandler, authHandler, withUserId} from "./auth/authentication";
 import {uploadFileReqList} from "./pages/upload-file/upload-file-req-list";
 import * as TrekRouter from 'trek-router';
 import {captchaProtectedHandler} from "./auth/captcha";
@@ -18,9 +18,9 @@ import {
     exportJSONContactsReqList,
     exportXMLContactsReqList
 } from "./util/export/export-contacts";
-import {hotelDetailsPage} from "./pages/hotel-details";
+import {hotelDetailsPage} from "./pages/hotel-details/hotel-details";
 import {changePasswordReqList} from "./pages/client-auth/reset-password-req-list";
-import {recoveryTokenGeneratorReqList} from "./util/recovery/recovery-token";
+import {recoveryTokenGeneratorReqList} from "./util/token/recovery-token";
 import {HttpRouter, MyHttpListener, myResToNodeRes, nodeReqToMyHttpReq} from "./util/my-http/my-http";
 import {imgResizeReqList} from "./pages/img-resize/img-resize-req-list";
 import {downloadUploadFilesReqList} from "./util/compress/compress";
@@ -37,10 +37,20 @@ import {
 import {contactEditPage, contactPage} from "./pages/contact/contact";
 import {imgResizePage} from "./pages/img-resize/img-resize";
 import {uploadFilePage} from "./pages/upload-file/upload-file";
+import {movieEditPage, moviePage} from "./pages/movie/movie";
+import {movieDeleteReqList, movieEditReqList, movieReqList} from "./pages/movie/movie-req-list";
+import {movieListPage} from "./pages/movie/movie-list";
+import {addScreeningPage, screeningListPage} from "./pages/movie/screening";
+import {reservationPage} from "./pages/reservation/reservation";
+import {reservationReqList} from "./pages/reservation/reservation-req-list";
+import {reservationCheckPage, reservationCheckReqList} from "./pages/reservation/check/reservation-check";
+import {cancelReservationPage, cancelTokenVerifyPage} from "./pages/reservation/cancel/cancel-reservation";
+import {cancelReservationTokenReqList} from "./util/token/cancel-reservation-token";
+import {cancelReservationReqList} from "./pages/reservation/cancel/cancel-reservation-req-list";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
-    port: 25,
+    port: 1025,
     secure: false
 });
 
@@ -67,10 +77,10 @@ Promise.all([
     console.log("Initializing router");
 
     router.add('GET', '/about', aboutPage());
+
     router.add('GET', '/contact', authHandler(contactPage()));
-    router.add('POST', '/contact', contactReqList(con, smtpTransport));
-    router.add('GET', '/', homePage());
-    router.add('GET', '/home', homePage());
+    router.add('POST', '/contact', authHandler(contactReqList(con, smtpTransport)));
+
     router.add('GET', "/contact-list", authHandler(contactListPage(con)));
     router.add('GET', "/contact-list-stream", authHandler(streamableContactListPage(con)));
     router.add('POST', '/contact-list/:id/delete', authHandler(contactDeleteReqList(con)));
@@ -79,28 +89,67 @@ Promise.all([
     router.add('GET', "/contact-list-csv", authHandler(exportCSVContactsReqList(con)));
     router.add('GET', "/contact-list-xml", authHandler(exportXMLContactsReqList(con)));
     router.add('GET', "/contact-list-json", authHandler(exportJSONContactsReqList(con)));
+
+
+    router.add('GET', '/', homePage());
+    router.add('GET', '/home', homePage());
+
     router.add('GET', "/csv", testCSVReqList(con));
     router.add('GET', "/csv-stream", TestCSVStreamReqList(con));
     router.add('GET', "/csv-stream-pipe", TestCSVStreamPipeReqList(con));
+
     router.add('GET', '/hotel-details-page', hotelDetailsPage());
+
     router.add('GET', '/img-resize-page', imgResizePage());
     router.add('GET', '/img-resize', imgResizeReqList());
+
     router.add('GET', '/assets/*', staticFileReqList(mimetypes));
     router.add('GET', '/uploads/*', authHandler(staticFileReqList(mimetypes)));
+
     router.add('POST', '/register', captchaProtectedHandler(captchaSecret, registerReqList(con)));
     router.add('GET', '/register', registerPage());
+
     router.add('POST', '/login', captchaProtectedHandler(captchaSecret, loginReqList(con)));
     router.add('GET', '/login', loginPage());
+
     router.add('POST', '/logout', logoutReqList(con));
+
     router.add('GET', '/upload-file', authHandler(uploadFilePage()));
     router.add('POST', '/upload-file', authHandler(uploadFileReqList()));
+
     router.add('GET', '/file-list', authHandler(uploadListPage()));
+
     router.add('GET', '/forgot-password', forgotPasswordPage());
     router.add('POST', '/token-generator', recoveryTokenGeneratorReqList(con, smtpTransport));
     router.add('GET', '/token-verify', recoveryTokenVerificationPage());
     router.add('GET', '/change-password', changePasswordPage());
     router.add('POST', '/change-password', changePasswordReqList(con));
+
+    router.add('POST', '/cancel-reservation-token', cancelReservationTokenReqList(con, smtpTransport));
+    router.add('GET', '/cancel-token-verify', cancelTokenVerifyPage());
+    router.add('GET', '/cancel-reservation', cancelReservationPage());
+    router.add('POST', '/cancel-reservation', cancelReservationReqList(con));
+
     router.add('GET', '/download-upload-files', downloadUploadFilesReqList());
+
+    router.add('GET', '/add-movie', adminHandler(moviePage()));
+    router.add('POST', '/add-movie', adminHandler(movieReqList(con)));
+
+    router.add('GET', '/add-screening', adminHandler(addScreeningPage(con)));
+
+    router.add('GET', '/movie-list', authHandler(movieListPage(con)));
+    router.add('POST', '/movie-list/:id/delete', adminHandler(movieDeleteReqList(con)));
+    router.add('GET', '/movie-list/:id', adminHandler(movieEditPage(con)));
+    router.add('POST', '/movie-list/:id', adminHandler(movieEditReqList(con)));
+
+    router.add('GET', '/screening-list', screeningListPage(con));
+
+    router.add('GET', '/reservation', reservationPage(con));
+    router.add('POST', '/reservation', reservationReqList(con));
+
+    router.add('GET', '/reservation-check', reservationCheckPage());
+    router.add('POST', '/reservation-check', reservationCheckReqList(con));
+
     router.add('GET', '*', () => Promise.resolve(pageNotFoundResponse()));
 
     console.log("Router initialized");

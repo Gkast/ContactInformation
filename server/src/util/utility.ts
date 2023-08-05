@@ -1,9 +1,10 @@
 import * as fs from "fs";
-import * as xmlEscapeLib from "xml-escape";
+import * as xmlEscapeLib from "xml-escape"
 import {MyHttpListener, MyHttpResponse} from "./my-http/my-http";
 import {IncomingHttpHeaders} from "http";
 import {Readable} from "stream";
 import {pageNotFoundResponse} from "./my-http/responses/400";
+import {Connection, QueryOptions} from "mysql";
 
 export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     const chunks = [];
@@ -54,7 +55,7 @@ export function entries_map<X, T = any>(obj: {
     return obj ? Object.keys(obj).map((key, index) => fn(key, obj[key], index)) : [];
 }
 
-function intRange(start, arraySize, increment) {
+function intRange(start: number, arraySize: number, increment: number) {
     let range = [];
     let temp = start;
     for (let i = 0; i < arraySize; i++) {
@@ -105,4 +106,21 @@ export function starRating(stars: number): string {
 
 export function stringAsStream(s: string): NodeJS.ReadableStream {
     return Readable.from(s);
+}
+
+export function mysqlQuery<T = any>(con: Connection, q: string | QueryOptions, values?: any): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+        con.query(q, values, (err, results, fields) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results);
+            }
+        })
+    })
+}
+
+export function rowNumberToLetter(n:number):string{
+    const alphabet = 'ABCDEFGHIJKLMOPQRSTUVWXYZ'
+    return alphabet.charAt(n-1);
 }

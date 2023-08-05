@@ -100,6 +100,38 @@ input::file-selector-button:hover {
     align-items: center;
 }
 
-.cl-gr{
+.cl-gr {
     color: gray;
+}
+
+.w-80 {
+    width: 80%;
+}
+
+.w-500px {
+    width: 500px;
+}
+
+.w-200px {
+    width: 200px;
+}
+
+.flx-al-it-str {
+    align-items: flex-start;
+}
+
+.disabled {
+    color: darkgray;
+    border-color: darkgray;
+    cursor: pointer;
+}
+
+.disabled:hover {
+    color: darkgray;
+    border-color: darkgray;
+    background-color: white;
+}
+
+.txt-bold {
+    font-weight: bold;
 }

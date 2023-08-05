@@ -1,9 +1,9 @@
-import {starRating, streamToString, xmlEscape} from "../util/utility";
+import {starRating, streamToString, xmlEscape} from "../../util/utility";
 import {XMLParser} from "fast-xml-parser";
 import * as https from "https";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/responses/200";
-import {React} from "../util/react";
+import {MyHttpListener} from "../../util/my-http/my-http";
+import {pageHtmlResponse} from "../../util/my-http/responses/200";
+import {React} from "../../util/react";
 
 export function hotelDetailsPage(): MyHttpListener {
     return (req, user) => new Promise((resolve) => https.get(process.env["XML_REQUEST_URL"], res =>

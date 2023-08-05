@@ -9,31 +9,42 @@ import {React} from "../../util/react";
 
 export function contactListPage(con: Connection): MyHttpListener {
     return (req, user) => new Promise((resolve, reject) => {
+        const filter = req.url.searchParams.get('search-filter');
+        let sqlCondition = [];
+        let filterSQLCondition = '';
+        if (filter) {
+            const searchFilter = filter.replace(`'`, ``).trim().split(" ");
+            searchFilter.forEach(value =>
+                sqlCondition.push(`(c.firstname LIKE '%${value}%' OR c.lastname LIKE '%${value}%' OR 
+                c.email LIKE '%${value}%' OR c.subject LIKE '%${value}%' OR c.message LIKE '%${value}%')`));
+            filterSQLCondition = sqlCondition.join(" AND ")
+        }
         con.query(`SELECT c.*, u.username
                    FROM contact_form_submits c
                             JOIN users u on u.id = c.user_id
-                       ${user.admin ? `` : `WHERE c.user_id = ?`}
+                       ${user.admin ? `${filter ? `WHERE ` + filterSQLCondition : ``}` :
+                               `WHERE c.user_id = ? ${filter ? ("AND " + filterSQLCondition) : ''}`}
                    ORDER BY c.datetime_submitted
-        DESC`, user.admin ? [] : [user.id], (err, result) => {
+        DESC`, user.admin ? [] : [user.id], (err, results) => {
             if (err) {
                 reject(err);
                 return;
             } else {
                 let queryToHtml = "";
-                (result as any[]).forEach((row) => {
+                (results as any[]).forEach((row) => {
                     queryToHtml +=
                         <div class="list-container">
                             <div class="top mr-btm mr-lft">
                                 <span>
                                     <strong>Full Name: </strong>
-                                    <span data-fullname="">
+                                    <span>
                                         {xmlEscape(row.firstname) + " " + xmlEscape(row.lastname)}
                                     </span>
                                 </span>
                                 <br/><br/>
                                 <span>
                                     <strong>Email: </strong>
-                                    <span data-email="">{xmlEscape(row.email)}</span>
+                                    <span>{xmlEscape(row.email)}</span>
                                 </span>
                                 <br/><br/>
                                 <span>
@@ -45,13 +56,13 @@ export function contactListPage(con: Connection): MyHttpListener {
                             <div class="body mr-btm mr-lft">
                                 <span>
                                     <strong>Subject: </strong>
-                                    <span data-subject="">{xmlEscape(row.subject)}</span>
+                                    <span>{xmlEscape(row.subject)}</span>
                                 </span>
                                 <br/><br/>
                                 <span class="mr-tp">
                                     <strong>Message: </strong>
                                 </span>
-                                <p data-message="">{xmlEscape(row.message)}</p>
+                                <p>{xmlEscape(row.message)}</p>
                             </div>
                             <div class="bottom mr-lft">
                                 <a href={"/contact-list/" + row.id} class="no-underline mr-rgt">
@@ -66,7 +77,10 @@ export function contactListPage(con: Connection): MyHttpListener {
                 });
                 resolve(pageHtmlResponse({user: user, title: "Contact List"},
                     <div class="center-container">
-                        <input type="text" placeholder="Search messages" class="search-list" data-contact-search=""/>
+                        <form method="get" action="/contact-list" class="flx-rw w-80 flx-al-it-str">
+                            <input type="text" name="search-filter" placeholder="Search contacts" class="search-list"/>
+                            <button type="submit" class="btn">Search</button>
+                        </form>
                         {queryToHtml}
                         <div class="list-button-container">
                             <a href="/contact-list" class="no-underline">
@@ -82,7 +96,8 @@ export function contactListPage(con: Connection): MyHttpListener {
                                 <button class="btn">Export to JSON</button>
                             </a>
                         </div>
-                    </div>));
+                    </div>
+                ));
             }
         });
     })

@@ -1,6 +1,6 @@
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/responses/200";
-import {React} from "../util/react";
+import {MyHttpListener} from "../../util/my-http/my-http";
+import {pageHtmlResponse} from "../../util/my-http/responses/200";
+import {React} from "../../util/react";
 
 export function homePage(): MyHttpListener {
     return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Home"},
@@ -36,6 +36,16 @@ export function homePage(): MyHttpListener {
                             <span>Hotel Details</span>
                         </a>
                     </li>
+                    <li class="home-li">
+                        <a href="/screening-list" class="no-underline">
+                            <span>Screening List</span>
+                        </a>
+                    </li>
+                    <li class="home-li">
+                        <a href="/reservation-check" class="no-underline">
+                            <span>Check Reservation</span>
+                        </a>
+                    </li>
                     <li class={"home-li" + (!user ? " li-btm-br" : "")}>
                         <a href="/img-resize-page" class="no-underline">
                             <span>Image Resizer</span>
@@ -63,6 +73,17 @@ export function homePage(): MyHttpListener {
                                     <span>Upload File</span>
                                 </a>
                             </li>
+                            {user.admin ?
+                                <li class="home-li">
+                                    <a href="/add-movie" class="no-underline">
+                                        <span>Add Movie</span>
+                                    </a>
+                                </li> : ``}
+                            <li class="home-li">
+                                <a href="/movie-list" class="no-underline">
+                                    <span>Movie List</span>
+                                </a>
+                            </li>
                             <li class="home-li li-btm-br">
                                 <a href="/file-list" class="no-underline">
                                     <span>File List</span>
@@ -72,5 +93,5 @@ export function homePage(): MyHttpListener {
                 </ul>
             </div>
         </div>
-    ));
+    ))
 }

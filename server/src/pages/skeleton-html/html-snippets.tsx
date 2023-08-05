@@ -3,8 +3,8 @@ import {React} from "../../util/react";
 
 export function headerHtml(user: UserDetails) {
     return !user ?
-        <div>
-            <a href="/login" class="no-underline">
+        <div class="flx-rw">
+            <a href="/login" class="no-underline mr-rgt">
                 <button class="btn">Log In</button>
             </a>
             <a href="/register" class="no-underline">
