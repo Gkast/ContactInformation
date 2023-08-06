@@ -3,11 +3,11 @@ import {xmlEscape} from "../utility";
 import {stringify} from "csv-stringify/sync";
 import {stringify as stringifyStream} from "csv-stringify";
 import {MyHttpListener} from "../my-http/my-http";
-import {PageResponseStream} from "../my-http/responses/200";
+import {pageResponseStream} from "../my-http/responses/200";
 
 
 export function exportCSVContactsReqList(con: Connection): MyHttpListener {
-    return (req, user) => Promise.resolve(PageResponseStream('text/plain', res => {
+    return (req, user) => Promise.resolve(pageResponseStream('text/plain', res => {
         res.write(stringify([['Contact Id', 'Submitted Date', 'Firstname', 'Lastname',
             'E-Mail', 'Subject', 'Message']]));
         con.query(`SELECT id,
@@ -23,7 +23,7 @@ export function exportCSVContactsReqList(con: Connection): MyHttpListener {
 }
 
 export function exportXMLContactsReqList(con: Connection): MyHttpListener {
-    return (req, user) => Promise.resolve(PageResponseStream('text/xml', res => {
+    return (req, user) => Promise.resolve(pageResponseStream('text/xml', res => {
         res.write(`<?xml version="1.0" encoding="UTF-8"?>
                 <data>`);
         con.query(`SELECT id,
@@ -63,7 +63,7 @@ export function exportXMLContactsReqList(con: Connection): MyHttpListener {
 }
 
 export function exportJSONContactsReqList(con: Connection): MyHttpListener {
-    return (req, user) => Promise.resolve(PageResponseStream('text/json', res => {
+    return (req, user) => Promise.resolve(pageResponseStream('text/json', res => {
         con.query(`SELECT id,
                           DATE_FORMAT(datetime_submitted, '%d/%m/%Y') AS date,
                           firstname,

@@ -47,6 +47,7 @@ import {reservationCheckPage, reservationCheckReqList} from "./pages/reservation
 import {cancelReservationPage, cancelTokenVerifyPage} from "./pages/reservation/cancel/cancel-reservation";
 import {cancelReservationTokenReqList} from "./util/token/cancel-reservation-token";
 import {cancelReservationReqList} from "./pages/reservation/cancel/cancel-reservation-req-list";
+import {Pool} from "pg";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -55,6 +56,14 @@ const smtpTransport = nodemailer.createTransport({
 });
 
 const con = mysql.createConnection(process.env.MYSQL_CONN_STRING);
+
+const con_postgresql = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'project',
+    password: '19851987',
+    port: 5432
+})
 
 Promise.all([
     fs.promises.readFile('../misc/mimetypes.json', {encoding: 'utf-8'}).then(fileContents => {
@@ -67,6 +76,13 @@ Promise.all([
         } else {
             console.log("Connected to database");
             resolve(con);
+        }
+    })),
+    new Promise((resolve, reject) => con_postgresql.connect((err, client) => {
+        if (err) {
+            reject(err)
+        } else {
+            resolve(con_postgresql);
         }
     }))
 ]).then(all => {

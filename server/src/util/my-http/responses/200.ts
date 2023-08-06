@@ -18,7 +18,7 @@ export function pageHtmlResponse(
     }
 }
 
-export function PageResponseStream(
+export function pageResponseStream(
     contentType: string,
     pageResponseStream: ((res: NodeJS.WritableStream) => void)): MyHttpResponse {
     return {

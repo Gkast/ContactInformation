@@ -1,6 +1,6 @@
 import {Connection} from "mysql";
 import {MyHttpListener} from "../../util/my-http/my-http";
-import {pageHtmlResponse, PageResponseStream} from "../../util/my-http/responses/200";
+import {pageHtmlResponse, pageResponseStream} from "../../util/my-http/responses/200";
 import {pageHtmlBottom, pageHtmlTop} from "../skeleton-html/skeleton";
 import {Transform, TransformCallback} from "stream";
 import {xmlEscape} from "../../util/utility";
@@ -104,7 +104,7 @@ export function contactListPage(con: Connection): MyHttpListener {
 }
 
 export function streamableContactListPage(con: Connection): MyHttpListener {
-    return (req, user) => Promise.resolve(PageResponseStream('text/html', res => {
+    return (req, user) => Promise.resolve(pageResponseStream('text/html', res => {
         let i = 0;
         res.write(pageHtmlTop({user: user, title: "Contact List"}));
         res.write(`
