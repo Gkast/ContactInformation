@@ -55,7 +55,7 @@ export function entries_map<X, T = any>(obj: {
     return obj ? Object.keys(obj).map((key, index) => fn(key, obj[key], index)) : [];
 }
 
-function intRange(start: number, arraySize: number, increment: number) {
+export function intRange(start: number, arraySize: number, increment: number): number[] {
     let range = [];
     let temp = start;
     for (let i = 0; i < arraySize; i++) {
@@ -120,7 +120,16 @@ export function mysqlQuery<T = any>(con: Connection, q: string | QueryOptions, v
     })
 }
 
-export function rowNumberToLetter(n:number):string{
+export function rowNumberToLetter(n: number): string {
     const alphabet = 'ABCDEFGHIJKLMOPQRSTUVWXYZ'
-    return alphabet.charAt(n-1);
+    return alphabet.charAt(n - 1);
+}
+
+export function isoDateParser(isoDate: string): Date {
+    const tempIsoDate = isoDate.split('-');
+    const year = parseInt(tempIsoDate[0]);
+    const month = parseInt(tempIsoDate[1]) - 1;
+    const day = parseInt(tempIsoDate[2]);
+
+    return new Date(year, month, day);
 }

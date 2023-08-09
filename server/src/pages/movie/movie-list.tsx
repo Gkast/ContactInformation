@@ -18,29 +18,30 @@ export function movieListPage(con: Connection): MyHttpListener {
                     queryToHtml +=
                         <div class="list-container">
                             <div class="top mr-btm mr-lft">
-                                <span>
+                                <img src={row['image_url']} alt='movie image' width='240px'/>
+                                <div>
                                     <strong>Title: </strong>
                                     <span>
                                         {xmlEscape(row.title)}
                                     </span>
-                                </span>
-                                <br/><br/>
-                                <span>
+                                </div>
+                                <br/>
+                                <div>
                                     <strong>Duration: </strong>
                                     <span>{row["duration_minutes"] + ' Minutes'}</span>
-                                </span>
-                                <br/><br/>
-                                <span>
+                                </div>
+                                <br/>
+                                <div>
                                     <strong>Production Year: </strong>
                                     <span>{row["production_year"]}</span>
-                                </span>
-                                <br/><br/>
+                                </div>
+                                <br/>
                             </div>
                             <div class="body mr-btm mr-lft">
-                                <span>
+                                <div>
                                     <strong>Description: </strong>
                                     <p>{xmlEscape(row.description)}</p>
-                                </span>
+                                </div>
                                 <br/><br/>
                             </div>
                             {user.admin ?

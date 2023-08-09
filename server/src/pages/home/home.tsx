@@ -9,6 +9,7 @@ export function homePage(): MyHttpListener {
                 <h1>Home</h1>
                 {user ? <span class="user">Welcome {user.username}</span> : ''}
             </div>
+
             <div class="ul-container">
                 <ul class="nv-home-links">
                     <li class="home-li li-tp-br">

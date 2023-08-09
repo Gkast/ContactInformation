@@ -46,7 +46,7 @@ export function reservationPage(con: Connection): MyHttpListener {
                                              JOIN seat s on s.id = sr.seat_id
                                              JOIN reservation r on r.id = sr.reservation_id
                                     WHERE sr.screening_id = ?
-                                      AND r.is_cancelled = 0)`, [id, id])
+                                      AND r.is_cancelled = 0 AND sr.is_cancelled = 0)`, [id, id])
         ]).then(all => {
             const screening = all[0];
             const availableSeats = all[1];
@@ -57,6 +57,7 @@ export function reservationPage(con: Connection): MyHttpListener {
                 <div class='center-container'>
                     <form method="post" action="/reservation" class='list-container'>
                         <div class="top mr-btm mr-lft">
+                            <img src={screening[0].image_url} alt='movie image' width='240px'/>
                             <div>
                                 <strong>Title: </strong>
                                 <span>{xmlEscape(screening[0].title)}</span>

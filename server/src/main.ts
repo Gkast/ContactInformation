@@ -44,10 +44,12 @@ import {addScreeningPage, screeningListPage} from "./pages/movie/screening";
 import {reservationPage} from "./pages/reservation/reservation";
 import {reservationReqList} from "./pages/reservation/reservation-req-list";
 import {reservationCheckPage, reservationCheckReqList} from "./pages/reservation/check/reservation-check";
-import {cancelReservationPage, cancelTokenVerifyPage} from "./pages/reservation/cancel/cancel-reservation";
+import {cancelReservationPage} from "./pages/reservation/cancel/cancel-reservation";
 import {cancelReservationTokenReqList} from "./util/token/cancel-reservation-token";
 import {cancelReservationReqList} from "./pages/reservation/cancel/cancel-reservation-req-list";
-import {Pool} from "pg";
+import {changeSeatPage} from "./pages/reservation/change-seat/change-seat";
+import {changeSeatReqList} from "./pages/reservation/change-seat/change-seat-req-list";
+import {addScreeningReqList} from "./pages/movie/screening-req-list";
 
 const smtpTransport = nodemailer.createTransport({
     host: "localhost",
@@ -56,14 +58,6 @@ const smtpTransport = nodemailer.createTransport({
 });
 
 const con = mysql.createConnection(process.env.MYSQL_CONN_STRING);
-
-const con_postgresql = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'project',
-    password: '19851987',
-    port: 5432
-})
 
 Promise.all([
     fs.promises.readFile('../misc/mimetypes.json', {encoding: 'utf-8'}).then(fileContents => {
@@ -76,13 +70,6 @@ Promise.all([
         } else {
             console.log("Connected to database");
             resolve(con);
-        }
-    })),
-    new Promise((resolve, reject) => con_postgresql.connect((err, client) => {
-        if (err) {
-            reject(err)
-        } else {
-            resolve(con_postgresql);
         }
     }))
 ]).then(all => {
@@ -142,9 +129,11 @@ Promise.all([
     router.add('POST', '/change-password', changePasswordReqList(con));
 
     router.add('POST', '/cancel-reservation-token', cancelReservationTokenReqList(con, smtpTransport));
-    router.add('GET', '/cancel-token-verify', cancelTokenVerifyPage());
     router.add('GET', '/cancel-reservation', cancelReservationPage());
     router.add('POST', '/cancel-reservation', cancelReservationReqList(con));
+
+    router.add('POST', '/change-seat-reservation-page', changeSeatPage(con));
+    router.add('POST', '/change-seat-reservation', changeSeatReqList(con));
 
     router.add('GET', '/download-upload-files', downloadUploadFilesReqList());
 
@@ -152,6 +141,7 @@ Promise.all([
     router.add('POST', '/add-movie', adminHandler(movieReqList(con)));
 
     router.add('GET', '/add-screening', adminHandler(addScreeningPage(con)));
+    router.add('POST', '/add-screening', adminHandler(addScreeningReqList(con)));
 
     router.add('GET', '/movie-list', authHandler(movieListPage(con)));
     router.add('POST', '/movie-list/:id/delete', adminHandler(movieDeleteReqList(con)));
@@ -161,7 +151,7 @@ Promise.all([
     router.add('GET', '/screening-list', screeningListPage(con));
 
     router.add('GET', '/reservation', reservationPage(con));
-    router.add('POST', '/reservation', reservationReqList(con));
+    router.add('POST', '/reservation', reservationReqList(con, smtpTransport));
 
     router.add('GET', '/reservation-check', reservationCheckPage());
     router.add('POST', '/reservation-check', reservationCheckReqList(con));

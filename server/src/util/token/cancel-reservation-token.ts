@@ -5,6 +5,7 @@ import * as querystring from "querystring";
 import * as randomstring from "randomstring";
 import {Transporter} from "nodemailer";
 import {redirectResponse} from "../my-http/responses/300";
+import {pageHtmlResponse} from "../my-http/responses/200";
 
 export function cancelReservationTokenReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
@@ -17,6 +18,7 @@ export function cancelReservationTokenReqList(con: Connection, smtpTransport: Tr
                 charset: "alphanumeric",
                 capitalization: "lowercase"
             })
+            const cancellationLink = `http://localhost:3000/cancel-reservation?token=${cancellationToken}`
             return mysqlQuery(con,
                 `INSERT INTO cancel_reservation_tokens (token_value, reservation_id)
                  VALUES (?, ?)`, [cancellationToken, results[0].id])
@@ -24,8 +26,21 @@ export function cancelReservationTokenReqList(con: Connection, smtpTransport: Tr
                     from: 'noreply@giorgokastanis.com',
                     to: results[0].email,
                     subject: 'Cancel Reservation Token',
-                    text: 'Your Cancellation Token: ' + cancellationToken + `\n\n Expires in 30 Minutes`
-                }).then(value => redirectResponse('/cancel-token-verify')))
+                    html: `<p>To cancel your reservation press the link bellow</p>` +
+                        `<a href=${cancellationLink}><button 
+style="background-color: white;
+    border: 2px solid black;
+    border-radius: 10px;
+    color: black;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 20px;
+    cursor: pointer;"
+    >Cancel Reservation</button></a>` +
+                        `<p>Expires in 30 Minutes</p>`
+                }).then(value => pageHtmlResponse({title: 'Cancellation Link Sent', user: user},
+                    `<h1>Your cancellation link has been sent</h1>`)))
         })
     })
 }

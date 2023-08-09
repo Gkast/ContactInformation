@@ -20,7 +20,7 @@ export function contactReqList(con: Connection, smtpTransport: Transporter): MyH
                             from: 'noreply@giorgokastanis.com',
                             to: p.email,
                             subject: typeof p.subject === 'string' ? p.subject : p.subject[0],
-                            text: 'Contact form message: \n\n' + p.message + 'Thank you for submitting'
+                            text: 'Contact form message: \n\n' + p.message + '\n\nThank you for submitting'
                         }, (err) =>
                             err ? reject(err) :
                                 resolve(pageHtmlResponse({user: user, title: "Successful Submission"}, `
