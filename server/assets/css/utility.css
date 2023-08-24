@@ -135,3 +135,9 @@ input::file-selector-button:hover {
 .txt-bold {
     font-weight: bold;
 }
+
+.movie-img{
+    width: 240px;
+    height: 360px;
+    object-fit: contain;
+}

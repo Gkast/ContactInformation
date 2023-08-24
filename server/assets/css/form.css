@@ -6,7 +6,7 @@
     padding: 20px 40px;
 }
 
-.form-container input, textarea {
+.form-container input, textarea, select {
     width: 80%;
     padding: 10px 20px;
     border-radius: 10px;

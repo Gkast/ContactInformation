@@ -3,7 +3,7 @@ import * as xmlEscapeLib from "xml-escape"
 import {MyHttpListener, MyHttpResponse} from "./my-http/my-http";
 import {IncomingHttpHeaders} from "http";
 import {Readable} from "stream";
-import {pageNotFoundResponse} from "./my-http/responses/400";
+import {pageNotFoundResponse} from "./my-http/400";
 import {Connection, QueryOptions} from "mysql";
 
 export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
@@ -27,7 +27,7 @@ export function parseRequestCookies(cookie: string) {
 }
 
 export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListener {
-    return (req) => {
+    return (req, user) => {
         const decodedPath = decodeURIComponent(req.url.pathname)
         return fs.promises.stat('..' + decodedPath).then(result => {
             if (result.isFile()) {
@@ -45,7 +45,7 @@ export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListene
             } else {
                 return pageNotFoundResponse()
             }
-        }).catch(pageNotFoundResponse);
+        })
     }
 }
 
@@ -130,6 +130,5 @@ export function isoDateParser(isoDate: string): Date {
     const year = parseInt(tempIsoDate[0]);
     const month = parseInt(tempIsoDate[1]) - 1;
     const day = parseInt(tempIsoDate[2]);
-
     return new Date(year, month, day);
 }
