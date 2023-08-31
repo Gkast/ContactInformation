@@ -2,9 +2,9 @@ import {Connection} from "mysql";
 import {MyHttpListener} from "../util/my-http/my-http";
 import {isoDateParser, mysqlQuery, streamToString} from "../util/utility";
 import * as querystring from "querystring";
-import {pageHtmlResponse} from "../util/my-http/200";
-import {redirectResponse} from "../util/my-http/300";
-import {pageNotFoundResponse} from "../util/my-http/400";
+import {pageHtmlResponse} from "../util/my-http/successful-response";
+import {redirectResponse} from "../util/my-http/redirect-response";
+import {pageNotFoundResponse} from "../util/my-http/client-error-response";
 import {format as dateFormat} from "fecha";
 import {Movie} from "./movie-list";
 
@@ -16,14 +16,14 @@ export function addMovieReqList(con: Connection): MyHttpListener {
                                 description)
              VALUES (?, ?, ?, ?, ?, ?, ?)`, [p['title'], p['duration'], p['production-year'], p['image-url'],
                 dateFormat(isoDateParser(p['premiere-date'] as string), 'YYYY/MM/DD'), p['mpa'], p.description])
-            .then(result => pageHtmlResponse({title: 'Success', user: user}, `
+            .then(result => pageHtmlResponse({title: 'Success', user: user,contentHtml:`
 <div>
     <h1>The Movie Was Added Successfully</h1>
     <p>The Movie ID:${result['insertId']}</p>
     <a href="/home" class="no-underline">
         <button class="btn">Home</button>
     </a>                
-</div>`))
+</div>`}))
     })
 }
 

@@ -1,16 +1,14 @@
 import {MyHttpResponse} from "./my-http";
-
-import {skeletonHtmlPage} from "../../main/skeleton";
-import {PageParams} from "./200";
-import {UserDetails} from "../auth/authentication";
+import {htmlPageTemplate} from "./html-template";
+import {mimeType} from "../mime-types";
 
 export function pageNotFoundResponse(
     title = 'Page Not Found',
     contentHtml = `<h1>Page Not Found</h1>`): MyHttpResponse {
     return {
         status: 404,
-        headers: {'content-type': 'text/html'},
-        body: skeletonHtmlPage({title: title}, contentHtml)
+        headers: {'content-type': mimeType("html")},
+        body: htmlPageTemplate({title: title, contentHtml: contentHtml})
     }
 }
 
@@ -20,8 +18,8 @@ export function wrongCredentialsResponse(
 ): MyHttpResponse {
     return {
         status: 401,
-        headers: {"content-type": 'text/html'},
-        body: skeletonHtmlPage({title: title}, contentHtml)
+        headers: {"content-type": mimeType("html")},
+        body: htmlPageTemplate({title: title, contentHtml: contentHtml})
     }
 }
 
@@ -30,7 +28,7 @@ export function badRequestResponse(
     contentHtml = `<h1>Bad Request</h1>`): MyHttpResponse {
     return {
         status: 400,
-        headers: {"content-type": "text/html"},
-        body: skeletonHtmlPage({title: title}, contentHtml)
+        headers: {"content-type": mimeType("html")},
+        body: htmlPageTemplate({title: title, contentHtml: contentHtml})
     }
 }

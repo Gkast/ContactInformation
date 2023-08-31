@@ -1,10 +1,9 @@
 import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/200";
+import {pageHtmlResponse} from "../util/my-http/successful-response";
 import {React} from "../util/react";
 
 export function homePage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Home"},
-        <div class="center-container">
+    return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Home",contentHtml:<div class="center-container">
             <div class="article-message">
                 <h1>Home</h1>
                 {user ? <span class="user">Welcome {user.username}</span> : ''}
@@ -116,6 +115,5 @@ export function homePage(): MyHttpListener {
                         </div> : ``}
                 </ul>
             </div>
-        </div>
-    ))
+        </div>}))
 }

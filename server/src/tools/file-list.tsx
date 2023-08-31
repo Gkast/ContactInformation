@@ -1,6 +1,6 @@
 import {MyHttpListener} from "../util/my-http/my-http";
 import * as fs from "fs";
-import {pageHtmlResponse} from "../util/my-http/200";
+import {pageHtmlResponse} from "../util/my-http/successful-response";
 import {React} from "../util/react";
 
 export function uploadListPage(): MyHttpListener {
@@ -21,8 +21,8 @@ export function uploadListPage(): MyHttpListener {
                         </div>
                     </div>
             });
-            err ? reject(err) : resolve(pageHtmlResponse({user: user, title: "Files"},
-                <div class="center-container">
+            err ? reject(err) : resolve(pageHtmlResponse({
+                user: user, title: "Files", contentHtml: <div class="center-container">
                     <input type="text" placeholder="Search files" class="search-list" data-file-search=""/>
                     {fileQueryHtml}
                     <div class="list-button-container">
@@ -34,7 +34,7 @@ export function uploadListPage(): MyHttpListener {
                         </a>
                     </div>
                 </div>
-            ));
+            }));
         })
     })
 }

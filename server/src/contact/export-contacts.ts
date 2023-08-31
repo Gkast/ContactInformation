@@ -3,7 +3,7 @@ import {xmlEscape} from "../util/utility";
 import {stringify} from "csv-stringify/sync";
 import {stringify as stringifyStream} from "csv-stringify";
 import {MyHttpListener} from "../util/my-http/my-http";
-import {pageResponseStream} from "../util/my-http/200";
+import {pageResponseStream} from "../util/my-http/successful-response";
 
 
 export function exportCSVContactsReqList(con: Connection): MyHttpListener {

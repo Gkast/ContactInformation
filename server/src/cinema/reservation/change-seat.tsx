@@ -4,9 +4,9 @@ import {MyHttpListener} from "../../util/my-http/my-http";
 import {mysqlQuery, rowNumberToLetter, streamToString, xmlEscape} from "../../util/utility";
 import * as querystring from "querystring";
 import {AvailableSeatsSQLResult} from "./reservation";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 import {format as dateFormat} from "fecha";
-import {pageNotFoundResponse} from "../../util/my-http/400";
+import {pageNotFoundResponse} from "../../util/my-http/client-error-response";
 
 export function changeSeatPage(con: Connection): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
@@ -44,8 +44,8 @@ export function changeSeatPage(con: Connection): MyHttpListener {
             let availableSeatsHTML = '';
             availableSeats.forEach(seat => availableSeatsHTML +=
                 <option value={seat.id[0]}>{rowNumberToLetter(seat.row)}-{seat.number}</option>)
-            return pageHtmlResponse({title: 'Change Seat', user: user},
-                <div class='center-container'>
+            return pageHtmlResponse({
+                title: 'Change Seat', user: user, contentHtml: <div class='center-container'>
                     <form method="post" action="/change-seat-reservation" class='list-container'>
                         <div class="top mr-btm mr-lft">
                             <a href={screening[0].image_url}>
@@ -112,7 +112,8 @@ export function changeSeatPage(con: Connection): MyHttpListener {
                             </div>
                         </div>
                     </form>
-                </div>)
+                </div>
+            })
         })
     })
 }

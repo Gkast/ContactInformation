@@ -1,15 +1,15 @@
 import {React} from "../util/react";
 import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/200";
+import {pageHtmlResponse} from "../util/my-http/successful-response";
 import {Connection} from "mysql";
-import {pageNotFoundResponse} from "../util/my-http/400";
+import {pageNotFoundResponse} from "../util/my-http/client-error-response";
 import {mysqlQuery, xmlEscape} from "../util/utility";
 import {format as dateFormat} from "fecha";
 import {Movie} from "./movie-list";
 
 export function addMoviePage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({title: 'Add Movie', user: user},
-        <div class="center-container">
+    return (req, user) => Promise.resolve(pageHtmlResponse({
+        title: 'Add Movie', user: user, contentHtml: <div class="center-container">
             <form method="post" action="/add-movie" class="form-container">
                 <input type="text" placeholder="Title" name="title" required/>
                 <input type="number" placeholder="Duration in Minutes" name="duration" required/>
@@ -31,7 +31,7 @@ export function addMoviePage(): MyHttpListener {
                 </div>
             </form>
         </div>
-    ))
+    }))
 }
 
 export function movieEditPage(con: Connection): MyHttpListener {
@@ -56,8 +56,8 @@ export function movieEditPage(con: Connection): MyHttpListener {
             if (!results[0]) {
                 return pageNotFoundResponse()
             }
-            return pageHtmlResponse({user: user, title: "Edit Contact"},
-                <div class="center-container">
+            return pageHtmlResponse({
+                user: user, title: "Edit Contact", contentHtml: <div class="center-container">
                     <form method="post" action={"/movie-list/" + results[0].id} class="form-container">
                         <input type="text" placeholder="Title" name="title" required
                                value={xmlEscape(results[0].title)}/>
@@ -76,7 +76,7 @@ export function movieEditPage(con: Connection): MyHttpListener {
                         <button type="submit" class="btn">Change Contact Form</button>
                     </form>
                 </div>
-            )
+            })
         })
     }
 }

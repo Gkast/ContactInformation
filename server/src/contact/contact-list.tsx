@@ -1,12 +1,12 @@
 import {Connection} from "mysql";
 import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse, pageResponseStream} from "../util/my-http/200";
-import {pageHtmlBottom, pageHtmlTop} from "../main/skeleton";
+import {pageHtmlResponse, pageResponseStream} from "../util/my-http/successful-response";
+import {htmlBottomPageTemplate, htmlTopPageTemplate} from "../util/my-http/html-template";
 import {Transform, TransformCallback} from "stream";
 import {mysqlQuery, xmlEscape} from "../util/utility";
 import {format as dateFormat} from "fecha";
 import {React} from "../util/react";
-import {pageNotFoundResponse} from "../util/my-http/400";
+import {pageNotFoundResponse} from "../util/my-http/client-error-response";
 
 export function contactListPage(con: Connection): MyHttpListener {
     return (req, user) => {
@@ -75,8 +75,7 @@ export function contactListPage(con: Connection): MyHttpListener {
                             </div>
                         </div>
                 });
-                return pageHtmlResponse({user: user, title: "Contact List"},
-                    <div class="center-container">
+                return pageHtmlResponse({user: user, title: "Contact List",contentHtml:<div class="center-container">
                         <form method="get" action="/contact-list" class="flx-rw w-80 flx-al-it-str">
                             <input type="text" name="search-filter" placeholder="Search contacts"
                                    class="search-list"/>
@@ -97,8 +96,7 @@ export function contactListPage(con: Connection): MyHttpListener {
                                 <button class="btn">Export to JSON</button>
                             </a>
                         </div>
-                    </div>
-                )
+                    </div>})
             })
     }
 }
@@ -106,7 +104,7 @@ export function contactListPage(con: Connection): MyHttpListener {
 export function streamableContactListPage(con: Connection): MyHttpListener {
     return (req, user) => Promise.resolve(pageResponseStream('text/html', res => {
         let i = 0;
-        res.write(pageHtmlTop({user: user, title: "Contact List"}));
+        res.write(htmlTopPageTemplate({user: user, title: "Contact List"}));
         res.write(`
 <div class="center-container">
     <input type="text" placeholder="Search messages" class="search-list" data-contact-search>
@@ -179,7 +177,7 @@ export function streamableContactListPage(con: Connection): MyHttpListener {
     </a>
     </div>
 </div>`);
-            res.end(pageHtmlBottom());
+            res.end(htmlBottomPageTemplate());
         }).pipe(res, {end: false})
     }))
 }

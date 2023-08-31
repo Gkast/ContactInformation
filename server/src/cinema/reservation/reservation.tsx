@@ -1,13 +1,13 @@
 import {React} from "../../util/react";
 import {MyHttpListener} from "../../util/my-http/my-http";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 import {mysqlQuery, rowNumberToLetter, xmlEscape} from "../../util/utility";
 import {Connection} from "mysql";
 import {ScreeningListSqlResult} from "../screening/screening-list";
 import {format as dateFormat} from "fecha";
-import {pageNotFoundResponse} from "../../util/my-http/400";
+import {pageNotFoundResponse} from "../../util/my-http/client-error-response";
 
-export interface AvailableSeatsSQLResult {
+export type AvailableSeatsSQLResult = {
     id: number;
     row: number;
     number: number;
@@ -55,8 +55,10 @@ export function reservationPage(con: Connection): MyHttpListener {
             let availableSeatsHTML = '';
             availableSeats.forEach(seat => availableSeatsHTML +=
                 <option value={seat.id}>{rowNumberToLetter(seat.row)}-{seat.number}</option>)
-            return pageHtmlResponse({title: `Reservation for ${screening[0].title}`, user: user},
-                <div class='center-container'>
+            return pageHtmlResponse({
+                title: `Reservation for ${screening[0].title}`,
+                user: user,
+                contentHtml: <div class='center-container'>
                     <form method="post" action="/reservation" class='list-container'>
                         <div class="top mr-btm mr-lft">
                             <a href={screening[0].image_url}>
@@ -133,7 +135,7 @@ export function reservationPage(con: Connection): MyHttpListener {
                         <button class='btn'>Screenings</button>
                     </a>
                 </div>
-            );
+            });
         })
     }
 }

@@ -1,9 +1,10 @@
 import {Connection} from "mysql";
 import {parseRequestCookies} from "../utility";
 import {MyHttpListener} from "../my-http/my-http";
-import {redirectResponse} from "../my-http/300";
+import {redirectResponse} from "../my-http/redirect-response";
+import {logger} from "../../main";
 
-export interface UserDetails {
+export type UserDetails = {
     id: number;
     username?: string;
     email?: string;
@@ -41,7 +42,11 @@ export function withUserId(con: Connection, handler: MyHttpListener): MyHttpList
                                SET last_update_datetime=CURRENT_TIMESTAMP
                                WHERE cookie_value = ?`, [loginCookie], err => {
                         if (err) {
-                            console.error('UPDATE last action error', loginCookie, err)
+                            logger.error(`UPDATE last action error ${err}`, {
+                                loginCookie: loginCookie,
+                                message: err.message,
+                                stack: err.stack
+                            })
                         }
                     })
                 }

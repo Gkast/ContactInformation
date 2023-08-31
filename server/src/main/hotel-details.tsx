@@ -2,17 +2,17 @@ import {starRating, streamToString, xmlEscape} from "../util/utility";
 import {XMLParser} from "fast-xml-parser";
 import * as https from "https";
 import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/200";
+import {pageHtmlResponse} from "../util/my-http/successful-response";
 import {React} from "../util/react";
 
 export function hotelDetailsPage(): MyHttpListener {
-    return (req, user) => new Promise((resolve) => https.get(process.env["XML_REQUEST_URL"], res =>
+    return (req, user) => new Promise((resolve,reject) => https.get(process.env["XML_REQUEST_URL"], res =>
         streamToString(res).then(xmlString => {
             const xmlParser = new XMLParser({ignoreAttributes: false});
             const parsed = xmlParser.parse(xmlString);
             const h = parsed.HtSearchRq.Hotel;
-            resolve(pageHtmlResponse({user: user, title: 'Hotel details for ' + parsed.HtSearchRq.HID},
-                <div>
+            resolve(pageHtmlResponse({
+                user: user, title: 'Hotel details for ' + parsed.HtSearchRq.HID, contentHtml: <div>
                     <h2>Hotel name {xmlEscape(h['@_Name'])}</h2>
                     <h3>Hotel Rating: {starRating(parseInt(xmlEscape(h.Official_Rating).split(" ")[0]))}</h3>
                     <h3>Hotel Location: {xmlEscape(parsed.HtSearchRq.Destination)}</h3>
@@ -32,7 +32,7 @@ export function hotelDetailsPage(): MyHttpListener {
                             </li>).join("")}
                     </ul>
                 </div>
-            ));
+            }));
         })));
 }
 

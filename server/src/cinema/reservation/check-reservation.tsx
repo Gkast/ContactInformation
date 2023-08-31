@@ -1,20 +1,21 @@
 import {React} from "../../util/react";
 import {MyHttpListener} from "../../util/my-http/my-http";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 import {Connection} from "mysql";
 import {mysqlQuery, rowNumberToLetter, streamToString, xmlEscape} from "../../util/utility";
 import * as querystring from "querystring";
 import {format as dateFormat} from "fecha";
-import {pageNotFoundResponse} from "../../util/my-http/400";
+import {pageNotFoundResponse} from "../../util/my-http/client-error-response";
 
 export function reservationCheckPage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({title: 'Check Reservation', user: user},
-        <div class='center-container'>
-            <form method='post' action='/reservation-check' class='form-container'>
-                <input name='reservation_id' placeholder='Enter Reservation ID...' required/>
-                <button class='btn'>Check Reservation</button>
-            </form>
-        </div>
+    return (req, user) => Promise.resolve(pageHtmlResponse({
+            title: 'Check Reservation', user: user, contentHtml: <div class='center-container'>
+                <form method='post' action='/reservation-check' class='form-container'>
+                    <input name='reservation_id' placeholder='Enter Reservation ID...' required/>
+                    <button class='btn'>Check Reservation</button>
+                </form>
+            </div>
+        }
     ))
 }
 
@@ -42,9 +43,13 @@ export function reservationCheckReqList(con: Connection): MyHttpListener {
                 const s = all[0];
                 const sr = all[1];
                 return s.length === 0 ?
-                    pageHtmlResponse({title: 'Wrong Reservation ID', user: user}, `<h1>Wrong Reservation ID</h1>`)
-                    : pageHtmlResponse({title: 'Your Reservation', user: user},
-                        <div class='center-container'>
+                    pageHtmlResponse({
+                        title: 'Wrong Reservation ID',
+                        user: user,
+                        contentHtml: `<h1>Wrong Reservation ID</h1>`
+                    })
+                    : pageHtmlResponse({
+                        title: 'Your Reservation', user: user, contentHtml: <div class='center-container'>
                             <div class='list-container'>
                                 <div class="top mr-btm mr-lft">
                                     <a href={s[0].image_url}>
@@ -91,7 +96,8 @@ export function reservationCheckReqList(con: Connection): MyHttpListener {
                                     </div>
                                 </div>
                             </div>
-                        </div>)
+                        </div>
+                    })
             })
         }
     )

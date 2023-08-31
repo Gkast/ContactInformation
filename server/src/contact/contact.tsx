@@ -1,13 +1,13 @@
 import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/200";
+import {pageHtmlResponse} from "../util/my-http/successful-response";
 import {Connection} from "mysql";
-import {pageNotFoundResponse} from "../util/my-http/400";
+import {pageNotFoundResponse} from "../util/my-http/client-error-response";
 import {mysqlQuery, xmlEscape} from "../util/utility";
 import {React} from "../util/react";
 
 export function contactPage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Contact us"},
-        <div class="center-container">
+    return (req, user) => Promise.resolve(pageHtmlResponse({
+        user: user, title: "Contact us", contentHtml: <div class="center-container">
             <form method="post" action="/server/src/contact/contact" class="form-container">
                 <input type="text" placeholder="First Name" name="firstname" required/>
                 <input type="text" placeholder="Last Name" name="lastname" required/>
@@ -19,7 +19,7 @@ export function contactPage(): MyHttpListener {
                 </div>
             </form>
         </div>
-    ))
+    }))
 }
 
 export function contactEditPage(con: Connection): MyHttpListener {
@@ -34,8 +34,8 @@ export function contactEditPage(con: Connection): MyHttpListener {
              WHERE id = ?`,
             [id])
             .then(results => !results[0] ? pageNotFoundResponse() :
-                pageHtmlResponse({user: user, title: "Edit Contact"},
-                    <div class="center-container">
+                pageHtmlResponse({
+                    user: user, title: "Edit Contact", contentHtml: <div class="center-container">
                         <form method="post" action={"/contact-list/" + results[0].id} class="form-container">
                             <input type="text" placeholder="First Name" name="firstname" required
                                    value={xmlEscape(results[0].firstname)}/>
@@ -51,6 +51,6 @@ export function contactEditPage(con: Connection): MyHttpListener {
                             <button type="submit" class="btn">Change Contact Form</button>
                         </form>
                     </div>
-                ))
+                }))
     }
 }

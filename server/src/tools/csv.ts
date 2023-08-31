@@ -2,7 +2,7 @@ import {Connection} from "mysql";
 import {stringify} from "csv-stringify/sync";
 import {stringify as stringifyStream} from "csv-stringify";
 import {MyHttpListener} from "../util/my-http/my-http";
-import {downloadResponse} from "../util/my-http/200";
+import {downloadResponse} from "../util/my-http/successful-response";
 import {mysqlQuery} from "../util/utility";
 
 export function testCSVReqList(con: Connection): MyHttpListener {

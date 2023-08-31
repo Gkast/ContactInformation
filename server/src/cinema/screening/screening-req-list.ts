@@ -2,7 +2,7 @@ import {Connection} from "mysql";
 import {MyHttpListener} from "../../util/my-http/my-http";
 import {isoDateParser, mysqlQuery, streamToString} from "../../util/utility";
 import * as querystring from "querystring";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 import {format as dateFormat} from "fecha";
 
 export function addScreeningReqList(con: Connection): MyHttpListener {
@@ -26,12 +26,18 @@ export function addScreeningReqList(con: Connection): MyHttpListener {
                         `INSERT INTO screening (movie_id, auditorium_id, screening_date)
                          VALUES (?, ?,
                                  ?)`, [p.movie, p.room, formattedDate])
-                        .then(result1 => pageHtmlResponse({title: 'Success', user: user},
-                            `<h1>The screening was added</h1>`)
+                        .then(result1 => pageHtmlResponse({
+                                title: 'Success',
+                                user: user,
+                                contentHtml: `<h1>The screening was added</h1>`
+                            })
                         )
                 } else {
-                    return pageHtmlResponse({title: 'Fail', user: user},
-                        `<h1>Another Screening is playing at that date-time</h1>`)
+                    return pageHtmlResponse({
+                        title: 'Fail',
+                        user: user,
+                        contentHtml: `<h1>Another Screening is playing at that date-time</h1>`
+                    })
                 }
             })
     })

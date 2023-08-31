@@ -1,11 +1,19 @@
 import * as fs from "fs";
 import * as xmlEscapeLib from "xml-escape"
-import {MyHttpListener, MyHttpResponse} from "./my-http/my-http";
-import {IncomingHttpHeaders} from "http";
+import {MyHttpListener} from "./my-http/my-http";
 import {Readable} from "stream";
-import {pageNotFoundResponse} from "./my-http/400";
+import {pageNotFoundResponse} from "./my-http/client-error-response";
 import {Connection, QueryOptions} from "mysql";
+import {mimeLookup, mimeType} from "./mime-types";
+import {format as dateFormat} from 'fecha';
 
+// export function logInfoPrefix(){
+//     return `${dateFormat(new Date(),`YYYY-MM-DD HH:mm:ss`)} app[Contact Information]: INFO:`
+// }
+//
+// export function logErrorPrefix(){
+//     return `${dateFormat(new Date(),`YYYY-MM-DD HH:mm:ss`)} app[Contact Information]: ERROR:`
+// }
 export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     const chunks = [];
     return new Promise((resolve, reject) => {
@@ -26,7 +34,7 @@ export function parseRequestCookies(cookie: string) {
     return allCookiesMap;
 }
 
-export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListener {
+export function staticFileReqList(): MyHttpListener {
     return (req, user) => {
         const decodedPath = decodeURIComponent(req.url.pathname)
         return fs.promises.stat('..' + decodedPath).then(result => {
@@ -35,24 +43,18 @@ export function staticFileReqList(mimetypes: Map<string, string>): MyHttpListene
                 const ext = decodedPath.split('.').pop();
                 return {
                     headers: Object.assign({
-                            'content-type': mimetypes.get(ext) || 'application/octet-stream',
+                            'content-type': mimeLookup(ext) || mimeType("bin"),
                             "content-length": result.size.toString()
-                        } as IncomingHttpHeaders,
-                        forceDownload ? {"content-disposition": 'attachment'} as IncomingHttpHeaders : {}
+                        },
+                        forceDownload ? {"content-disposition": 'attachment'} : {}
                     ),
                     body: res => fs.createReadStream('..' + decodedPath).pipe(res)
-                } as MyHttpResponse;
+                };
             } else {
                 return pageNotFoundResponse()
             }
         })
     }
-}
-
-export function entries_map<X, T = any>(obj: {
-    [key: string]: T
-}, fn: (key: string, value: T, index: number) => X): X[] {
-    return obj ? Object.keys(obj).map((key, index) => fn(key, obj[key], index)) : [];
 }
 
 export function intRange(start: number, arraySize: number, increment: number): number[] {
@@ -63,21 +65,6 @@ export function intRange(start: number, arraySize: number, increment: number): n
         temp += increment;
     }
     return range;
-}
-
-export function range(start: number, end: number, step = 1) {
-    return {
-        [Symbol.iterator]() {
-            return this;
-        },
-        next() {
-            if (start < end) {
-                start += step;
-                return {value: start, done: false};
-            }
-            return {value: end, done: true};
-        }
-    }
 }
 
 export function plusMinutes(date: Date, minutes_diff: number): Date {
@@ -108,9 +95,9 @@ export function stringAsStream(s: string): NodeJS.ReadableStream {
     return Readable.from(s);
 }
 
-export function mysqlQuery<T = any>(con: Connection, q: string | QueryOptions, values?: any): Promise<T[]> {
+export function mysqlQuery<T = any>(con: Connection, query: string | QueryOptions, values?: any): Promise<T[]> {
     return new Promise((resolve, reject) => {
-        con.query(q, values, (err, results, fields) => {
+        con.query(query, values, (err, results, fields) => {
             if (err) {
                 reject(err);
             } else {
@@ -121,7 +108,7 @@ export function mysqlQuery<T = any>(con: Connection, q: string | QueryOptions, v
 }
 
 export function rowNumberToLetter(n: number): string {
-    const alphabet = 'ABCDEFGHIJKLMOPQRSTUVWXYZ'
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     return alphabet.charAt(n - 1);
 }
 

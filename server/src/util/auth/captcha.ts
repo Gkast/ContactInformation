@@ -2,7 +2,7 @@ import * as https from "https";
 import {firstParam, streamToString, stringAsStream} from "../utility";
 import * as querystring from "querystring";
 import {MyHttpListener} from "../my-http/my-http";
-import {badRequestResponse} from "../my-http/400";
+import {badRequestResponse} from "../my-http/client-error-response";
 
 export function captchaVerification(responseKey: string, secretKey: string): Promise<boolean> {
     return new Promise((resolve, reject) => https.request({

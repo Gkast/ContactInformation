@@ -1,12 +1,12 @@
 import {Connection} from "mysql";
 import {MyHttpListener} from "../../util/my-http/my-http";
 import {mysqlQuery, parseRequestCookies, plusMinutes, streamToString} from "../../util/utility";
-import {redirectResponse} from "../../util/my-http/300";
+import {redirectResponse} from "../../util/my-http/redirect-response";
 import * as querystring from "querystring";
-import {pageNotFoundResponse, wrongCredentialsResponse} from "../../util/my-http/400";
+import {pageNotFoundResponse, wrongCredentialsResponse} from "../../util/my-http/client-error-response";
 import * as randomstring from "randomstring";
 import {Transporter} from "nodemailer";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 
 export function loginReqList(con: Connection): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
@@ -88,11 +88,13 @@ export function registerReqList(con: Connection): MyHttpListener {
             `INSERT INTO users (username, password, email)
              VALUES (?, ?, ?)`,
             [p.username, p.password, p.email])
-            .then(result => pageHtmlResponse({user: user, title: "Successful Registration"}, `
+            .then(result => pageHtmlResponse({
+                user: user, title: "Successful Registration", contentHtml: `
 <h1>Successful Registration</h1>
 <a href="/home" class="no-underline">
     <button class="btn">Home</button>
-</a>`))
+</a>`
+            }))
     });
 }
 
@@ -108,7 +110,7 @@ export function changePasswordReqList(con: Connection): MyHttpListener {
                            AND DATE_ADD(created_token_time, INTERVAL 30 MINUTE) > CURRENT_TIMESTAMP)`,
             [p.password, p.token])
             .then(results => results['affectedRows'] > 0 ?
-                pageHtmlResponse({user: user, title: "Success"}, `<h1>Password Changed</h1>`) :
-                pageHtmlResponse({user: user, title: "Token Expired"}, `<h1>Token Expired</h1>`))
+                pageHtmlResponse({user: user, title: "Success", contentHtml: `<h1>Password Changed</h1>`}) :
+                pageHtmlResponse({user: user, title: "Token Expired", contentHtml: `<h1>Token Expired</h1>`}))
     });
 }

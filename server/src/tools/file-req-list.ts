@@ -1,7 +1,7 @@
 import {MyHttpListener} from "../util/my-http/my-http";
 import * as formidable from "formidable";
 import * as fs from "fs";
-import {downloadResponse, pageHtmlResponse} from "../util/my-http/200";
+import {downloadResponse, pageHtmlResponse} from "../util/my-http/successful-response";
 import * as archiver from "archiver";
 
 export function uploadFileReqList(): MyHttpListener {
@@ -14,11 +14,13 @@ export function uploadFileReqList(): MyHttpListener {
                     (files['uploadFile'] as formidable.File[])[0] :
                     (files['uploadFile'] as formidable.File);
                 file ? fs.rename(file.filepath, '../uploads/' + file.originalFilename, err =>
-                    err ? reject(err) : resolve(pageHtmlResponse({user: user, title: "File uploaded"}, `
+                    err ? reject(err) : resolve(pageHtmlResponse({
+                        user: user, title: "File uploaded", contentHtml: `
 <h1>File Uploaded</h1>
 <a href="/home" class="no-underline">
     <button class="btn">Home</button>
-</a>`))
+</a>`
+                    }))
                 ) : reject('Missing "uploadFile" param');
             }
         }));

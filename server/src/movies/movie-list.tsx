@@ -2,9 +2,9 @@ import {React} from "../util/react";
 import {Connection} from "mysql";
 import {MyHttpListener} from "../util/my-http/my-http";
 import {mysqlQuery, xmlEscape} from "../util/utility";
-import {pageHtmlResponse} from "../util/my-http/200";
+import {pageHtmlResponse} from "../util/my-http/successful-response";
 
-export interface Movie {
+export type Movie = {
     id: number;
     title: string;
     duration_minutes: number;
@@ -71,8 +71,8 @@ export function movieListPage(con: Connection): MyHttpListener {
                             </div> : ``}
                     </div>
             });
-            return pageHtmlResponse({title: 'Movie List', user: user},
-                <div class="center-container">
+            return pageHtmlResponse({
+                title: 'Movie List', user: user, contentHtml: <div class="center-container">
                     {queryToHtml}
                     <div class="list-button-container">
                         <a href="/movie-list" class="no-underline">
@@ -80,6 +80,6 @@ export function movieListPage(con: Connection): MyHttpListener {
                         </a>
                     </div>
                 </div>
-            )
+            })
         })
 }

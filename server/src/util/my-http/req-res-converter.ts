@@ -1,6 +1,6 @@
 import {IncomingMessage, ServerResponse} from "http";
 import {URL} from "url";
-import {MyHttpRequest, MyHttpResponse} from "./my-http";
+import {MyHttpRequest, MyHttpResponse, HTTP_STATUS} from "./my-http";
 
 export function nodeReqToMyReq(req: IncomingMessage): MyHttpRequest {
     return {
@@ -16,6 +16,7 @@ export function nodeReqToMyReq(req: IncomingMessage): MyHttpRequest {
 
 export function myResToNodeRes(myRes: MyHttpResponse, res: ServerResponse) {
     res.statusCode = myRes.status || 200;
+    res.statusMessage = HTTP_STATUS[res.statusCode]
     if (myRes.headers) {
         Object.keys(myRes.headers).forEach(name => {
             res.setHeader(name, myRes.headers[name]);

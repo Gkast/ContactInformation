@@ -3,9 +3,9 @@ import * as querystring from "querystring";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
 import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/200";
-import {pageNotFoundResponse} from "../util/my-http/400";
-import {redirectResponse} from "../util/my-http/300";
+import {pageHtmlResponse} from "../util/my-http/successful-response";
+import {pageNotFoundResponse} from "../util/my-http/client-error-response";
+import {redirectResponse} from "../util/my-http/redirect-response";
 
 export function contactReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
@@ -21,12 +21,14 @@ export function contactReqList(con: Connection, smtpTransport: Transporter): MyH
                 text: 'Contact form message: \n\n' + p.message + '\n\nThank you for submitting'
             }, (err) =>
                 err ? reject(err) :
-                    resolve(pageHtmlResponse({user: user, title: "Successful Submission"}, `
+                    resolve(pageHtmlResponse({
+                        user: user, title: "Successful Submission", contentHtml: `
     <h1>Successful Submission</h1>
     <p>Your Contact ID:${results['insertId']}</p>
     <a href="/home" class="no-underline">
         <button class="btn">Home</button>
-    </a>`)))))
+    </a>`
+                    })))))
     })
 }
 

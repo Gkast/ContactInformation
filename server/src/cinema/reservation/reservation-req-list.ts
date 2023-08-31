@@ -1,7 +1,7 @@
 import {MyHttpListener} from "../../util/my-http/my-http";
 import {mysqlQuery, streamToString} from "../../util/utility";
 import * as querystring from "querystring";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 import {Connection} from "mysql";
 import {Transporter} from "nodemailer";
 import * as randomstring from "randomstring";
@@ -21,13 +21,13 @@ export function reservationReqList(con: Connection, smtpTransport: Transporter):
                     text: 'Your Reservation Ticket ID: ' + results['insertId']
                 }).then(value => pageHtmlResponse({
                     title: 'Successful Reservation',
-                    user: user
-                }, `
+                    user: user, contentHtml: `
                 <h1>Successful Reservation</h1>
         <p>Your Reservation ID: ${results['insertId']}</p>
         <a href="/home" class="no-underline">
             <button class="btn">Home</button>
-        </a>`))
+        </a>`
+                }))
             }))
     })
 }
@@ -35,7 +35,6 @@ export function reservationReqList(con: Connection, smtpTransport: Transporter):
 export function changeSeatReqList(con: Connection): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
-        console.log(p.previous_seat);
         return mysqlQuery(con,
             `UPDATE seat_reserved
              SET is_cancelled = 1
@@ -45,8 +44,11 @@ export function changeSeatReqList(con: Connection): MyHttpListener {
                  SET seat_id        = ?,
                      screening_id   = ?,
                      reservation_id = ?`, [p.seat, p.scr_id, p.res_id])
-                .then(result1 => pageHtmlResponse({title: 'Seat Changed', user: user},
-                    `<h1>Your seat changed successfully</h1>`)))
+                .then(result1 => pageHtmlResponse({
+                    title: 'Seat Changed',
+                    user: user,
+                    contentHtml: `<h1>Your seat changed successfully</h1>`
+                })))
     })
 }
 
@@ -60,8 +62,16 @@ export function cancelReservationReqList(con: Connection): MyHttpListener {
                          FROM cancel_reservation_tokens
                          WHERE token_value = ?
                            AND DATE_ADD(created_token_time, INTERVAL 30 MINUTE) > CURRENT_TIMESTAMP)`, [p.token])
-            .then(results => pageHtmlResponse({title: 'Success', user: user}, `<h1>Reservation Cancelled</h1>`))
-            .catch(reason => pageHtmlResponse({user: user, title: "Token Expired"}, `<h1>Token Expired</h1>`))
+            .then(results => pageHtmlResponse({
+                title: 'Success',
+                user: user,
+                contentHtml: `<h1>Reservation Cancelled</h1>`
+            }))
+            .catch(reason => pageHtmlResponse({
+                user: user,
+                title: "Token Expired",
+                contentHtml: `<h1>Token Expired</h1>`
+            }))
     });
 }
 
@@ -97,8 +107,11 @@ style="background-color: white;
     cursor: pointer;"
     >Cancel Reservation</button></a>` +
                         `<p>Expires in 30 Minutes</p>`
-                }).then(value => pageHtmlResponse({title: 'Cancellation Link Sent', user: user},
-                    `<h1>Your cancellation link has been sent</h1>`)))
+                }).then(value => pageHtmlResponse({
+                    title: 'Cancellation Link Sent',
+                    user: user,
+                    contentHtml: `<h1>Your cancellation link has been sent</h1>`
+                })))
         })
     })
 }

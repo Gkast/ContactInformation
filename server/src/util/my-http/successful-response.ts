@@ -1,20 +1,21 @@
 import {MyHttpResponse} from "./my-http";
 import {UserDetails} from "../auth/authentication";
-import {skeletonHtmlPage} from "../../main/skeleton";
+import {htmlPageTemplate} from "./html-template";
+import {mimeType} from "../mime-types";
 
-export interface PageParams {
+export type PageParams = {
     title: string;
     user?: UserDetails;
     hasCaptcha?: boolean
+    contentHtml?: string
 }
 
 export function pageHtmlResponse(
-    params: PageParams & NodeJS.Dict<any>,
-    contentHtml: string): MyHttpResponse {
+    params: PageParams): MyHttpResponse {
     return {
         status: 200,
-        headers: {"content-type": 'text/html'},
-        body: skeletonHtmlPage(params, contentHtml)
+        headers: {"content-type": mimeType("html")},
+        body: htmlPageTemplate(params)
     }
 }
 

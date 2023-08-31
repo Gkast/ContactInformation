@@ -1,11 +1,11 @@
 import {React} from "../../util/react";
 import {Connection} from "mysql";
 import {MyHttpListener} from "../../util/my-http/my-http";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 import {mysqlQuery, xmlEscape} from "../../util/utility";
 import {format as dateFormat} from "fecha";
 
-export interface ScreeningListSqlResult {
+export type ScreeningListSqlResult = {
     id: number;
     title: string;
     duration_minutes: number;
@@ -19,7 +19,7 @@ export interface ScreeningListSqlResult {
     available_seats: number;
 }
 
-export interface ScreeningListSqlResultGrouped {
+export type ScreeningListSqlResultGrouped = {
     id: number;
     title: string;
     duration_minutes: number;
@@ -80,8 +80,8 @@ export function screeningListPage(con: Connection): MyHttpListener {
                 })
             }
         });
-        return pageHtmlResponse({title: 'Screening List', user: user},
-            <div class="center-container">
+        return pageHtmlResponse({
+            title: 'Screening List', user: user, contentHtml: <div class="center-container">
                 {movies.map(row =>
                     <div class="list-container">
                         <div class="top mr-btm mr-lft">
@@ -152,6 +152,6 @@ export function screeningListPage(con: Connection): MyHttpListener {
                     </a>
                 </div>
             </div>
-        );
+        });
     })
 }

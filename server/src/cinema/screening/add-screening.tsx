@@ -1,7 +1,7 @@
 import {Connection} from "mysql";
 import {MyHttpListener} from "../../util/my-http/my-http";
 import {intRange, mysqlQuery, xmlEscape} from "../../util/utility";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 import {format as dateFormat} from "fecha";
 import {React} from "../../util/react";
 import {Movie} from "../../movies/movie-list";
@@ -45,8 +45,10 @@ export function addScreeningPage(con: Connection): MyHttpListener {
                 {roomName}
             </select>
 
-        return pageHtmlResponse({title: 'Add Screening List', user: user},
-            <form method='post' action='/add-screening' class="list-container">
+        return pageHtmlResponse({
+            title: 'Add Screening List',
+            user: user,
+            contentHtml: <form method='post' action='/add-screening' class="list-container">
                 <div class="top mr-btm mr-lft">
                     <a href={movie[0].image_url}>
                         <img src={movie[0].image_url} alt='movie image' class='movie-img'/>
@@ -91,6 +93,6 @@ export function addScreeningPage(con: Connection): MyHttpListener {
                     <button type={'submit'} class={'btn mr-lft'}>Add Screening</button>
                 </div>
             </form>
-        );
+        });
     })
 }

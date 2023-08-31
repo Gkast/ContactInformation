@@ -1,10 +1,10 @@
 import {MyHttpListener} from "../../util/my-http/my-http";
-import {pageHtmlResponse} from "../../util/my-http/200";
+import {pageHtmlResponse} from "../../util/my-http/successful-response";
 import {React} from "../../util/react";
 
 export function loginPage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({user: user, title: "Login", hasCaptcha: true},
-        <div class="center-container">
+    return (req, user) => Promise.resolve(pageHtmlResponse({
+        user: user, title: "Login", hasCaptcha: true, contentHtml: <div class="center-container">
             <form action="/login" method="post" class="login-register-container" data-captcha-form="">
                 <input type="text" placeholder="Username" name="username" required/>
                 <input type="password" placeholder="Password" name="password" required/>
@@ -18,5 +18,5 @@ export function loginPage(): MyHttpListener {
                 <button type="submit" class="btn">Login</button>
             </form>
         </div>
-    ))
+    }))
 }

@@ -1,5 +1,3 @@
-import {entries_map} from "./utility";
-
 const void_els = new Set([
     "br",
     "hr",
@@ -18,6 +16,12 @@ const void_els = new Set([
     "param",
     "source"
 ])
+
+function entries_map<X, T = any>(obj: {
+    [key: string]: T
+}, fn: (key: string, value: T, index: number) => X): X[] {
+    return obj ? Object.keys(obj).map((key, index) => fn(key, obj[key], index)) : [];
+}
 
 function child_fn(i) {
     return i == null || i === false ? '' : i instanceof Array ? i.join('') : i.toString()
