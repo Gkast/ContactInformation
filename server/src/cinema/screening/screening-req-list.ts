@@ -1,11 +1,11 @@
-import {Connection} from "mysql";
-import {MyHttpListener} from "../../util/my-http/my-http";
-import {isoDateParser, mysqlQuery, streamToString} from "../../util/utility";
+import {Pool} from "mysql";
+import {MyHttpListener} from "../../util/my-http/http-handler";
+import {isoDateParser, mysqlQuery, streamToString} from "../../util/util";
 import * as querystring from "querystring";
-import {pageHtmlResponse} from "../../util/my-http/successful-response";
+import {pageHtmlResponse} from "../../util/my-http/responses/successful-response";
 import {format as dateFormat} from "fecha";
 
-export function addScreeningReqList(con: Connection): MyHttpListener {
+export function addScreeningReqList(con: Pool): MyHttpListener {
     return (req, user) => streamToString(req.body).then(b => {
         const p = querystring.parse(b);
         const dateTime = isoDateParser(p.date as string);

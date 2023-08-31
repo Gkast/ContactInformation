@@ -1,8 +1,8 @@
 import {React} from "../../util/react";
-import {Connection} from "mysql";
-import {MyHttpListener} from "../../util/my-http/my-http";
-import {pageHtmlResponse} from "../../util/my-http/successful-response";
-import {mysqlQuery, xmlEscape} from "../../util/utility";
+import {Pool} from "mysql";
+import {MyHttpListener} from "../../util/my-http/http-handler";
+import {pageHtmlResponse} from "../../util/my-http/responses/successful-response";
+import {mysqlQuery, xmlEscape} from "../../util/util";
 import {format as dateFormat} from "fecha";
 
 export type ScreeningListSqlResult = {
@@ -34,7 +34,7 @@ export type ScreeningListSqlResultGrouped = {
     }]
 }
 
-export function screeningListPage(con: Connection): MyHttpListener {
+export function screeningListPage(con: Pool): MyHttpListener {
     return (req, user) => mysqlQuery<ScreeningListSqlResult>(con,
         `SELECT m.*,
                 s.screening_date,

@@ -1,9 +1,9 @@
 import {React} from "../util/react";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/successful-response";
-import {Connection} from "mysql";
-import {pageNotFoundResponse} from "../util/my-http/client-error-response";
-import {mysqlQuery, xmlEscape} from "../util/utility";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
+import {Pool} from "mysql";
+import {pageNotFoundResponse} from "../util/my-http/responses/client-error-response";
+import {mysqlQuery, xmlEscape} from "../util/util";
 import {format as dateFormat} from "fecha";
 import {Movie} from "./movie-list";
 
@@ -34,7 +34,7 @@ export function addMoviePage(): MyHttpListener {
     }))
 }
 
-export function movieEditPage(con: Connection): MyHttpListener {
+export function movieEditPage(con: Pool): MyHttpListener {
     return (req, user) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         if (!id) {

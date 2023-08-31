@@ -1,12 +1,12 @@
-import {Connection} from "mysql";
-import {xmlEscape} from "../util/utility";
+import {Pool} from "mysql";
+import {xmlEscape} from "../util/util";
 import {stringify} from "csv-stringify/sync";
 import {stringify as stringifyStream} from "csv-stringify";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageResponseStream} from "../util/my-http/successful-response";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {pageResponseStream} from "../util/my-http/responses/successful-response";
 
 
-export function exportCSVContactsReqList(con: Connection): MyHttpListener {
+export function exportCSVContactsReqList(con: Pool): MyHttpListener {
     return (req, user) => Promise.resolve(pageResponseStream('text/plain', res => {
         res.write(stringify([['Contact Id', 'Submitted Date', 'Firstname', 'Lastname',
             'E-Mail', 'Subject', 'Message']]));
@@ -22,7 +22,7 @@ export function exportCSVContactsReqList(con: Connection): MyHttpListener {
     }))
 }
 
-export function exportXMLContactsReqList(con: Connection): MyHttpListener {
+export function exportXMLContactsReqList(con: Pool): MyHttpListener {
     return (req, user) => Promise.resolve(pageResponseStream('text/xml', res => {
         res.write(`<?xml version="1.0" encoding="UTF-8"?>
                 <data>`);
@@ -62,7 +62,7 @@ export function exportXMLContactsReqList(con: Connection): MyHttpListener {
     }))
 }
 
-export function exportJSONContactsReqList(con: Connection): MyHttpListener {
+export function exportJSONContactsReqList(con: Pool): MyHttpListener {
     return (req, user) => Promise.resolve(pageResponseStream('text/json', res => {
         con.query(`SELECT id,
                           DATE_FORMAT(datetime_submitted, '%d/%m/%Y') AS date,

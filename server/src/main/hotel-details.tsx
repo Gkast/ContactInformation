@@ -1,8 +1,8 @@
-import {starRating, streamToString, xmlEscape} from "../util/utility";
+import {starRating, streamToString, xmlEscape} from "../util/util";
 import {XMLParser} from "fast-xml-parser";
 import * as https from "https";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/successful-response";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
 import {React} from "../util/react";
 
 export function hotelDetailsPage(): MyHttpListener {

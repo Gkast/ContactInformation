@@ -1,7 +1,7 @@
-import {MyHttpListener} from "../util/my-http/my-http";
+import {MyHttpListener} from "../util/my-http/http-handler";
 import * as formidable from "formidable";
 import * as fs from "fs";
-import {downloadResponse, pageHtmlResponse} from "../util/my-http/successful-response";
+import {downloadResponse, pageHtmlResponse} from "../util/my-http/responses/successful-response";
 import * as archiver from "archiver";
 
 export function uploadFileReqList(): MyHttpListener {

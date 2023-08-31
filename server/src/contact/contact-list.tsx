@@ -1,14 +1,14 @@
-import {Connection} from "mysql";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse, pageResponseStream} from "../util/my-http/successful-response";
-import {htmlBottomPageTemplate, htmlTopPageTemplate} from "../util/my-http/html-template";
+import {Pool} from "mysql";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {pageHtmlResponse, pageResponseStream} from "../util/my-http/responses/successful-response";
+import {htmlBottomPageTemplate, htmlTopPageTemplate} from "../util/my-http/responses/html-template";
 import {Transform, TransformCallback} from "stream";
-import {mysqlQuery, xmlEscape} from "../util/utility";
+import {mysqlQuery, xmlEscape} from "../util/util";
 import {format as dateFormat} from "fecha";
 import {React} from "../util/react";
-import {pageNotFoundResponse} from "../util/my-http/client-error-response";
+import {pageNotFoundResponse} from "../util/my-http/responses/client-error-response";
 
-export function contactListPage(con: Connection): MyHttpListener {
+export function contactListPage(con: Pool): MyHttpListener {
     return (req, user) => {
         const filter = req.url.searchParams.get('search-filter');
         let sqlCondition = [];
@@ -101,7 +101,7 @@ export function contactListPage(con: Connection): MyHttpListener {
     }
 }
 
-export function streamableContactListPage(con: Connection): MyHttpListener {
+export function streamableContactListPage(con: Pool): MyHttpListener {
     return (req, user) => Promise.resolve(pageResponseStream('text/html', res => {
         let i = 0;
         res.write(htmlTopPageTemplate({user: user, title: "Contact List"}));

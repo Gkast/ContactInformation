@@ -1,14 +1,14 @@
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/successful-response";
-import {Connection} from "mysql";
-import {pageNotFoundResponse} from "../util/my-http/client-error-response";
-import {mysqlQuery, xmlEscape} from "../util/utility";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
+import {Pool} from "mysql";
+import {pageNotFoundResponse} from "../util/my-http/responses/client-error-response";
+import {mysqlQuery, xmlEscape} from "../util/util";
 import {React} from "../util/react";
 
 export function contactPage(): MyHttpListener {
     return (req, user) => Promise.resolve(pageHtmlResponse({
         user: user, title: "Contact us", contentHtml: <div class="center-container">
-            <form method="post" action="/server/src/contact/contact" class="form-container">
+            <form method="post" action="/contact" class="form-container">
                 <input type="text" placeholder="First Name" name="firstname" required/>
                 <input type="text" placeholder="Last Name" name="lastname" required/>
                 <input type="email" placeholder="Email" name="email" required/>
@@ -22,7 +22,7 @@ export function contactPage(): MyHttpListener {
     }))
 }
 
-export function contactEditPage(con: Connection): MyHttpListener {
+export function contactEditPage(con: Pool): MyHttpListener {
     return (req, user) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         if (!id) {

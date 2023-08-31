@@ -1,14 +1,14 @@
-import {Connection} from "mysql";
-import {MyHttpListener} from "../../util/my-http/my-http";
-import {mysqlQuery, parseRequestCookies, plusMinutes, streamToString} from "../../util/utility";
-import {redirectResponse} from "../../util/my-http/redirect-response";
+import {Pool} from "mysql";
+import {MyHttpListener} from "../../util/my-http/http-handler";
+import {mysqlQuery, parseRequestCookies, plusMinutes, streamToString} from "../../util/util";
+import {redirectResponse} from "../../util/my-http/responses/redirect-response";
 import * as querystring from "querystring";
-import {pageNotFoundResponse, wrongCredentialsResponse} from "../../util/my-http/client-error-response";
+import {pageNotFoundResponse, wrongCredentialsResponse} from "../../util/my-http/responses/client-error-response";
 import * as randomstring from "randomstring";
 import {Transporter} from "nodemailer";
-import {pageHtmlResponse} from "../../util/my-http/successful-response";
+import {pageHtmlResponse} from "../../util/my-http/responses/successful-response";
 
-export function loginReqList(con: Connection): MyHttpListener {
+export function loginReqList(con: Pool): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con,
@@ -39,7 +39,7 @@ export function loginReqList(con: Connection): MyHttpListener {
     })
 }
 
-export function logoutReqList(con: Connection): MyHttpListener {
+export function logoutReqList(con: Pool): MyHttpListener {
     return (req) => {
         const allCookiesMap = parseRequestCookies(req.headers.cookie);
         return mysqlQuery(con,
@@ -51,7 +51,7 @@ export function logoutReqList(con: Connection): MyHttpListener {
     }
 }
 
-export function recoveryTokenGeneratorReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
+export function recoveryTokenGeneratorReqList(con: Pool, smtpTransport: Transporter): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con,
@@ -81,7 +81,7 @@ export function recoveryTokenGeneratorReqList(con: Connection, smtpTransport: Tr
     });
 }
 
-export function registerReqList(con: Connection): MyHttpListener {
+export function registerReqList(con: Pool): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con,
@@ -98,7 +98,7 @@ export function registerReqList(con: Connection): MyHttpListener {
     });
 }
 
-export function changePasswordReqList(con: Connection): MyHttpListener {
+export function changePasswordReqList(con: Pool): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con,

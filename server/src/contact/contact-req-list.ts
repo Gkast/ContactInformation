@@ -1,13 +1,13 @@
-import {mysqlQuery, streamToString} from "../util/utility";
+import {mysqlQuery, streamToString} from "../util/util";
 import * as querystring from "querystring";
-import {Connection} from "mysql";
+import {Pool} from "mysql";
 import {Transporter} from "nodemailer";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/successful-response";
-import {pageNotFoundResponse} from "../util/my-http/client-error-response";
-import {redirectResponse} from "../util/my-http/redirect-response";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
+import {pageNotFoundResponse} from "../util/my-http/responses/client-error-response";
+import {redirectResponse} from "../util/my-http/responses/redirect-response";
 
-export function contactReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
+export function contactReqList(con: Pool, smtpTransport: Transporter): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con,
@@ -32,7 +32,7 @@ export function contactReqList(con: Connection, smtpTransport: Transporter): MyH
     })
 }
 
-export function contactDeleteReqList(con: Connection): MyHttpListener {
+export function contactDeleteReqList(con: Pool): MyHttpListener {
     return (req) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         return mysqlQuery(con, `DELETE
@@ -42,7 +42,7 @@ export function contactDeleteReqList(con: Connection): MyHttpListener {
     }
 }
 
-export function contactEditReqList(con: Connection): MyHttpListener {
+export function contactEditReqList(con: Pool): MyHttpListener {
     return (req, user) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         return !id ? Promise.resolve(pageNotFoundResponse()) : streamToString(req.body).then(bodyString => {

@@ -1,6 +1,6 @@
 import {PageParams} from "./successful-response";
-import {React} from "../react";
-import {UserDetails} from "../auth/authentication";
+import {React} from "../../react";
+import {UserDetails} from "../../../auth/authentication";
 
 export function htmlPageTemplate(params: PageParams): string {
     return htmlTopPageTemplate(params) + params.contentHtml + htmlBottomPageTemplate(params.hasCaptcha)
@@ -12,7 +12,7 @@ export function htmlTopPageTemplate(params: PageParams): string {
 <head>
     <meta charset="UTF-8">
     <title>${params.title}</title>
-    <link rel="stylesheet" type="text/css" href="../../../assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="../../../../assets/css/main.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -35,7 +35,7 @@ export function htmlBottomPageTemplate(hasCaptcha = false): string {
     <footer class="ft-cont">
         ${footerHtml()}
     </footer>
-    <script src="../../../assets/js/main.js"></script>
+    <script src="../../../../assets/js/main.js"></script>
     ${hasCaptcha ? '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' : ''}
 </body>
 </html>`;

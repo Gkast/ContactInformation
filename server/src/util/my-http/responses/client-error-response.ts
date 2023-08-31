@@ -1,6 +1,6 @@
-import {MyHttpResponse} from "./my-http";
+import {MyHttpResponse} from "../http-handler";
 import {htmlPageTemplate} from "./html-template";
-import {mimeType} from "../mime-types";
+import {mimeType} from "../../tools/mime-types";
 
 export function pageNotFoundResponse(
     title = 'Page Not Found',

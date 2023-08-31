@@ -1,11 +1,11 @@
 import {React} from "../../util/react";
-import {MyHttpListener} from "../../util/my-http/my-http";
-import {pageHtmlResponse} from "../../util/my-http/successful-response";
-import {mysqlQuery, rowNumberToLetter, xmlEscape} from "../../util/utility";
-import {Connection} from "mysql";
+import {MyHttpListener} from "../../util/my-http/http-handler";
+import {pageHtmlResponse} from "../../util/my-http/responses/successful-response";
+import {mysqlQuery, rowNumberToLetter, xmlEscape} from "../../util/util";
+import {Pool} from "mysql";
 import {ScreeningListSqlResult} from "../screening/screening-list";
 import {format as dateFormat} from "fecha";
-import {pageNotFoundResponse} from "../../util/my-http/client-error-response";
+import {pageNotFoundResponse} from "../../util/my-http/responses/client-error-response";
 
 export type AvailableSeatsSQLResult = {
     id: number;
@@ -13,7 +13,7 @@ export type AvailableSeatsSQLResult = {
     number: number;
 }
 
-export function reservationPage(con: Connection): MyHttpListener {
+export function reservationPage(con: Pool): MyHttpListener {
     return (req, user) => {
         const id = decodeURIComponent(req.url.searchParams.get('id'));
         return Promise.all([

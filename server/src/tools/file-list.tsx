@@ -1,6 +1,6 @@
-import {MyHttpListener} from "../util/my-http/my-http";
+import {MyHttpListener} from "../util/my-http/http-handler";
 import * as fs from "fs";
-import {pageHtmlResponse} from "../util/my-http/successful-response";
+import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
 import {React} from "../util/react";
 
 export function uploadListPage(): MyHttpListener {

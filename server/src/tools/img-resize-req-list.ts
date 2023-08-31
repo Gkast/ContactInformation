@@ -1,7 +1,7 @@
-import {MyHttpListener} from "../util/my-http/my-http";
+import {MyHttpListener} from "../util/my-http/http-handler";
 import * as sharp from "sharp";
 import * as https from "https";
-import {pageResponseStream} from "../util/my-http/successful-response";
+import {pageResponseStream} from "../util/my-http/responses/successful-response";
 
 export function imgResizeReqList(): MyHttpListener {
     return (req) => {

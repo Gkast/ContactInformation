@@ -1,11 +1,11 @@
-import {Connection} from "mysql";
+import {Pool} from "mysql";
 import {stringify} from "csv-stringify/sync";
 import {stringify as stringifyStream} from "csv-stringify";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {downloadResponse} from "../util/my-http/successful-response";
-import {mysqlQuery} from "../util/utility";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {downloadResponse} from "../util/my-http/responses/successful-response";
+import {mysqlQuery} from "../util/util";
 
-export function testCSVReqList(con: Connection): MyHttpListener {
+export function testCSVReqList(con: Pool): MyHttpListener {
     return () => mysqlQuery(con,
         `SELECT a.*
          FROM authors a,
@@ -15,7 +15,7 @@ export function testCSVReqList(con: Connection): MyHttpListener {
 
 }
 
-export function TestCSVStreamReqList(con: Connection): MyHttpListener {
+export function TestCSVStreamReqList(con: Pool): MyHttpListener {
     return () => Promise.resolve(downloadResponse('test stream.csv', res => {
         res.write(stringify([['Id', 'Firstname', 'Lastname',
             'E-Mail', 'Birthdate', 'Added']]));
@@ -29,7 +29,7 @@ export function TestCSVStreamReqList(con: Connection): MyHttpListener {
     }))
 }
 
-export function TestCSVStreamPipeReqList(con: Connection): MyHttpListener {
+export function TestCSVStreamPipeReqList(con: Pool): MyHttpListener {
     return () => Promise.resolve(downloadResponse('test stream pipe.csv', res => {
         res.write(stringify([['Id', 'Firstname', 'Lastname',
             'E-Mail', 'Birthdate', 'Added']]));

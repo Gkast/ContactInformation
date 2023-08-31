@@ -1,8 +1,8 @@
-import {Connection} from "mysql";
-import {parseRequestCookies} from "../utility";
-import {MyHttpListener} from "../my-http/my-http";
-import {redirectResponse} from "../my-http/redirect-response";
-import {logger} from "../../main";
+import {Pool} from "mysql";
+import {parseRequestCookies} from "../util/util";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {redirectResponse} from "../util/my-http/responses/redirect-response";
+import {logger} from "../main";
 
 export type UserDetails = {
     id: number;
@@ -11,7 +11,7 @@ export type UserDetails = {
     admin?: boolean;
 }
 
-export function userIdFromCookie(con: Connection, loginId: string): Promise<UserDetails> {
+export function userIdFromCookie(con: Pool, loginId: string): Promise<UserDetails> {
     return new Promise((resolve, reject) => !loginId ? resolve(undefined) :
         con.query(`SELECT login_cookies.user_id AS id, users.username, users.email, users.is_admin AS admin
                    FROM login_cookies
@@ -32,7 +32,7 @@ export function userIdFromCookie(con: Connection, loginId: string): Promise<User
         }))
 }
 
-export function withUserId(con: Connection, handler: MyHttpListener): MyHttpListener {
+export function withUserId(con: Pool, handler: MyHttpListener): MyHttpListener {
     return (req) => {
         const loginCookie = parseRequestCookies(req.headers.cookie).get('loginid')
         return userIdFromCookie(con, loginCookie)

@@ -1,7 +1,7 @@
-import {MyHttpListener} from "../../util/my-http/my-http";
-import {pageHtmlResponse} from "../../util/my-http/successful-response";
+import {MyHttpListener} from "../../util/my-http/http-handler";
+import {pageHtmlResponse} from "../../util/my-http/responses/successful-response";
 import {React} from "../../util/react";
-import {xmlEscape} from "../../util/utility";
+import {xmlEscape} from "../../util/util";
 
 export function forgotPasswordPage(): MyHttpListener {
     return (req, user) => Promise.resolve(pageHtmlResponse({

@@ -1,16 +1,16 @@
-import {MyHttpListener} from "../../util/my-http/my-http";
-import {mysqlQuery, streamToString} from "../../util/utility";
+import {MyHttpListener} from "../../util/my-http/http-handler";
+import {mysqlQuery, streamToString} from "../../util/util";
 import * as querystring from "querystring";
-import {pageHtmlResponse} from "../../util/my-http/successful-response";
-import {Connection} from "mysql";
+import {pageHtmlResponse} from "../../util/my-http/responses/successful-response";
+import {Pool} from "mysql";
 import {Transporter} from "nodemailer";
 import * as randomstring from "randomstring";
 
-export function reservationReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
+export function reservationReqList(con: Pool, smtpTransport: Transporter): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con, `INSERT INTO reservation (screening_id, reserved_by, email)
-                                VALUES (?, ?, ?)`, [p.id, p.name, p.email])
+                                 VALUES (?, ?, ?)`, [p.id, p.name, p.email])
             .then(results => mysqlQuery(con,
                 `INSERT INTO seat_reserved (seat_id, reservation_id, screening_id)
                  VALUES (?, ?, ?)`, [p.seat, results['insertId'], p.id]).then(results1 => {
@@ -32,7 +32,7 @@ export function reservationReqList(con: Connection, smtpTransport: Transporter):
     })
 }
 
-export function changeSeatReqList(con: Connection): MyHttpListener {
+export function changeSeatReqList(con: Pool): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con,
@@ -52,7 +52,7 @@ export function changeSeatReqList(con: Connection): MyHttpListener {
     })
 }
 
-export function cancelReservationReqList(con: Connection): MyHttpListener {
+export function cancelReservationReqList(con: Pool): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con,
@@ -75,12 +75,12 @@ export function cancelReservationReqList(con: Connection): MyHttpListener {
     });
 }
 
-export function cancelReservationTokenReqList(con: Connection, smtpTransport: Transporter): MyHttpListener {
+export function cancelReservationTokenReqList(con: Pool, smtpTransport: Transporter): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con, `SELECT id, email
-                                FROM reservation
-                                WHERE id = ?`, [p.id]).then(results => {
+                                 FROM reservation
+                                 WHERE id = ?`, [p.id]).then(results => {
             const cancellationToken = randomstring.generate({
                 length: 6,
                 charset: "alphanumeric",

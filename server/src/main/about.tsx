@@ -1,5 +1,5 @@
-import {MyHttpListener} from "../util/my-http/my-http";
-import {pageHtmlResponse} from "../util/my-http/successful-response";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
 import {React} from "../util/react";
 
 export function aboutPage(): MyHttpListener {

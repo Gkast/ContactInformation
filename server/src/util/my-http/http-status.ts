@@ -1,51 +1,11 @@
-import {IncomingHttpHeaders, IncomingMessage} from "http";
-import {URL} from "url";
-import {UserDetails} from "../auth/authentication";
-
-export type MyHttpRequest = {
-    remoteAddr?: string;
-    method?: string;
-    url: URL;
-    httpVersion?: string;
-    headers?: IncomingHttpHeaders;
-    body?: NodeJS.ReadableStream;
-    nodeJsReqObject?: IncomingMessage;
-}
-
-export type MyHttpResponse = {
-    status?: HttpStatusCodes;
-    headers?: IncomingHttpHeaders;
-    body?: string | ((res: NodeJS.WritableStream) => void);
-}
-
-export type MyHttpListener = (req: MyHttpRequest, user?: UserDetails) => Promise<MyHttpResponse>
-
-export type HttpMethod =
-    | "GET"
-    | "POST"
-    | "HEAD"
-    | "PUT"
-    | "DELETE"
-    | "CONNECT"
-    | "OPTIONS"
-    | "TRACE"
-    | "PATCH";
-
-export type HttpRouter<T> = {
-    add(method: HttpMethod, path: string, handler: T): void;
-
-    find(method: string, path: string): [T, unknown];
-};
-
-type HttpStatusCodes = keyof typeof HTTP_STATUS;
-
+export type HttpStatusCodes = keyof typeof HTTP_STATUS;
 type HttpStatusMessages = typeof HTTP_STATUS[HttpStatusCodes];
 
 export function getHttpStatusMessage(statusCode: number): HttpStatusMessages {
     return HTTP_STATUS[statusCode];
 }
 
-export const HTTP_STATUS = {
+const HTTP_STATUS = {
     100: 'Continue',
     101: 'Switching Protocols',
     102: 'Processing',

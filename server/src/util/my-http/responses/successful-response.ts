@@ -1,7 +1,7 @@
-import {MyHttpResponse} from "./my-http";
-import {UserDetails} from "../auth/authentication";
+import {MyHttpResponse} from "../http-handler";
+import {UserDetails} from "../../../auth/authentication";
 import {htmlPageTemplate} from "./html-template";
-import {mimeType} from "../mime-types";
+import {mimeType} from "../../tools/mime-types";
 
 export type PageParams = {
     title: string;

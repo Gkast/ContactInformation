@@ -1,12 +1,12 @@
-import {Connection} from "mysql";
-import {MyHttpListener} from "../../util/my-http/my-http";
-import {intRange, mysqlQuery, xmlEscape} from "../../util/utility";
-import {pageHtmlResponse} from "../../util/my-http/successful-response";
+import {Pool} from "mysql";
+import {MyHttpListener} from "../../util/my-http/http-handler";
+import {intRange, mysqlQuery, xmlEscape} from "../../util/util";
+import {pageHtmlResponse} from "../../util/my-http/responses/successful-response";
 import {format as dateFormat} from "fecha";
 import {React} from "../../util/react";
 import {Movie} from "../../movies/movie-list";
 
-export function addScreeningPage(con: Connection): MyHttpListener {
+export function addScreeningPage(con: Pool): MyHttpListener {
     return (req, user) => Promise.all([
         mysqlQuery<Movie>(con,
             `SELECT *
@@ -48,7 +48,7 @@ export function addScreeningPage(con: Connection): MyHttpListener {
         return pageHtmlResponse({
             title: 'Add Screening List',
             user: user,
-            contentHtml: <form method='post' action='/add-screening' class="list-container">
+            contentHtml: <form method='post' action='/server/src/cinema/screening/screening-add' class="list-container">
                 <div class="top mr-btm mr-lft">
                     <a href={movie[0].image_url}>
                         <img src={movie[0].image_url} alt='movie image' class='movie-img'/>

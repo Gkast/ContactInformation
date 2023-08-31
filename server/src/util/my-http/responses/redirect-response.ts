@@ -1,4 +1,4 @@
-import {MyHttpResponse} from "./my-http";
+import {MyHttpResponse} from "../http-handler";
 
 export function redirectResponse(location: string): MyHttpResponse {
     return {

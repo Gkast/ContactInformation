@@ -1,8 +1,8 @@
 import {React} from "../util/react";
-import {Connection} from "mysql";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {mysqlQuery, xmlEscape} from "../util/utility";
-import {pageHtmlResponse} from "../util/my-http/successful-response";
+import {Pool} from "mysql";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {mysqlQuery, xmlEscape} from "../util/util";
+import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
 
 export type Movie = {
     id: number;
@@ -15,7 +15,7 @@ export type Movie = {
     mpa: string;
 }
 
-export function movieListPage(con: Connection): MyHttpListener {
+export function movieListPage(con: Pool): MyHttpListener {
     return (req, user) => mysqlQuery<Movie>(con,
         `SELECT *
          FROM movie

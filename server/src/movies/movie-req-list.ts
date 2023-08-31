@@ -1,14 +1,13 @@
-import {Connection} from "mysql";
-import {MyHttpListener} from "../util/my-http/my-http";
-import {isoDateParser, mysqlQuery, streamToString} from "../util/utility";
+import {Pool} from "mysql";
+import {MyHttpListener} from "../util/my-http/http-handler";
+import {isoDateParser, mysqlQuery, streamToString} from "../util/util";
 import * as querystring from "querystring";
-import {pageHtmlResponse} from "../util/my-http/successful-response";
-import {redirectResponse} from "../util/my-http/redirect-response";
-import {pageNotFoundResponse} from "../util/my-http/client-error-response";
+import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
+import {redirectResponse} from "../util/my-http/responses/redirect-response";
+import {pageNotFoundResponse} from "../util/my-http/responses/client-error-response";
 import {format as dateFormat} from "fecha";
-import {Movie} from "./movie-list";
 
-export function addMovieReqList(con: Connection): MyHttpListener {
+export function addMovieReqList(con: Pool): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         return mysqlQuery(con,
@@ -27,7 +26,7 @@ export function addMovieReqList(con: Connection): MyHttpListener {
     })
 }
 
-export function deleteMovieReqList(con: Connection): MyHttpListener {
+export function deleteMovieReqList(con: Pool): MyHttpListener {
     return (req) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         if (id) {
@@ -40,7 +39,7 @@ export function deleteMovieReqList(con: Connection): MyHttpListener {
     }
 }
 
-export function editMovieReqList(con: Connection): MyHttpListener {
+export function editMovieReqList(con: Pool): MyHttpListener {
     return (req, user) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         return !id ? Promise.resolve(pageNotFoundResponse()) : streamToString(req.body).then(bodyString => {

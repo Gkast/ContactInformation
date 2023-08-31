@@ -1,14 +1,14 @@
 import {React} from "../../util/react";
-import {Connection} from "mysql";
-import {MyHttpListener} from "../../util/my-http/my-http";
-import {mysqlQuery, rowNumberToLetter, streamToString, xmlEscape} from "../../util/utility";
+import {Pool} from "mysql";
+import {MyHttpListener} from "../../util/my-http/http-handler";
+import {mysqlQuery, rowNumberToLetter, streamToString, xmlEscape} from "../../util/util";
 import * as querystring from "querystring";
 import {AvailableSeatsSQLResult} from "./reservation";
-import {pageHtmlResponse} from "../../util/my-http/successful-response";
+import {pageHtmlResponse} from "../../util/my-http/responses/successful-response";
 import {format as dateFormat} from "fecha";
-import {pageNotFoundResponse} from "../../util/my-http/client-error-response";
+import {pageNotFoundResponse} from "../../util/my-http/responses/client-error-response";
 
-export function changeSeatPage(con: Connection): MyHttpListener {
+export function changeSeatPage(con: Pool): MyHttpListener {
     return (req, user) => streamToString(req.body).then(bodyString => {
         const p = querystring.parse(bodyString);
         const previousSeatId = p.seatid;
