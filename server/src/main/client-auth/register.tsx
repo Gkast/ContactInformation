@@ -3,7 +3,7 @@ import {pageHtmlResponse} from "../../util/my-http/responses/successful-response
 import {React} from "../../util/react";
 
 export function registerPage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({
+    return async (req, user) => pageHtmlResponse({
         user: user, title: "Register", hasCaptcha: true, contentHtml: <div class="center-container">
             <form action="/register" method="post" class="login-register-container">
                 <input type="text" placeholder="Username" name="username" required/>
@@ -13,5 +13,5 @@ export function registerPage(): MyHttpListener {
                 <button type="submit" class="btn">Register</button>
             </form>
         </div>
-    }))
+    })
 }

@@ -5,7 +5,6 @@ import {Readable} from "stream";
 import {pageNotFoundResponse} from "./my-http/responses/client-error-response";
 import {Pool, QueryOptions} from "mysql";
 import {mimeLookup, mimeType} from "./tools/mime-types";
-import {logger} from "../main";
 
 export function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     const chunks = [];
@@ -92,7 +91,6 @@ export function mysqlQuery<T = any>(con: Pool, query: string | QueryOptions, val
     return new Promise((resolve, reject) => {
         con.query(query, values, (err, results, fields) => {
             if (err) {
-                logger.error(`Query error occurred: ${err}`, {message: err.message, sql: err.sql, stack: err.stack})
                 reject(err);
             } else {
                 resolve(results);

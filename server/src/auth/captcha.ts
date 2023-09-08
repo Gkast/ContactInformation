@@ -19,12 +19,13 @@ export function captchaVerification(responseKey: string, secretKey: string): Pro
 }
 
 export function captchaProtectedHandler(secret: string, handler: MyHttpListener): MyHttpListener {
-    return (req, user) => streamToString(req.body).then(bodyString => {
+    return async (req, user) => {
+        const bodyString = await streamToString(req.body);
         const responseKey = req.method === 'GET' ?
             req.url.searchParams.get('g-recaptcha-response') :
             firstParam(querystring.parse(bodyString)['g-recaptcha-response']);
-        return captchaVerification(responseKey, secret).then(captchaResult =>
-            captchaResult ? handler(Object.assign({}, req, {body: stringAsStream(bodyString)}), user) :
-                badRequestResponse('Captcha Not Verified', `<h1>Captcha wasn't verified</h1>`))
-    })
+        const captchaResult = await captchaVerification(responseKey, secret);
+        return (captchaResult ? handler(Object.assign({}, req, {body: stringAsStream(bodyString)}), user) :
+            badRequestResponse('Captcha Not Verified', `<h1>Captcha wasn't verified</h1>`));
+    }
 }

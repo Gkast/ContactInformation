@@ -7,7 +7,7 @@ import {pageResponseStream} from "../util/my-http/responses/successful-response"
 
 
 export function exportCSVContactsReqList(con: Pool): MyHttpListener {
-    return (req, user) => Promise.resolve(pageResponseStream('text/plain', res => {
+    return async (req, user) => pageResponseStream('text/plain', res => {
         res.write(stringify([['Contact Id', 'Submitted Date', 'Firstname', 'Lastname',
             'E-Mail', 'Subject', 'Message']]));
         con.query(`SELECT id,
@@ -19,11 +19,11 @@ export function exportCSVContactsReqList(con: Pool): MyHttpListener {
                           message
                    FROM contact_form_submits ${user.admin ? '' : 'WHERE user_id=?'}`,
             user.admin ? [] : [user.id]).stream().pipe(stringifyStream()).pipe(res)
-    }))
+    })
 }
 
 export function exportXMLContactsReqList(con: Pool): MyHttpListener {
-    return (req, user) => Promise.resolve(pageResponseStream('text/xml', res => {
+    return async (req, user) => pageResponseStream('text/xml', res => {
         res.write(`<?xml version="1.0" encoding="UTF-8"?>
                 <data>`);
         con.query(`SELECT id,
@@ -59,11 +59,11 @@ export function exportXMLContactsReqList(con: Pool): MyHttpListener {
         }).on('end', () => {
             res.end(`</data>`);
         });
-    }))
+    })
 }
 
 export function exportJSONContactsReqList(con: Pool): MyHttpListener {
-    return (req, user) => Promise.resolve(pageResponseStream('text/json', res => {
+    return async (req, user) => pageResponseStream('text/json', res => {
         con.query(`SELECT id,
                           DATE_FORMAT(datetime_submitted, '%d/%m/%Y') AS date,
                           firstname,
@@ -77,5 +77,5 @@ export function exportJSONContactsReqList(con: Pool): MyHttpListener {
         }).on('end', () => {
             res.end();
         })
-    }))
+    })
 }

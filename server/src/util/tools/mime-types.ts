@@ -1,5 +1,6 @@
 type MimeExtensions = keyof typeof MIME_TYPES;
 type MimeTypes = typeof MIME_TYPES[MimeExtensions];
+
 // type MimeTypes = ReturnType<typeof mimeType>;
 
 export function mimeLookup(path: string) {

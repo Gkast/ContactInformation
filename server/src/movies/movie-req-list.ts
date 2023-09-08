@@ -8,43 +8,49 @@ import {pageNotFoundResponse} from "../util/my-http/responses/client-error-respo
 import {format as dateFormat} from "fecha";
 
 export function addMovieReqList(con: Pool): MyHttpListener {
-    return (req, user) => streamToString(req.body).then(bodyString => {
+    return async (req, user) => {
+        const bodyString = await streamToString(req.body);
         const p = querystring.parse(bodyString);
-        return mysqlQuery(con,
+        const result = await mysqlQuery(con,
             `INSERT INTO movie (title, duration_minutes, production_year, image_url, premiere_date, mpa,
                                 description)
              VALUES (?, ?, ?, ?, ?, ?, ?)`, [p['title'], p['duration'], p['production-year'], p['image-url'],
-                dateFormat(isoDateParser(p['premiere-date'] as string), 'YYYY/MM/DD'), p['mpa'], p.description])
-            .then(result => pageHtmlResponse({title: 'Success', user: user,contentHtml:`
-<div>
-    <h1>The Movie Was Added Successfully</h1>
-    <p>The Movie ID:${result['insertId']}</p>
-    <a href="/home" class="no-underline">
-        <button class="btn">Home</button>
-    </a>                
-</div>`}))
-    })
+                dateFormat(isoDateParser(p['premiere-date'] as string), 'YYYY/MM/DD'), p['mpa'], p.description]);
+        return pageHtmlResponse({
+            title: 'Success', user: user, contentHtml: `
+    <div>
+        <h1>The Movie Was Added Successfully</h1>
+        <p>The Movie ID:${result['insertId']}</p>
+        <a href="/home" class="no-underline">
+            <button class="btn">Home</button>
+        </a>                
+    </div>`
+        });
+    }
 }
 
 export function deleteMovieReqList(con: Pool): MyHttpListener {
-    return (req) => {
+    return async (req) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
         if (id) {
-            return mysqlQuery(con,
+            await mysqlQuery(con,
                 `DELETE
                  FROM movie
-                 WHERE id = ?`)
-                .then(result => redirectResponse('/movie-list'))
+                 WHERE id = ?`, [id]);
+            return redirectResponse('/movie-list');
         }
     }
 }
 
 export function editMovieReqList(con: Pool): MyHttpListener {
-    return (req, user) => {
+    return async (req, user) => {
         const id = parseInt(req.url.pathname.split('/')[2], 10);
-        return !id ? Promise.resolve(pageNotFoundResponse()) : streamToString(req.body).then(bodyString => {
+        if (!id) {
+            return Promise.resolve(pageNotFoundResponse());
+        } else {
+            const bodyString = await streamToString(req.body);
             const p = querystring.parse(bodyString);
-            return mysqlQuery(con,
+            await mysqlQuery(con,
                 `UPDATE movie
                  SET title            = ?,
                      duration_minutes = ?,
@@ -55,8 +61,8 @@ export function editMovieReqList(con: Pool): MyHttpListener {
                      description      = ?
                  WHERE id = ?`, [p.title, p.duration, p['production-year'], p['image-url'],
                     dateFormat(isoDateParser(p['premiere-date'] as string), 'YYYY/MM/DD'), p['mpa'],
-                    p.description, id])
-                .then(result => redirectResponse('/contact-list'))
-        });
+                    p.description, id]);
+            return redirectResponse('/contact-list');
+        }
     }
 }

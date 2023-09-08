@@ -46,6 +46,6 @@ async function initializeRoutes(
     await setupContactRoutes(router, dbPool, smtpTransport);
     await setupMovieRoutes(router, dbPool);
     await setupCinemaRoutes(router, dbPool, smtpTransport);
-    await setupToolsRoutes(router, dbPool)
+    await setupToolsRoutes(router, dbPool);
 }
 

@@ -1,5 +1,5 @@
 export type HttpStatusCodes = keyof typeof HTTP_STATUS;
-type HttpStatusMessages = typeof HTTP_STATUS[HttpStatusCodes];
+export type HttpStatusMessages = typeof HTTP_STATUS[HttpStatusCodes];
 
 export function getHttpStatusMessage(statusCode: number): HttpStatusMessages {
     return HTTP_STATUS[statusCode];

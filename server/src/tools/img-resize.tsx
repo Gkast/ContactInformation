@@ -3,7 +3,7 @@ import {pageHtmlResponse} from "../util/my-http/responses/successful-response";
 import {React} from "../util/react";
 
 export function imgResizePage(): MyHttpListener {
-    return (req, user) => Promise.resolve(pageHtmlResponse({
+    return async (req, user) => pageHtmlResponse({
         user: user, title: "Resize", contentHtml: <div class="center-container">
             <form method="get" action="/img-resize" class="form-container">
                 <input type="url" placeholder="Image URL" name="url" required/>
@@ -12,5 +12,5 @@ export function imgResizePage(): MyHttpListener {
                 <button type="submit" class="btn">Resize</button>
             </form>
         </div>
-    }))
+    })
 }

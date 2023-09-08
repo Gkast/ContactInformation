@@ -2,11 +2,12 @@ import {Pool} from 'mysql';
 import {logger} from "../../main";
 import {Transporter} from "nodemailer";
 import {Server} from "http";
+import * as SMTPTransport from "nodemailer/lib/smtp-transport";
 
 export function initiateGracefulShutdown(
     server: Server,
     dbPool: Pool,
-    smtpTransport: Transporter,
+    smtpTransport:  Transporter<SMTPTransport.SentMessageInfo>,
     timeoutMs: number,
     ongoingRequestsCounter: {
         getOngoingRequests: () => number;
@@ -31,7 +32,7 @@ export function initiateGracefulShutdown(
 export function gracefulShutdown(
     server: Server,
     dbPool: Pool,
-    smtpTransport: Transporter,
+    smtpTransport:  Transporter<SMTPTransport.SentMessageInfo>,
     timeoutMs: number,
     ongoingRequestsCounter: {
         getOngoingRequests: () => number;

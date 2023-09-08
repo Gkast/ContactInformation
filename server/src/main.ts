@@ -7,7 +7,8 @@ import {
     handleClientError,
     handleServerError,
     handleStartServerError,
-    handleUncaughtException, handleUnhandledRejection
+    handleUncaughtException,
+    handleUnhandledRejection
 } from "./handler/error-handler";
 import {createServer} from "http";
 

@@ -44,5 +44,5 @@ export async function setupMainRoutes(
     router.add('GET', '/change-password', changePasswordPage());
     router.add('POST', '/change-password', changePasswordReqList(dbPool));
     router.add('GET', '/assets/*', staticFileReqList());
-    router.add('GET', '*', () => Promise.resolve(pageNotFoundResponse()));
+    router.add('GET', '*', async () => pageNotFoundResponse());
 }

@@ -1,11 +1,10 @@
 import {HttpRouter} from "../util/config/router-config";
 import * as http from "http";
-import {myResToNodeRes, nodeReqToMyReq} from "../util/my-http/http-converter";
 import {mimeType} from "../util/tools/mime-types";
 import {withUserId} from "../auth/authentication";
 import {getHttpStatusMessage} from "../util/my-http/http-status";
 import {logger} from "../main";
-import {MyHttpListener} from "../util/my-http/http-handler";
+import {MyHttpListener, myResToNodeRes, nodeReqToMyReq} from "../util/my-http/http-handler";
 import {Pool} from "mysql";
 
 export async function handleRequest(
@@ -33,7 +32,11 @@ export async function handleRequest(
         const myRes = await wrappedHandler(myReq);
         myResToNodeRes(myRes, nodeRes);
     } catch (err) {
-        logger.error(`An unexpected error occurred ${err.message} ${err.stack}`, {
+        logger.error(`Error occurred: 
+Url: ${nodeReq.url} 
+Headers: ${JSON.stringify(nodeReq.headers, null, 4)} 
+Error Message: ${err.message} 
+Error stack: ${err.stack}`, {
             url: nodeReq.url,
             headers: nodeReq.headers,
             message: err.message,

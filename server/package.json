@@ -1,12 +1,11 @@
 {
-  "name": "giorgostest",
+  "name": "contact-app",
   "version": "1.0.0",
   "description": "",
   "main": "src/main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --project tsconfig.json",
-    "build2": "tsc ."
+    "build": "tsc --project tsconfig.json"
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +21,7 @@
     "sharp": "^0.32.4",
     "trek-router": "^1.2.0",
     "winston": "^3.10.0",
+    "winston-mysql": "^1.1.1",
     "xml-escape": "^1.1.0"
   },
   "devDependencies": {

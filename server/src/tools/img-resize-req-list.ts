@@ -4,15 +4,15 @@ import * as https from "https";
 import {pageResponseStream} from "../util/my-http/responses/successful-response";
 
 export function imgResizeReqList(): MyHttpListener {
-    return (req) => {
+    return async (req) => {
         const url = decodeURIComponent(req.url.searchParams.get('url'));
         const width = decodeURIComponent(req.url.searchParams.get('width')) ?
             parseInt(req.url.searchParams.get('width')) : 200;
         const height = decodeURIComponent(req.url.searchParams.get('height')) ?
             parseInt(req.url.searchParams.get('height')) : 200;
         const imgResizer = sharp().resize(width, height, {fit: "contain",}).jpeg();
-        return Promise.resolve(pageResponseStream('image/jpeg', res =>
+        return pageResponseStream('image/jpeg', res =>
             https.get(url, res1 => res1.pipe(imgResizer).pipe(res))
-        ));
+        );
     }
 }

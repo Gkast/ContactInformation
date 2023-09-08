@@ -6,11 +6,9 @@ import {logger} from "../../main";
 export async function createDatabasePool(): Promise<mysql.Pool> {
     const pool = mysql.createPool(process.env.MYSQL_CONN_STRING);
     logger.info("MySQL Pool initialized");
-
     return new Promise<mysql.Pool>((resolve, reject) => {
         pool.getConnection((err) => {
             if (err) {
-                logger.error(`Error connecting to database ${err}`, {message: err.message, stack: err.stack});
                 reject(err);
             } else {
                 logger.info("Connected to MySQL database");
@@ -18,7 +16,7 @@ export async function createDatabasePool(): Promise<mysql.Pool> {
             }
         });
     });
-};
+}
 
 export async function createSMTPTransport(): Promise<nodemailer.Transporter<SMTPTransport.SentMessageInfo>> {
     const smtpTransport = nodemailer.createTransport({
